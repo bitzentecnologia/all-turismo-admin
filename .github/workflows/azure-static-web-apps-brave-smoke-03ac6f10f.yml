@@ -33,7 +33,7 @@ jobs:
         run: npm run build
       
       - name: Copy Static Web App config
-        run: cp staticwebapp.config.json dist/nexaro/browser/
+        run: cp staticwebapp.config.json dist/all-turismo-admin/browser/
       
       - name: Build And Deploy
         id: builddeploy
