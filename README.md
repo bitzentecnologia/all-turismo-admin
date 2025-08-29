@@ -110,6 +110,17 @@ A aplicação é totalmente responsiva e inclui:
 - Imports organizados por tipo (Angular, Material, terceiros, locais)
 - Uso de aliases de path (@core, @shared, etc.)
 
+## 🌐 Links de Teste
+
+### Sistemas Publicados
+- **Painel Administrativo:** [https://brave-smoke-03ac6f10f.1.azurestaticapps.net/](https://brave-smoke-03ac6f10f.1.azurestaticapps.net/)
+- **Landing Page:** [https://icy-ground-0dd3e000f.1.azurestaticapps.net/](https://icy-ground-0dd3e000f.1.azurestaticapps.net/)
+
+### Status dos Ambientes
+- 🧪 **Teste:** Ativo e funcionando
+- 🔄 **Deploy Automático:** Configurado via GitHub Actions
+- 📊 **Monitoramento:** Azure Static Web Apps
+
 ## 🚀 Deploy
 
 ### GitHub Actions + Azure Static Web Apps
@@ -121,6 +132,12 @@ npm run build
 ```
 
 O build será gerado na pasta `dist/all-turismo-admin/`.
+
+### Configuração de Deploy
+- **Branch de Deploy:** `develop`
+- **Trigger:** Push e Pull Requests para `develop`
+- **Plataforma:** Azure Static Web Apps
+- **Build Tool:** Oryx (Azure)
 
 ## 🔒 Segurança
 
