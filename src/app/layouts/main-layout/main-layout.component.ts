@@ -106,6 +106,14 @@ export class MainLayoutComponent {
     this.boostItems.forEach(boostItem => boostItem.active = false);
   }
 
+  logout() {
+    // Aqui você implementaria a lógica de logout (limpar tokens, etc.)
+    console.log('Logout realizado');
+    
+    // Redirecionar para a página de login
+    this.router.navigate(['/login']);
+  }
+
   private setActiveItemByRoute() {
     const currentRoute = this.router.url;
     

@@ -13,7 +13,7 @@
         
         <div class="dropdown-menu" *ngIf="isUserDropdownOpen">
           <a href="#" class="dropdown-item">Minha Conta</a>
-          <a href="#" class="dropdown-item">Sair</a>
+          <a href="#" class="dropdown-item" (click)="logout(); $event.preventDefault()">Sair</a>
         </div>
       </div>
     </div>
@@ -38,7 +38,7 @@
       <!-- Logo section -->
       <div class="sidebar-logo">
         <a routerLink="/" class="logo-link" (click)="resetActiveItems()">
-          <img src="assets/images/logo/logo7.png" alt="AllTurismo Logo" class="logo-icon">
+          <img src="assets/images/logo/logo5.png" alt="AllTurismo Logo" class="logo-icon">
           <span class="logo-text">ALLTURISMO</span>
         </a>
       </div>
