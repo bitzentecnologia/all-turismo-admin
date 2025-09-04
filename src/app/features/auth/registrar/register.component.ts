@@ -5,13 +5,13 @@ import { Router } from '@angular/router';
 import { formatCnpj, formatCep, formatPhone, validateNumbersOnly as validateNumbers } from '../../../shared/utils/masks';
 
 @Component({
-  selector: 'app-registrar',
+  selector: 'app-register',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './registrar.component.html',
-  styleUrls: ['./registrar.component.scss']
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
 })
-export class RegistrarComponent {
+export class RegisterComponent {
   currentStep: number = 1;
   isLoading: boolean = false;
 

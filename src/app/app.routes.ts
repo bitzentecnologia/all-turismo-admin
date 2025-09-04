@@ -4,7 +4,7 @@ import { HomeComponent } from './features/dashboard/home/home.component';
 import { CuponsComponent } from './features/dashboard/cupons/cupons.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { LoginComponent } from './features/auth/login/login.component';
-import { RegistrarComponent } from './features/auth/registrar/registrar.component';
+import { RegisterComponent } from './features/auth/registrar/register.component';
 
 export const routes: Routes = [
   {
@@ -13,7 +13,7 @@ export const routes: Routes = [
   },
   {
     path: 'registrar',
-    component: RegistrarComponent
+    component: RegisterComponent
   },
   {
     path: '',
