@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { formatCnpj, formatCep, formatPhone, validateNumbersOnly as validateNumbers } from '../../../shared/utils/masks';
 
 @Component({
   selector: 'app-registrar',
@@ -140,86 +141,29 @@ export class RegistrarComponent {
     this.router.navigate(['/']);
   }
 
-  // Validar apenas números no input
-  validateNumbersOnly(event: any): boolean {
-    const charCode = event.which ? event.which : event.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-      event.preventDefault();
-      return false;
-    }
-    return true;
-  }
-
   // Máscara para telefone brasileiro
   formatPhone(event: any): void {
-    let value = event.target.value.replace(/\D/g, '');
-    
-    if (value.length <= 11) {
-      if (value.length <= 2) {
-        value = value;
-      } else if (value.length <= 7) {
-        value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
-      } else {
-        value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-      }
-      
-      this.phone = value;
-    }
+    this.phone = formatPhone(event.target.value);
   }
 
   // Máscara para CEP brasileiro
   formatCep(event: any): void {
-    let value = event.target.value.replace(/\D/g, '');
-    
-    if (value.length <= 8) {
-      if (value.length <= 5) {
-        value = value;
-      } else {
-        value = value.replace(/(\d{5})(\d{0,3})/, '$1-$2');
-      }
-      
-      this.cep = value;
-    }
+    this.cep = formatCep(event.target.value);
   }
 
   // Máscara para CNPJ brasileiro
   formatCnpj(event: any): void {
-    let value = event.target.value.replace(/\D/g, '');
-    
-    if (value.length <= 14) {
-      if (value.length <= 2) {
-        value = value;
-      } else if (value.length <= 5) {
-        value = value.replace(/(\d{2})(\d{0,3})/, '$1.$2');
-      } else if (value.length <= 8) {
-        value = value.replace(/(\d{2})(\d{3})(\d{0,3})/, '$1.$2.$3');
-      } else if (value.length <= 12) {
-        value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, '$1.$2.$3/$4');
-      } else {
-        value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/, '$1.$2.$3/$4-$5');
-      }
-      
-      this.cnpj = value;
-    }
+    this.cnpj = formatCnpj(event.target.value);
   }
 
   // Máscara para telefone fixo ou celular
   formatEstablishmentPhone(event: any): void {
-    let value = event.target.value.replace(/\D/g, '');
-    
-    if (value.length <= 11) {
-      if (value.length <= 2) {
-        value = value;
-      } else if (value.length <= 6) {
-        value = value.replace(/(\d{2})(\d{0,4})/, '($1) $2');
-      } else if (value.length <= 10) {
-        value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-      } else {
-        value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-      }
-      
-      this.establishmentPhone = value;
-    }
+    this.establishmentPhone = formatPhone(event.target.value);
+  }
+
+  // Validar apenas números no input
+  validateNumbersOnly(event: any): boolean {
+    return validateNumbers(event);
   }
 
   // Upload de logo
