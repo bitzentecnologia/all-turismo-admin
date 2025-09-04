@@ -97,16 +97,22 @@
       <div *ngIf="isStep2" class="form-step" [formGroupName]="'address'">
         <div class="form-group">
           <label for="cep">CEP</label>
-          <input 
-            type="text" 
-            id="cep" 
-            formControlName="cep"
-            (input)="formatCep($event)"
-            (keypress)="validateNumbersOnly($event)"
-            placeholder="00000-000"
-            maxlength="9"
-            [class.error]="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched"
-          >
+          <div class="cep-input-container">
+            <input 
+              type="text" 
+              id="cep" 
+              formControlName="cep"
+              (input)="formatCep($event)"
+              (keypress)="validateNumbersOnly($event)"
+              placeholder="00000-000"
+              maxlength="9"
+              [class.error]="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched"
+              [disabled]="isConsultingCep"
+            >
+            <div *ngIf="isConsultingCep" class="cep-loading">
+              <span>Consultando...</span>
+            </div>
+          </div>
           <div *ngIf="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched" class="error-message">
             <span *ngIf="addressForm.get('cep')?.errors?.['required']">CEP é obrigatório</span>
             <span *ngIf="addressForm.get('cep')?.errors?.['minlength']">CEP deve ter pelo menos 8 caracteres</span>
@@ -247,7 +253,7 @@
               <input 
                 type="radio" 
                 [id]="'category-' + category.id"
-                name="category" 
+                name="categoryId" 
                 [value]="category.id"
                 formControlName="categoryId"
               >

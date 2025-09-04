@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { formatCnpj, formatCep, formatPhone, validateNumbersOnly as validateNumbers } from '../../../shared/utils/masks';
 import { DropDownItem } from '../../../shared/models/dropdown.model';
 import { RegisterFormData } from './register.model';
+import { CepService } from '../../../shared/services/cep.service';
 
 @Component({
   selector: 'app-register',
@@ -16,6 +17,7 @@ import { RegisterFormData } from './register.model';
 export class RegisterComponent implements OnInit {
   currentStep: number = 1;
   isLoading: boolean = false;
+  isConsultingCep: boolean = false;
   registerForm!: FormGroup;
 
   // Categorias (futuramente carregadas de API)
@@ -41,7 +43,8 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cepService: CepService
   ) {}
 
   ngOnInit(): void {
@@ -144,6 +147,46 @@ export class RegisterComponent implements OnInit {
   formatCep(event: any): void {
     const value = formatCep(event.target.value);
     this.registerForm.get('address.cep')?.setValue(value);
+    
+    // Consulta CEP automaticamente quando tiver 8 dígitos
+    const cepLimpo = value.replace(/\D/g, '');
+    if (cepLimpo.length === 8) {
+      this.consultCep(cepLimpo);
+    }
+  }
+
+  // Consultar CEP automaticamente
+  private consultCep(cep: string): void {
+    this.isConsultingCep = true;
+    
+    this.cepService.consultarCep(cep).subscribe({
+      next: (response) => {
+        // Preenche automaticamente os campos de endereço
+        this.registerForm.patchValue({
+          address: {
+            cep: this.cepService.formatarCep(response.cep),
+            state: response.uf,
+            city: response.localidade,
+            neighborhood: response.bairro,
+            street: response.logradouro
+          }
+        });
+        this.isConsultingCep = false;
+      },
+      error: (error) => {
+        console.log('CEP não encontrado ou erro na consulta:', error.message);
+        // Limpa os campos de endereço em caso de erro
+        this.registerForm.patchValue({
+          address: {
+            state: '',
+            city: '',
+            neighborhood: '',
+            street: ''
+          }
+        });
+        this.isConsultingCep = false;
+      }
+    });
   }
 
   formatCnpj(event: any): void {
