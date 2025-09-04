@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -44,11 +44,13 @@ export class RegisterComponent implements OnInit {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private cepService: CepService
+    private cepService: CepService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.initForm();
+    console.log('Formulário inicializado:', this.registerForm.value);
   }
 
   private initForm(): void {
@@ -74,7 +76,9 @@ export class RegisterComponent implements OnInit {
         subcategoryId: [''],
         phone: ['', [Validators.required, Validators.minLength(14)]],
         instagram: [''],
-        description: ['', Validators.maxLength(100)]
+        description: ['', Validators.maxLength(100)],
+        logoFile: [null],
+        logoPreview: ['']
       })
     });
   }
@@ -207,11 +211,18 @@ export class RegisterComponent implements OnInit {
   // Upload de logo
   onLogoSelected(event: any): void {
     const file = event.target.files[0];
+    console.log('Arquivo selecionado:', file);
     if (file) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
+        console.log('Preview gerado:', e.target.result);
         this.registerForm.get('establishment.logoPreview')?.setValue(e.target.result);
         this.registerForm.get('establishment.logoFile')?.setValue(file);
+        console.log('Valores do formulário após upload:', {
+          logoPreview: this.registerForm.get('establishment.logoPreview')?.value,
+          logoFile: this.registerForm.get('establishment.logoFile')?.value
+        });
+        this.cdr.detectChanges();
       };
       reader.readAsDataURL(file);
     }
@@ -221,6 +232,7 @@ export class RegisterComponent implements OnInit {
   removeLogo(): void {
     this.registerForm.get('establishment.logoPreview')?.setValue('');
     this.registerForm.get('establishment.logoFile')?.setValue(null);
+    this.cdr.detectChanges();
   }
 
   // Obter subcategorias filtradas por categoria
