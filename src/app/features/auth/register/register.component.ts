@@ -1,47 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { formatCnpj, formatCep, formatPhone, validateNumbersOnly as validateNumbers } from '../../../shared/utils/masks';
+import { DropDownItem } from '../../../shared/models/dropdown.model';
+import { RegisterFormData } from './register.model';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   currentStep: number = 1;
   isLoading: boolean = false;
-
-  // Dados da etapa 1 - Responsável
-  name: string = '';
-  email: string = '';
-  phone: string = '';
-
-  // Dados da etapa 2 - Endereço
-  cep: string = '';
-  state: string = '';
-  city: string = '';
-  neighborhood: string = '';
-  street: string = '';
-  number: string = '';
-  complement: string = '';
-
-  // Dados da etapa 3 - Estabelecimento
-  establishmentName: string = '';
-  cnpj: string = '';
-  categoryId: string = '';
-  subcategoryId: string = '';
-  establishmentPhone: string = '';
-  instagram: string = '';
-  description: string = '';
-  logoFile: File | null = null;
-  logoPreview: string = '';
+  registerForm!: FormGroup;
 
   // Categorias (futuramente carregadas de API)
-  categories: any[] = [
+  categories: DropDownItem[] = [
     { id: '1', name: 'Gastronomia' },
     { id: '2', name: 'Lazer' },
     { id: '3', name: 'Serviços' },
@@ -49,19 +27,54 @@ export class RegisterComponent {
     { id: '5', name: 'Shows' }
   ];
 
-  subcategories: any[] = [
-    { id: '1', categoryId: '1', name: 'Restaurante' },
-    { id: '2', categoryId: '1', name: 'Bar' },
-    { id: '3', categoryId: '1', name: 'Café' },
-    { id: '4', categoryId: '2', name: 'Parque' },
-    { id: '5', categoryId: '2', name: 'Cinema' },
-    { id: '6', categoryId: '3', name: 'Consultório' },
-    { id: '7', categoryId: '4', name: 'Hotel' },
-    { id: '8', categoryId: '4', name: 'Pousada' },
-    { id: '9', categoryId: '5', name: 'Casa de Show' }
+  subcategories: DropDownItem[] = [
+    { id: '1', parentId: '1', name: 'Restaurante' },
+    { id: '2', parentId: '1', name: 'Bar' },
+    { id: '3', parentId: '1', name: 'Café' },
+    { id: '4', parentId: '2', name: 'Parque' },
+    { id: '5', parentId: '2', name: 'Cinema' },
+    { id: '6', parentId: '3', name: 'Consultório' },
+    { id: '7', parentId: '4', name: 'Hotel' },
+    { id: '8', parentId: '4', name: 'Pousada' },
+    { id: '9', parentId: '5', name: 'Casa de Show' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
+
+  ngOnInit(): void {
+    this.initForm();
+  }
+
+  private initForm(): void {
+    this.registerForm = this.fb.group({
+      responsible: this.fb.group({
+        name: ['', [Validators.required, Validators.minLength(2)]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: ['', [Validators.required, Validators.minLength(14)]]
+      }),
+      address: this.fb.group({
+        cep: ['', [Validators.required, Validators.minLength(8)]],
+        state: ['', Validators.required],
+        city: ['', Validators.required],
+        neighborhood: ['', Validators.required],
+        street: ['', Validators.required],
+        number: ['', Validators.required],
+        complement: ['']
+      }),
+      establishment: this.fb.group({
+        name: ['', [Validators.required, Validators.minLength(2)]],
+        cnpj: ['', [Validators.required, Validators.minLength(18)]],
+        categoryId: ['', Validators.required],
+        subcategoryId: [''],
+        phone: ['', [Validators.required, Validators.minLength(14)]],
+        instagram: [''],
+        description: ['', Validators.maxLength(100)]
+      })
+    });
+  }
 
   // Navegação entre etapas
   nextStep(): void {
@@ -73,7 +86,6 @@ export class RegisterComponent {
         if (this.currentStep < 3) {
           this.currentStep++;
         } else {
-          // Finalizar processo
           this.finishRegistration();
         }
       }, 1000);
@@ -90,75 +102,58 @@ export class RegisterComponent {
 
   // Validação por etapa
   validateCurrentStep(): boolean {
-    switch (this.currentStep) {
-      case 1:
-        if (!this.name || !this.email || !this.phone) {
-          alert('Por favor, preencha todos os campos da etapa 1');
-          return false;
-        }
-        break;
-      case 2:
-        if (!this.cep || !this.state || !this.city || !this.neighborhood || !this.street || !this.number) {
-          alert('Por favor, preencha todos os campos obrigatórios da etapa 2');
-          return false;
-        }
-        break;
-      case 3:
-        if (!this.establishmentName || !this.cnpj || !this.categoryId || !this.establishmentPhone) {
-          alert('Por favor, preencha todos os campos obrigatórios da etapa 3');
-          return false;
-        }
-        break;
+    const formGroup = this.getCurrentStepFormGroup();
+    if (formGroup && formGroup.invalid) {
+      this.markFormGroupTouched(formGroup);
+      return false;
     }
     return true;
   }
 
+  private getCurrentStepFormGroup(): FormGroup | null {
+    switch (this.currentStep) {
+      case 1: return this.registerForm.get('responsible') as FormGroup;
+      case 2: return this.registerForm.get('address') as FormGroup;
+      case 3: return this.registerForm.get('establishment') as FormGroup;
+      default: return null;
+    }
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
+    });
+  }
+
   // Finalizar registro
   finishRegistration(): void {
-    console.log('Registro finalizado:', {
-      responsavel: { name: this.name, email: this.email, phone: this.phone },
-      endereco: { 
-        cep: this.cep, 
-        state: this.state, 
-        city: this.city, 
-        neighborhood: this.neighborhood,
-        street: this.street,
-        number: this.number,
-        complement: this.complement
-      },
-      estabelecimento: { 
-        name: this.establishmentName, 
-        cnpj: this.cnpj,
-        categoryId: this.categoryId,
-        subcategoryId: this.subcategoryId,
-        phone: this.establishmentPhone,
-        instagram: this.instagram,
-        description: this.description,
-        logo: this.logoFile ? this.logoFile.name : null
-      }
-    });
-    
-    this.router.navigate(['/']);
+    if (this.registerForm.valid) {
+      const formData: RegisterFormData = this.registerForm.value;
+      console.log('Registro finalizado:', formData);
+      this.router.navigate(['/']);
+    }
   }
 
-  // Máscara para telefone brasileiro
+  // Máscaras
   formatPhone(event: any): void {
-    this.phone = formatPhone(event.target.value);
+    const value = formatPhone(event.target.value);
+    this.registerForm.get('responsible.phone')?.setValue(value);
   }
 
-  // Máscara para CEP brasileiro
   formatCep(event: any): void {
-    this.cep = formatCep(event.target.value);
+    const value = formatCep(event.target.value);
+    this.registerForm.get('address.cep')?.setValue(value);
   }
 
-  // Máscara para CNPJ brasileiro
   formatCnpj(event: any): void {
-    this.cnpj = formatCnpj(event.target.value);
+    const value = formatCnpj(event.target.value);
+    this.registerForm.get('establishment.cnpj')?.setValue(value);
   }
 
-  // Máscara para telefone fixo ou celular
   formatEstablishmentPhone(event: any): void {
-    this.establishmentPhone = formatPhone(event.target.value);
+    const value = formatPhone(event.target.value);
+    this.registerForm.get('establishment.phone')?.setValue(value);
   }
 
   // Validar apenas números no input
@@ -170,12 +165,10 @@ export class RegisterComponent {
   onLogoSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      this.logoFile = file;
-      
-      // Criar preview da imagem
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.logoPreview = e.target.result;
+        this.registerForm.get('establishment.logoPreview')?.setValue(e.target.result);
+        this.registerForm.get('establishment.logoFile')?.setValue(file);
       };
       reader.readAsDataURL(file);
     }
@@ -183,14 +176,15 @@ export class RegisterComponent {
 
   // Remover logo
   removeLogo(): void {
-    this.logoFile = null;
-    this.logoPreview = '';
+    this.registerForm.get('establishment.logoPreview')?.setValue('');
+    this.registerForm.get('establishment.logoFile')?.setValue(null);
   }
 
   // Obter subcategorias filtradas por categoria
-  getFilteredSubcategories(): any[] {
-    if (!this.categoryId) return [];
-    return this.subcategories.filter(sub => sub.categoryId === this.categoryId);
+  getFilteredSubcategories(): DropDownItem[] {
+    const categoryId = this.registerForm.get('establishment.categoryId')?.value;
+    if (!categoryId) return [];
+    return this.subcategories.filter(sub => sub.parentId === categoryId);
   }
 
   // Getters para controlar visibilidade
@@ -221,5 +215,18 @@ export class RegisterComponent {
 
   get buttonText(): string {
     return this.isLastStep ? 'Criar conta' : 'Continuar';
+  }
+
+  // Getters para acessar os formulários
+  get responsibleForm(): FormGroup {
+    return this.registerForm.get('responsible') as FormGroup;
+  }
+
+  get addressForm(): FormGroup {
+    return this.registerForm.get('address') as FormGroup;
+  }
+
+  get establishmentForm(): FormGroup {
+    return this.registerForm.get('establishment') as FormGroup;
   }
 }

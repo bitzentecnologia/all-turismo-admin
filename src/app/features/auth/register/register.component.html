@@ -40,20 +40,23 @@
     </div>
 
     <!-- Formulário -->
-    <form (ngSubmit)="nextStep()" class="registrar-form">
+    <form [formGroup]="registerForm" (ngSubmit)="nextStep()" class="registrar-form">
       
       <!-- Etapa 1: Dados do Responsável -->
-      <div *ngIf="isStep1" class="form-step">
+      <div *ngIf="isStep1" class="form-step" [formGroupName]="'responsible'">
         <div class="form-group">
           <label for="name">Nome</label>
           <input 
             type="text" 
             id="name" 
-            name="name" 
-            [(ngModel)]="name" 
+            formControlName="name"
             placeholder="Digite seu nome completo"
-            required
+            [class.error]="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched"
           >
+          <div *ngIf="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched" class="error-message">
+            <span *ngIf="responsibleForm.get('name')?.errors?.['required']">Nome é obrigatório</span>
+            <span *ngIf="responsibleForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2 caracteres</span>
+          </div>
         </div>
 
         <div class="form-group">
@@ -61,45 +64,54 @@
           <input 
             type="email" 
             id="email" 
-            name="email" 
-            [(ngModel)]="email" 
+            formControlName="email"
             placeholder="Digite seu e-mail"
-            required
+            [class.error]="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched"
           >
+          <div *ngIf="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched" class="error-message">
+            <span *ngIf="responsibleForm.get('email')?.errors?.['required']">E-mail é obrigatório</span>
+            <span *ngIf="responsibleForm.get('email')?.errors?.['email']">E-mail inválido</span>
+          </div>
         </div>
 
-                 <div class="form-group">
-           <label for="phone">WhatsApp</label>
-           <input 
-             type="tel" 
-             id="phone" 
-             name="phone" 
-             [(ngModel)]="phone" 
-             (input)="formatPhone($event)"
-             (keypress)="validateNumbersOnly($event)"
-             placeholder="(XX) XXXXX-XXXX"
-             maxlength="15"
-             required
-           >
-         </div>
+        <div class="form-group">
+          <label for="phone">WhatsApp</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            formControlName="phone"
+            (input)="formatPhone($event)"
+            (keypress)="validateNumbersOnly($event)"
+            placeholder="(XX) XXXXX-XXXX"
+            maxlength="15"
+            [class.error]="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched"
+          >
+          <div *ngIf="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched" class="error-message">
+            <span *ngIf="responsibleForm.get('phone')?.errors?.['required']">WhatsApp é obrigatório</span>
+            <span *ngIf="responsibleForm.get('phone')?.errors?.['minlength']">WhatsApp deve ter pelo menos 14 caracteres</span>
+          </div>
+        </div>
       </div>
 
       <!-- Etapa 2: Endereço -->
-      <div *ngIf="isStep2" class="form-step">
-                 <div class="form-group">
-           <label for="cep">CEP</label>
-           <input 
-             type="text" 
-             id="cep" 
-             name="cep" 
-             [(ngModel)]="cep" 
-             (input)="formatCep($event)"
-             (keypress)="validateNumbersOnly($event)"
-             placeholder="00000-000"
-             maxlength="9"
-             required
-           >
-         </div>
+      <div *ngIf="isStep2" class="form-step" [formGroupName]="'address'">
+        <div class="form-group">
+          <label for="cep">CEP</label>
+          <input 
+            type="text" 
+            id="cep" 
+            formControlName="cep"
+            (input)="formatCep($event)"
+            (keypress)="validateNumbersOnly($event)"
+            placeholder="00000-000"
+            maxlength="9"
+            [class.error]="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched"
+          >
+          <div *ngIf="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched" class="error-message">
+            <span *ngIf="addressForm.get('cep')?.errors?.['required']">CEP é obrigatório</span>
+            <span *ngIf="addressForm.get('cep')?.errors?.['minlength']">CEP deve ter pelo menos 8 caracteres</span>
+          </div>
+        </div>
 
         <div class="form-row">
           <div class="form-group">
@@ -107,11 +119,13 @@
             <input 
               type="text" 
               id="state" 
-              name="state" 
-              [(ngModel)]="state" 
+              formControlName="state"
               placeholder="Digite o estado"
-              required
+              [class.error]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched"
             >
+            <div *ngIf="addressForm.get('state')?.invalid && addressForm.get('state')?.touched" class="error-message">
+              <span *ngIf="addressForm.get('state')?.errors?.['required']">Estado é obrigatório</span>
+            </div>
           </div>
 
           <div class="form-group">
@@ -119,11 +133,13 @@
             <input 
               type="text" 
               id="city" 
-              name="city" 
-              [(ngModel)]="city" 
+              formControlName="city"
               placeholder="Digite a cidade"
-              required
+              [class.error]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched"
             >
+            <div *ngIf="addressForm.get('city')?.invalid && addressForm.get('city')?.touched" class="error-message">
+              <span *ngIf="addressForm.get('city')?.errors?.['required']">Cidade é obrigatória</span>
+            </div>
           </div>
         </div>
 
@@ -132,11 +148,13 @@
           <input 
             type="text" 
             id="neighborhood" 
-            name="neighborhood" 
-            [(ngModel)]="neighborhood" 
+            formControlName="neighborhood"
             placeholder="Digite o bairro"
-            required
+            [class.error]="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched"
           >
+          <div *ngIf="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched" class="error-message">
+            <span *ngIf="addressForm.get('neighborhood')?.errors?.['required']">Bairro é obrigatório</span>
+          </div>
         </div>
 
         <div class="form-group">
@@ -144,11 +162,13 @@
           <input 
             type="text" 
             id="street" 
-            name="street" 
-            [(ngModel)]="street" 
+            formControlName="street"
             placeholder="Digite a rua ou avenida"
-            required
+            [class.error]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched"
           >
+          <div *ngIf="addressForm.get('street')?.invalid && addressForm.get('street')?.touched" class="error-message">
+            <span *ngIf="addressForm.get('street')?.errors?.['required']">Rua/Avenida é obrigatória</span>
+          </div>
         </div>
 
         <div class="form-row">
@@ -157,11 +177,13 @@
             <input 
               type="text" 
               id="number" 
-              name="number" 
-              [(ngModel)]="number" 
+              formControlName="number"
               placeholder="Digite o número"
-              required
+              [class.error]="addressForm.get('number')?.invalid && addressForm.get('number')?.touched"
             >
+            <div *ngIf="addressForm.get('number')?.invalid && addressForm.get('number')?.touched" class="error-message">
+              <span *ngIf="addressForm.get('number')?.errors?.['required']">Número é obrigatório</span>
+            </div>
           </div>
 
           <div class="form-group">
@@ -169,8 +191,7 @@
             <input 
               type="text" 
               id="complement" 
-              name="complement" 
-              [(ngModel)]="complement" 
+              formControlName="complement"
               placeholder="Digite o complemento"
             >
           </div>
@@ -178,33 +199,39 @@
       </div>
 
       <!-- Etapa 3: Estabelecimento -->
-      <div *ngIf="isStep3" class="form-step">
+      <div *ngIf="isStep3" class="form-step" [formGroupName]="'establishment'">
         <div class="form-group">
           <label for="establishmentName">Nome do estabelecimento (como aparecerá no app)</label>
           <input 
             type="text" 
             id="establishmentName" 
-            name="establishmentName" 
-            [(ngModel)]="establishmentName" 
+            formControlName="name"
             placeholder="Ex.: Pizzaria Bela Massas"
-            required
+            [class.error]="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched"
           >
+          <div *ngIf="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched" class="error-message">
+            <span *ngIf="establishmentForm.get('name')?.errors?.['required']">Nome do estabelecimento é obrigatório</span>
+            <span *ngIf="establishmentForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2 caracteres</span>
+          </div>
         </div>
 
-                 <div class="form-group">
-           <label for="cnpj">CNPJ</label>
-           <input 
-             type="text" 
-             id="cnpj" 
-             name="cnpj" 
-             [(ngModel)]="cnpj" 
-             (input)="formatCnpj($event)"
-             (keypress)="validateNumbersOnly($event)"
-             placeholder="00.000.000/0001-00"
-             maxlength="18"
-             required
-           >
-         </div>
+        <div class="form-group">
+          <label for="cnpj">CNPJ</label>
+          <input 
+            type="text" 
+            id="cnpj" 
+            formControlName="cnpj"
+            (input)="formatCnpj($event)"
+            (keypress)="validateNumbersOnly($event)"
+            placeholder="00.000.000/0001-00"
+            maxlength="18"
+            [class.error]="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched"
+          >
+          <div *ngIf="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched" class="error-message">
+            <span *ngIf="establishmentForm.get('cnpj')?.errors?.['required']">CNPJ é obrigatório</span>
+            <span *ngIf="establishmentForm.get('cnpj')?.errors?.['minlength']">CNPJ deve ter pelo menos 18 caracteres</span>
+          </div>
+        </div>
 
         <div class="form-group">
           <label class="section-title">Categoria</label>
@@ -214,18 +241,21 @@
             <div 
               *ngFor="let category of categories" 
               class="category-option"
-              [class.selected]="categoryId === category.id"
-              (click)="categoryId = category.id; subcategoryId = ''"
+              [class.selected]="establishmentForm.get('categoryId')?.value === category.id"
+              (click)="establishmentForm.patchValue({categoryId: category.id, subcategoryId: ''})"
             >
               <input 
                 type="radio" 
                 [id]="'category-' + category.id"
                 name="category" 
                 [value]="category.id"
-                [(ngModel)]="categoryId"
+                formControlName="categoryId"
               >
               <label [for]="'category-' + category.id">{{ category.name }}</label>
             </div>
+          </div>
+          <div *ngIf="establishmentForm.get('categoryId')?.invalid && establishmentForm.get('categoryId')?.touched" class="error-message">
+            <span *ngIf="establishmentForm.get('categoryId')?.errors?.['required']">Categoria é obrigatória</span>
           </div>
         </div>
 
@@ -233,9 +263,8 @@
           <label for="subcategory">Subcategoria</label>
           <select 
             id="subcategory" 
-            name="subcategory" 
-            [(ngModel)]="subcategoryId"
-            [disabled]="!categoryId"
+            formControlName="subcategoryId"
+            [disabled]="!establishmentForm.get('categoryId')?.value"
           >
             <option value="">Selecione uma subcategoria</option>
             <option 
@@ -251,28 +280,30 @@
           <label class="section-title">Meios de contato</label>
           <p class="section-subtitle">Ficarão visíveis em seu perfil no app.</p>
           
-                     <div class="form-group">
-             <label for="establishmentPhone">Telefone/WhatsApp</label>
-             <input 
-               type="tel" 
-               id="establishmentPhone" 
-               name="establishmentPhone" 
-               [(ngModel)]="establishmentPhone" 
-               (input)="formatEstablishmentPhone($event)"
-               (keypress)="validateNumbersOnly($event)"
-               placeholder="(XX) XXXXX-XXXX"
-               maxlength="15"
-               required
-             >
-           </div>
+          <div class="form-group">
+            <label for="establishmentPhone">Telefone/WhatsApp</label>
+            <input 
+              type="tel" 
+              id="establishmentPhone" 
+              formControlName="phone"
+              (input)="formatEstablishmentPhone($event)"
+              (keypress)="validateNumbersOnly($event)"
+              placeholder="(XX) XXXXX-XXXX"
+              maxlength="15"
+              [class.error]="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched"
+            >
+            <div *ngIf="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched" class="error-message">
+              <span *ngIf="establishmentForm.get('phone')?.errors?.['required']">Telefone/WhatsApp é obrigatório</span>
+              <span *ngIf="establishmentForm.get('phone')?.errors?.['minlength']">Telefone deve ter pelo menos 14 caracteres</span>
+            </div>
+          </div>
 
           <div class="form-group">
             <label for="instagram">Instagram</label>
             <input 
               type="url" 
               id="instagram" 
-              name="instagram" 
-              [(ngModel)]="instagram" 
+              formControlName="instagram"
               placeholder="Insira o link do seu perfil"
             >
           </div>
@@ -282,51 +313,53 @@
           <label for="description">Descreva a atividade do estabelecimento</label>
           <textarea 
             id="description" 
-            name="description" 
-            [(ngModel)]="description" 
+            formControlName="description"
             placeholder="Ex.: Bar especializado em petiscos."
             maxlength="100"
             rows="4"
+            [class.error]="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched"
           ></textarea>
-          <div class="char-counter">{{ description.length }}/100</div>
+          <div class="char-counter">{{ establishmentForm.get('description')?.value?.length || 0 }}/100</div>
+          <div *ngIf="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched" class="error-message">
+            <span *ngIf="establishmentForm.get('description')?.errors?.['maxlength']">Descrição deve ter no máximo 100 caracteres</span>
+          </div>
         </div>
 
         <div class="form-group">
           <label class="section-title">Logo (Opcional)</label>
           <p class="section-subtitle">Envie a logo do seu estabelecimento.</p>
           
-                     <div class="logo-upload-area">
-             <div class="upload-placeholder">
-               <input 
-                 type="file" 
-                 id="logoFile" 
-                 name="logoFile" 
-                 accept="image/*"
-                 (change)="onLogoSelected($event)"
-                 style="display: none;"
-                 #fileInput
-               >
-               <div class="upload-icon">↑</div>
-               <button 
-                 type="button" 
-                 class="upload-btn" 
-                 (click)="fileInput.click()"
-               >
-                 Selecionar imagem
-               </button>
-             </div>
-             
-             <div *ngIf="logoPreview" class="logo-preview">
-               <img [src]="logoPreview" alt="Logo preview" class="preview-image">
-               <button 
-                 type="button" 
-                 class="remove-btn" 
-                 (click)="removeLogo()"
-               >
-                 Remover
-               </button>
-             </div>
-           </div>
+          <div class="logo-upload-area">
+            <div class="upload-placeholder">
+              <input 
+                type="file" 
+                id="logoFile" 
+                accept="image/*"
+                (change)="onLogoSelected($event)"
+                style="display: none;"
+                #fileInput
+              >
+              <div class="upload-icon">↑</div>
+              <button 
+                type="button" 
+                class="upload-btn" 
+                (click)="fileInput.click()"
+              >
+                Selecionar imagem
+              </button>
+            </div>
+            
+            <div *ngIf="establishmentForm.get('logoPreview')?.value" class="logo-preview">
+              <img [src]="establishmentForm.get('logoPreview')?.value" alt="Logo preview" class="preview-image">
+              <button 
+                type="button" 
+                class="remove-btn" 
+                (click)="removeLogo()"
+              >
+                Remover
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
