@@ -134,7 +134,7 @@ export class RegisterComponent implements OnInit {
     if (this.registerForm.valid) {
       const formData: RegisterFormData = this.registerForm.value;
       console.log('Registro finalizado:', formData);
-      this.router.navigate(['/']);
+      this.router.navigate(['/registro-sucesso']);
     }
   }
 

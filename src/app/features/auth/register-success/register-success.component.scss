@@ -1,0 +1,255 @@
+.success-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 2rem;
+}
+
+.success-card {
+  background: white;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 3rem;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.success-header {
+  margin-bottom: 3rem;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 0.8rem;
+
+    .logo-image {
+      width: 80px;
+      height: 80px;
+    }
+
+    .logo-text {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #333;
+      letter-spacing: 1px;
+    }
+  }
+}
+
+.success-content {
+  .success-icon {
+    margin-bottom: 2rem;
+
+    .checkmark {
+      display: inline-block;
+      width: 80px;
+      height: 80px;
+      background: #10B981;
+      color: white;
+      border-radius: 50%;
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 80px;
+      animation: scaleIn 0.5s ease-out 0.3s both;
+    }
+  }
+
+  .success-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #10B981;
+    margin: 0 0 0.5rem 0;
+    animation: fadeInUp 0.6s ease-out 0.4s both;
+  }
+
+  .success-subtitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 2rem 0;
+    animation: fadeInUp 0.6s ease-out 0.5s both;
+  }
+
+  .success-message {
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.6s ease-out 0.6s both;
+
+    p {
+      font-size: 1.1rem;
+      color: #666;
+      line-height: 1.6;
+      margin: 0 0 1rem 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .next-steps {
+    margin-bottom: 2.5rem;
+    text-align: left;
+    animation: fadeInUp 0.6s ease-out 0.7s both;
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 1rem 0;
+      text-align: center;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        background: #f8fafc;
+        border-left: 4px solid #3B82F6;
+        border-radius: 0 8px 8px 0;
+        font-size: 1rem;
+        color: #333;
+        position: relative;
+
+        &:before {
+          content: "→";
+          position: absolute;
+          left: 0.5rem;
+          color: #3B82F6;
+          font-weight: 600;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  .contact-info {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: #f0f7ff;
+    border-radius: 8px;
+    border: 1px solid #dbeafe;
+    animation: fadeInUp 0.6s ease-out 0.8s both;
+
+    p {
+      font-size: 1rem;
+      color: #333;
+      margin: 0 0 0.5rem 0;
+      line-height: 1.5;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      strong {
+        color: #3B82F6;
+      }
+    }
+  }
+}
+
+.success-actions {
+  animation: fadeInUp 0.6s ease-out 0.9s both;
+
+  .btn-login {
+    padding: 1rem 3rem;
+    background: #3B82F6;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+
+    &:hover {
+      background: #2563EB;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Animações
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .success-container {
+    padding: 1rem;
+  }
+
+  .success-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .success-header .logo .logo-text {
+    font-size: 2rem;
+  }
+
+  .success-content {
+    .success-title {
+      font-size: 2rem;
+    }
+
+    .success-subtitle {
+      font-size: 1.3rem;
+    }
+
+    .success-message p {
+      font-size: 1rem;
+    }
+
+    .next-steps ul li {
+      font-size: 0.9rem;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .contact-info p {
+      font-size: 0.9rem;
+    }
+  }
+
+  .success-actions .btn-login {
+    width: 100%;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
