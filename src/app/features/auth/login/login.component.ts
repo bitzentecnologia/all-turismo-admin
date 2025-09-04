@@ -42,7 +42,7 @@ export class LoginComponent {
   }
 
   onRegister(): void {
-    // Implementar redirecionamento para página de cadastro
-    alert('Funcionalidade de cadastro será implementada');
+    // Redirecionar para página de cadastro
+    this.router.navigate(['/registrar']);
   }
 }

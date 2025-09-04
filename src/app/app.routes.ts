@@ -4,11 +4,16 @@ import { HomeComponent } from './features/dashboard/home/home.component';
 import { CuponsComponent } from './features/dashboard/cupons/cupons.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { LoginComponent } from './features/auth/login/login.component';
+import { RegistrarComponent } from './features/auth/registrar/registrar.component';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
+  },
+  {
+    path: 'registrar',
+    component: RegistrarComponent
   },
   {
     path: '',
