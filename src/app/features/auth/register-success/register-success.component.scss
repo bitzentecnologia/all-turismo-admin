@@ -34,8 +34,9 @@
     }
 
     .logo-text {
+      font-family: 'Franxurter', 'Poppins', sans-serif;
       font-size: 2.5rem;
-      font-weight: 700;
+      font-weight: normal;
       color: #333;
       letter-spacing: 1px;
     }
@@ -155,6 +156,18 @@
 
       strong {
         color: #3B82F6;
+      }
+
+      a {
+        color: #3B82F6;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #2563EB;
+          text-decoration: underline;
+        }
       }
     }
   }

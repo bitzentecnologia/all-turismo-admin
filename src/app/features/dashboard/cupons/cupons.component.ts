@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Title } from '@angular/platform-browser';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-cupons',
@@ -8,6 +10,11 @@ import { CommonModule } from '@angular/common';
   templateUrl: './cupons.component.html',
   styleUrls: ['./cupons.component.scss']
 })
-export class CuponsComponent {
-  // Component logic will be added here
+export class CuponsComponent implements OnInit {
+  
+  constructor(private titleService: Title) {}
+
+  ngOnInit(): void {
+    this.titleService.setTitle(`Cupons | ${environment.appName}`);
+  }
 }

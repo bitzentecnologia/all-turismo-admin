@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -10,12 +12,16 @@ import { Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email: string = '';
   password: string = '';
   isLoading: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private titleService: Title) {}
+
+  ngOnInit(): void {
+    this.titleService.setTitle(`Login | ${environment.appName}`);
+  }
 
   onSubmit(): void {
     if (!this.email || !this.password) {
