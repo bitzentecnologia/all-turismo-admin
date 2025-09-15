@@ -1,5 +1,13 @@
 @use '@angular/material' as mat;
 
+// Definir fonte Franxurter
+@font-face {
+  font-family: 'Franxurter';
+  src: url('./assets/Franxurter.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 // Incluir o tema do Material Design
 @include mat.core();
 
@@ -145,6 +153,21 @@ body {
 // Transições
 .transition {
   transition: all 0.3s ease;
+}
+
+// Classes utilitárias para fonte Franxurter
+.font-franxurter {
+  font-family: 'Franxurter', 'Poppins', sans-serif;
+}
+
+.font-franxurter-bold {
+  font-family: 'Franxurter', 'Poppins', sans-serif;
+  font-weight: bold;
+}
+
+.font-franxurter-large {
+  font-family: 'Franxurter', 'Poppins', sans-serif;
+  font-size: 2rem;
 }
 
 // Responsividade
