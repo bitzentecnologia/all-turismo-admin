@@ -16,7 +16,7 @@ export class AuthService {
   register(data: RegisterFormData): Observable<any> {
     const formData = new FormData();
 
-    formData.append('name', data.establishment.name);
+    formData.append('companyName', data.establishment.name);
     formData.append('description', data.establishment.description || '');
     formData.append('cnpj', data.establishment.cnpj);
     formData.append('contact_phone', data.establishment.phone);
