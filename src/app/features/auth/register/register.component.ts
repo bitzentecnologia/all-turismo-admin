@@ -9,6 +9,7 @@ import { DropDownItem } from '../../../shared/models/dropdown.model';
 import { RegisterFormData } from './register.model';
 import { CepService } from '../../../shared/services/cep.service';
 import { AuthService } from './auth.service';
+import { cnpjValidator } from '@shared/utils/cnpj-validator';
 
 @Component({
   selector: 'app-register',
@@ -102,7 +103,7 @@ export class RegisterComponent implements OnInit {
       }),
       establishment: this.fb.group({
         name: ['', [Validators.required, Validators.minLength(2)]],
-        cnpj: ['', [Validators.required, Validators.minLength(18)]],
+        cnpj: ['', [Validators.required, Validators.minLength(18), cnpjValidator()]],
         categoryId: ['', Validators.required],
         subcategoryId: [''],
         phone: ['', [Validators.required, Validators.minLength(14)]],

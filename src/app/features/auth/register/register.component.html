@@ -251,6 +251,7 @@
           <div *ngIf="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched" class="error-message">
             <span *ngIf="establishmentForm.get('cnpj')?.errors?.['required']">CNPJ é obrigatório</span>
             <span *ngIf="establishmentForm.get('cnpj')?.errors?.['minlength']">CNPJ deve ter pelo menos 18 caracteres</span>
+            <span *ngIf="establishmentForm.get('cnpj')?.errors?.['invalidCnpj']">CNPJ inválido</span>
           </div>
         </div>
 
