@@ -34,7 +34,7 @@ export class AuthService {
 
     formData.append('partnerName', data.responsible.name);
     formData.append('email', data.responsible.email);
-    formData.append('password', 'passwrd');
+    formData.append('password', data.responsible.password);
     formData.append('phone_whatsapp', data.responsible.phone);
 
     if (data.establishment.logoFile) {
