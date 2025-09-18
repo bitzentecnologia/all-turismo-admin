@@ -51,27 +51,20 @@ export class RegisterComponent implements OnInit {
   finishRegistration(): void {
     if (this.registerForm.valid) {
       const formData: RegisterFormData = this.registerForm.value;
-      console.log('Registro finalizado:', formData);
-      this.router.navigate(['/registro-sucesso']);
+      this.isLoading = true;
+
+      this.authService.register(formData).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.router.navigate(['/registro-sucesso']);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Erro no registro:', err);
+        },
+      });
     }
   }
-  // finishRegistration(): void {
-  //   if (this.registerForm.valid) {
-  //     const formData: RegisterFormData = this.registerForm.value;
-  //     this.isLoading = true;
-
-  //     this.authService.register(formData).subscribe({
-  //       next: () => {
-  //         this.isLoading = false;
-  //         this.router.navigate(['/registro-sucesso']);
-  //       },
-  //       error: (err) => {
-  //         this.isLoading = false;
-  //         console.error('Erro no registro:', err);
-  //       },
-  //     });
-  //   }
-  // }
 
   // Atualizar subcategorias ao mudar categoria
   onCategoryChange(categoryId: string): void {

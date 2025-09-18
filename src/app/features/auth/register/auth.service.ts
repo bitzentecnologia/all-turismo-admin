@@ -16,24 +16,34 @@ export class AuthService {
   register(data: RegisterFormData): Observable<any> {
     const formData = new FormData();
 
-    Object.entries(data.responsible).forEach(([key, value]) => {
-      formData.append(`responsible.${key}`, value as string);
-    });
+    formData.append('name', data.establishment.name);
+    formData.append('description', data.establishment.description || '');
+    formData.append('cnpj', data.establishment.cnpj);
+    formData.append('contact_phone', data.establishment.phone);
+    formData.append('instagram', data.establishment.instagram || '');
+    formData.append('categoryId', data.establishment.categoryId || '');
+    formData.append('subCategoryId', data.establishment.subcategoryId || '');
 
-    Object.entries(data.address).forEach(([key, value]) => {
-      formData.append(`address.${key}`, value as string);
-    });
+    formData.append('street', data.address.street);
+    formData.append('number', data.address.number);
+    formData.append('complement', data.address.complement || '');
+    formData.append('neighborhood', data.address.neighborhood);
+    formData.append('city', data.address.city);
+    formData.append('state', data.address.state);
+    formData.append('zip_code', data.address.cep);
 
-    Object.entries(data.establishment).forEach(([key, value]) => {
-      if (key === 'logoFile' && value) {
-        formData.append('logo', value as File);
-      } else {
-        formData.append(`establishment.${key}`, value as string);
-      }
-    });
+    formData.append('partnerName', data.responsible.name);
+    formData.append('email', data.responsible.email);
+    formData.append('password', 'passwrd');
+    formData.append('phone_whatsapp', data.responsible.phone);
 
-    return this.http.post(`${this.apiUrl}/auth/register`, formData);
+    if (data.establishment.logoFile) {
+      formData.append('logo', data.establishment.logoFile);
+    }
+
+    return this.http.post(`${this.apiUrl}/companies`, formData);
   }
+
 
 
   getCategories(): Observable<DropDownItem[]> {
