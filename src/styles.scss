@@ -1,5 +1,13 @@
 @use '@angular/material' as mat;
 
+// Definir fonte Franxurter
+@font-face {
+  font-family: 'Franxurter';
+  src: url('./assets/Franxurter.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 // Incluir o tema do Material Design
 @include mat.core();
 
@@ -12,13 +20,13 @@
 
 html, body {
   height: 100%;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #fafafa;
 }
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 // Utilitários
@@ -80,9 +88,9 @@ body {
 
 // Cores personalizadas baseadas na imagem
 :root {
-  --primary-color: #1976d2;
-  --primary-light: #42a5f5;
-  --primary-dark: #1565c0;
+  --primary-color: #3B82F6;
+  --primary-light: #60A5FA;
+  --primary-dark: #1D4ED8;
   --accent-color: #ff4081;
   --warn-color: #f44336;
   --success-color: #4caf50;
@@ -145,6 +153,21 @@ body {
 // Transições
 .transition {
   transition: all 0.3s ease;
+}
+
+// Classes utilitárias para fonte Franxurter
+.font-franxurter {
+  font-family: 'Franxurter', 'Poppins', sans-serif;
+}
+
+.font-franxurter-bold {
+  font-family: 'Franxurter', 'Poppins', sans-serif;
+  font-weight: bold;
+}
+
+.font-franxurter-large {
+  font-family: 'Franxurter', 'Poppins', sans-serif;
+  font-size: 2rem;
 }
 
 // Responsividade

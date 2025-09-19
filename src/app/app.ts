@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -9,5 +9,5 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
-  title = signal('all-turismo-admin');
+  // App component logic
 }

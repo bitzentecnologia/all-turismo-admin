@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.allturismo.com/api',
-  appName: 'All Turismo Admin',
+  apiUrl: 'https://all-turismo-api-dev.azurewebsites.net/api',
+  appName: 'Allturismo',
   version: '1.0.0'
 };
