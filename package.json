@@ -38,6 +38,8 @@
     "@angular/platform-browser-dynamic": "^20.2.3",
     "@angular/router": "^20.2.3",
     "cpf-cnpj-validator": "^1.0.3",
+    "jwt-decode": "^4.0.0",
+    "ngx-cookie-service": "^20.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.6.0",
     "zone.js": "~0.15.0"
@@ -52,6 +54,7 @@
     "@angular/cli": "^20.2.1",
     "@angular/compiler-cli": "^20.2.3",
     "@types/jasmine": "~5.1.0",
+    "@types/jwt-decode": "^2.2.1",
     "@types/node": "^20.0.0",
     "eslint": "^9.0.0",
     "jasmine-core": "~5.1.0",

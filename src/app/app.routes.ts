@@ -7,18 +7,23 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
 import { RegisterSuccessComponent } from './features/auth/register-success/register-success.component';
 
+import { AuthGuard } from './core/guards/auth.guard';
+import { LoginGuard } from './core/guards/login.guard';
+
 export const routes: Routes = [
   {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
+    canActivate: [LoginGuard],
   },
   {
     path: 'registrar',
-    component: RegisterComponent
+    component: RegisterComponent,
+    canActivate: [LoginGuard],
   },
   {
     path: 'registro-sucesso',
-    component: RegisterSuccessComponent
+    component: RegisterSuccessComponent,
   },
   {
     path: '',
@@ -26,16 +31,15 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component: HomeComponent
+        component: HomeComponent,
+        canActivate: [AuthGuard],
       },
       {
         path: 'cupons',
-        component: CuponsComponent
-      }
-    ]
+        component: CuponsComponent,
+        canActivate: [AuthGuard],
+      },
+    ],
   },
-  {
-    path: '**',
-    component: NotFoundComponent
-  }
+  { path: '**', component: NotFoundComponent },
 ];

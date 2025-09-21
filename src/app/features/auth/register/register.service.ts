@@ -8,7 +8,7 @@ import { RegisterFormData } from './register.model';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
+export class RegisterService {
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
@@ -43,8 +43,6 @@ export class AuthService {
 
     return this.http.post(`${this.apiUrl}/companies`, formData);
   }
-
-
 
   getCategories(): Observable<DropDownItem[]> {
     return this.http.get<DropDownItem[]>(`${this.apiUrl}/categories`);

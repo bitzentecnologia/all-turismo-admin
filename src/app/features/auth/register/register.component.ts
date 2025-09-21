@@ -4,11 +4,16 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { environment } from '../../../../environments/environment';
-import { formatCnpj, formatCep, formatPhone, validateNumbersOnly as validateNumbers } from '../../../shared/utils/masks';
+import {
+  formatCnpj,
+  formatCep,
+  formatPhone,
+  validateNumbersOnly as validateNumbers,
+} from '../../../shared/utils/masks';
 import { DropDownItem } from '../../../shared/models/dropdown.model';
 import { RegisterFormData } from './register.model';
 import { CepService } from '../../../shared/services/cep.service';
-import { AuthService } from './auth.service';
+import { RegisterService } from './register.service';
 import { cnpjValidator } from '@shared/utils/cnpj-validator';
 
 @Component({
@@ -16,7 +21,7 @@ import { cnpjValidator } from '@shared/utils/cnpj-validator';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
   currentStep: number = 1;
@@ -33,18 +38,17 @@ export class RegisterComponent implements OnInit {
     private cepService: CepService,
     private cdr: ChangeDetectorRef,
     private titleService: Title,
-    private authService: AuthService
+    private registerService: RegisterService
   ) {}
-
 
   ngOnInit(): void {
     this.titleService.setTitle(`Registrar | ${environment.appName}`);
     this.initForm();
 
     // Load categories from API
-    this.authService.getCategories().subscribe({
-      next: (res) => (this.categories = res),
-      error: (err) => console.error('Erro ao carregar categorias:', err),
+    this.registerService.getCategories().subscribe({
+      next: res => (this.categories = res),
+      error: err => console.error('Erro ao carregar categorias:', err),
     });
   }
 
@@ -54,12 +58,12 @@ export class RegisterComponent implements OnInit {
       const formData: RegisterFormData = this.registerForm.value;
       this.isLoading = true;
 
-      this.authService.register(formData).subscribe({
+      this.registerService.register(formData).subscribe({
         next: () => {
           this.isLoading = false;
           this.router.navigate(['/registro-sucesso']);
         },
-        error: (err) => {
+        error: err => {
           this.isLoading = false;
           console.error('Erro no registro:', err);
         },
@@ -75,12 +79,12 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    this.authService.getSubcategories(categoryId).subscribe({
-      next: (res) => {
+    this.registerService.getSubcategories(categoryId).subscribe({
+      next: res => {
         this.subcategories = res.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
         this.establishmentForm.patchValue({ subcategoryId: '' });
       },
-      error: (err) => console.error('Erro ao carregar subcategorias:', err)
+      error: err => console.error('Erro ao carregar subcategorias:', err),
     });
   }
 
@@ -90,7 +94,7 @@ export class RegisterComponent implements OnInit {
         name: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
-        phone: ['', [Validators.required, Validators.minLength(14)]]
+        phone: ['', [Validators.required, Validators.minLength(14)]],
       }),
       address: this.fb.group({
         cep: ['', [Validators.required, Validators.minLength(8)]],
@@ -99,7 +103,7 @@ export class RegisterComponent implements OnInit {
         neighborhood: ['', Validators.required],
         street: ['', Validators.required],
         number: ['', Validators.required],
-        complement: ['']
+        complement: [''],
       }),
       establishment: this.fb.group({
         name: ['', [Validators.required, Validators.minLength(2)]],
@@ -110,8 +114,8 @@ export class RegisterComponent implements OnInit {
         instagram: [''],
         description: ['', Validators.maxLength(100)],
         logoFile: [null],
-        logoPreview: ['']
-      })
+        logoPreview: [''],
+      }),
     });
   }
 
@@ -151,10 +155,14 @@ export class RegisterComponent implements OnInit {
 
   private getCurrentStepFormGroup(): FormGroup | null {
     switch (this.currentStep) {
-      case 1: return this.registerForm.get('responsible') as FormGroup;
-      case 2: return this.registerForm.get('address') as FormGroup;
-      case 3: return this.registerForm.get('establishment') as FormGroup;
-      default: return null;
+      case 1:
+        return this.registerForm.get('responsible') as FormGroup;
+      case 2:
+        return this.registerForm.get('address') as FormGroup;
+      case 3:
+        return this.registerForm.get('establishment') as FormGroup;
+      default:
+        return null;
     }
   }
 
@@ -187,7 +195,7 @@ export class RegisterComponent implements OnInit {
     this.isConsultingCep = true;
 
     this.cepService.consultarCep(cep).subscribe({
-      next: (response) => {
+      next: response => {
         // Preenche automaticamente os campos de endereço
         this.registerForm.patchValue({
           address: {
@@ -195,12 +203,12 @@ export class RegisterComponent implements OnInit {
             state: response.uf,
             city: response.localidade,
             neighborhood: response.bairro,
-            street: response.logradouro
-          }
+            street: response.logradouro,
+          },
         });
         this.isConsultingCep = false;
       },
-      error: (error) => {
+      error: error => {
         console.log('CEP não encontrado ou erro na consulta:', error.message);
         // Limpa os campos de endereço em caso de erro
         this.registerForm.patchValue({
@@ -208,11 +216,11 @@ export class RegisterComponent implements OnInit {
             state: '',
             city: '',
             neighborhood: '',
-            street: ''
-          }
+            street: '',
+          },
         });
         this.isConsultingCep = false;
-      }
+      },
     });
   }
 
@@ -243,7 +251,7 @@ export class RegisterComponent implements OnInit {
         this.registerForm.get('establishment.logoFile')?.setValue(file);
         console.log('Valores do formulário após upload:', {
           logoPreview: this.registerForm.get('establishment.logoPreview')?.value,
-          logoFile: this.registerForm.get('establishment.logoFile')?.value
+          logoFile: this.registerForm.get('establishment.logoFile')?.value,
         });
         this.cdr.detectChanges();
       };
@@ -286,10 +294,14 @@ export class RegisterComponent implements OnInit {
 
   get stepTitle(): string {
     switch (this.currentStep) {
-      case 1: return 'Dados do responsável';
-      case 2: return 'Endereço';
-      case 3: return 'Estabelecimento';
-      default: return '';
+      case 1:
+        return 'Dados do responsável';
+      case 2:
+        return 'Endereço';
+      case 3:
+        return 'Estabelecimento';
+      default:
+        return '';
     }
   }
 
