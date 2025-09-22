@@ -1,0 +1,23 @@
+<div class="parceiros-page">
+  <div class="page-header">
+    <h1>Parceiros</h1>
+    <p>Gerencie empresas parceiras cadastradas no sistema.</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <span class="loading-spinner"></span> Carregando parceiros...
+  </div>
+
+  <app-generic-table
+    *ngIf="!loading"
+    [data]="partners"
+    [columns]="columns"
+    [showVisualizeAction]="true"
+    [showEditAction]="false"
+    [showDeleteAction]="false"
+    [meta]="meta"
+    (pageChange)="onPageChange($event)"
+    (view)="onView($event)"
+  >
+  </app-generic-table>
+</div>

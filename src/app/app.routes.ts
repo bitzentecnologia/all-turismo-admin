@@ -9,6 +9,8 @@ import { RegisterSuccessComponent } from './features/auth/register-success/regis
 
 import { AuthGuard } from './core/guards/auth.guard';
 import { LoginGuard } from './core/guards/login.guard';
+import { ParceirosComponent } from '@features/dashboard/admin/parceiros/parceiros.component';
+import { PartnerDetailComponent } from '@features/dashboard/admin/parceiros/details/partner-details.component';
 
 export const routes: Routes = [
   {
@@ -37,6 +39,16 @@ export const routes: Routes = [
       {
         path: 'cupons',
         component: CuponsComponent,
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'parceiros',
+        component: ParceirosComponent,
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'parceiros/:id',
+        component: PartnerDetailComponent,
         canActivate: [AuthGuard],
       },
     ],

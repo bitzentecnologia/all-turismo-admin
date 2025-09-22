@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Injectable()
+@Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private authService: AuthService,
@@ -29,6 +30,9 @@ export class AuthInterceptor implements HttpInterceptor {
         if (err.status === 401) {
           this.authService.logout();
           this.router.navigate(['/login']);
+        }
+        if (err.status === 403) {
+          this.router.navigate(['/']);
         }
         return throwError(() => err);
       })

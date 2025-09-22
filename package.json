@@ -37,6 +37,8 @@
     "@angular/platform-browser": "^20.2.3",
     "@angular/platform-browser-dynamic": "^20.2.3",
     "@angular/router": "^20.2.3",
+    "@ng-icons/core": "^32.1.0",
+    "@ng-icons/heroicons": "^32.1.0",
     "cpf-cnpj-validator": "^1.0.3",
     "jwt-decode": "^4.0.0",
     "ngx-cookie-service": "^20.1.0",

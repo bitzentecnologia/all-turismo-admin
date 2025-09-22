@@ -9,6 +9,11 @@ import { JwtPayload, UserRole } from '@shared/models/login.model';
 export class AuthService {
   constructor(private cookieService: CookieService) {}
 
+  getHeaderToken() {
+    const token = this.getToken();
+    return token ? `Bearer ${token}` : null;
+  }
+
   getToken(): string | null {
     return this.cookieService.get('accessToken') || null;
   }
@@ -46,6 +51,17 @@ export class AuthService {
     try {
       const payload: JwtPayload = jwtDecode(token);
       return payload.role;
+    } catch {
+      return null;
+    }
+  }
+
+  getUserName(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload: JwtPayload = jwtDecode(token);
+      return payload.name;
     } catch {
       return null;
     }

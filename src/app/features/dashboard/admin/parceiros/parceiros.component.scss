@@ -1,0 +1,216 @@
+// Variables
+$primary-blue: #3B82F6;
+$light-blue: #EFF6FF;
+$gray-50: #F9FAFB;
+$gray-100: #F3F4F6;
+$gray-200: #E5E7EB;
+$gray-300: #D1D5DB;
+$gray-400: #9CA3AF;
+$gray-500: #6B7280;
+$gray-600: #4B5563;
+$gray-700: #374151;
+$gray-800: #1F2937;
+$gray-900: #111827;
+$white: #FFFFFF;
+
+// Font family
+$font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+// Page container
+.parceiros-page {
+  margin: 0 auto;
+  font-family: $font-family;
+}
+
+// Page Header
+.page-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $gray-900;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+    font-family: $font-family;
+  }
+
+  p {
+    font-size: 1rem;
+    color: $gray-600;
+    margin: 0;
+    line-height: 1.5;
+    font-family: $font-family;
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+
+  .empty-illustration {
+    position: relative;
+    margin-bottom: 2rem;
+
+    .coupon-icon {
+      position: relative;
+      width: 120px;
+      height: 80px;
+      background: linear-gradient(135deg, $primary-blue, #2563EB);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+      .coupon-percentage {
+        color: $white;
+        font-size: 2rem;
+        font-weight: 700;
+        font-family: $font-family;
+      }
+
+      .coupon-tear {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        height: 20px;
+        background: $white;
+        border-radius: 0 0 0.5rem 0.5rem;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: -10px;
+          left: 0;
+          right: 0;
+          height: 20px;
+          background: linear-gradient(135deg, $primary-blue, #2563EB);
+          border-radius: 0.5rem;
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+      }
+    }
+
+    .decoration-dots {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      display: flex;
+      gap: 0.5rem;
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+
+        &.dot-pink {
+          background-color: #EC4899;
+        }
+
+        &.dot-orange {
+          background-color: #F97316;
+        }
+
+        &.dot-light-blue {
+          background-color: #06B6D4;
+        }
+      }
+    }
+
+    .info-badge {
+      position: absolute;
+      bottom: -5px;
+      right: -5px;
+      width: 24px;
+      height: 24px;
+      background-color: $primary-blue;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .empty-content {
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $gray-700;
+      margin: 0 0 1.5rem 0;
+      line-height: 1.4;
+      font-family: $font-family;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background-color: $primary-blue;
+      color: $white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      font-family: $font-family;
+
+      &:hover {
+        background-color: #2563EB;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-size: 1rem;
+  color: $gray-700;
+  font-family: $font-family;
+  gap: 0.5rem;
+
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid $gray-300;
+    border-top: 3px solid $primary-blue;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

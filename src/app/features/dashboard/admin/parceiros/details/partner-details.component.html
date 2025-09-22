@@ -1,0 +1,7 @@
+<div *ngIf="loading">Carregando...</div>
+
+<div *ngIf="partner && !loading">
+  <h1>{{ partner?.name }}</h1>
+  <p>Status: {{ partner?.status }}</p>
+  <p>ID: {{ partner?.id }}</p>
+</div>
