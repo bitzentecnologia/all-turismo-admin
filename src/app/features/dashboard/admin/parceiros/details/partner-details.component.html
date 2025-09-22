@@ -1,7 +1,42 @@
-<div *ngIf="loading">Carregando...</div>
+<div class="partner-details-page">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <span class="loading-spinner"></span> Carregando parceiro...
+  </div>
 
-<div *ngIf="partner && !loading">
-  <h1>{{ partner?.name }}</h1>
-  <p>Status: {{ partner?.status }}</p>
-  <p>ID: {{ partner?.id }}</p>
+  <!-- Detalhes do parceiro -->
+  <div *ngIf="!loading && partner" class="details-container">
+    <h1 class="partner-name">{{ partner.name }}</h1>
+    <div class="partner-info">
+      <p><strong>Status:</strong>
+        <span [ngClass]="{
+          'status-active': partner.status === 'ACTIVE',
+          'status-inactive': partner.status === 'INACTIVE',
+          'status-pending': partner.status === 'PENDING'
+        }">{{ partner.status }}</span>
+      </p>
+      <p><strong>CNPJ:</strong> {{ partner.cnpj }}</p>
+      <p><strong>Telefone:</strong> {{ partner.contact_phone }}</p>
+      <p *ngIf="partner.instagram"><strong>Instagram:</strong> {{ partner.instagram }}</p>
+      <p *ngIf="partner.description"><strong>Descrição:</strong> {{ partner.description }}</p>
+    </div>
+
+    <!-- Endereço -->
+    <div *ngIf="partner.address" class="partner-address">
+      <h2>Endereço</h2>
+      <p>{{ partner.address.street }}, {{ partner.address.number }} {{ partner.address.complement }}</p>
+      <p>{{ partner.address.neighborhood }}, {{ partner.address.city }} - {{ partner.address.state }}</p>
+      <p>CEP: {{ partner.address.zip_code }}</p>
+    </div>
+
+    <!-- Categoria -->
+    <div *ngIf="partner.category" class="partner-category">
+      <h2>Categoria</h2>
+      <p>{{ partner.category.name }} - {{ partner.category.description }}</p>
+    </div>
+  </div>
 </div>
+
+<style>
+
+</style>

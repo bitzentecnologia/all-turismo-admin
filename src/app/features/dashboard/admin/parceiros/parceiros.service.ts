@@ -13,7 +13,31 @@ export type PartnerResponse = {
 };
 
 export type PartnerDetailsResponse = PartnerResponse & {
-  description: string;
+  description?: string;
+  cnpj?: string;
+  contact_phone?: string;
+  instagram?: string;
+  role?: string;
+  created_at?: string;
+  updated_at?: string;
+  logo?: {
+    id: string;
+  };
+  address?: {
+    id: string;
+    street: string;
+    number: string;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    zip_code: string;
+  };
+  category?: {
+    id: string;
+    name: string;
+    description?: string;
+  };
 };
 
 @Injectable({

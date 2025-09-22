@@ -1,13 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ParceirosService } from '../parceiros.service';
+import { ParceirosService, PartnerDetailsResponse } from '../parceiros.service';
 import { CommonModule } from '@angular/common';
 
-export type Partner = {
-  id: string;
-  name: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
-};
+export type Partner = PartnerDetailsResponse;
 
 @Component({
   selector: 'app-partner-detail',
