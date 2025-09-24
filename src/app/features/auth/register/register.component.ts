@@ -32,9 +32,6 @@ export class RegisterComponent implements OnInit {
 
   categories: DropDownItem[] = [];
   subcategories: DropDownItem[] = [];
-  rules: any[] = [];
-  deliveryRules: any[] = [];
-  informationals: any[] = [];
 
   constructor(
     private router: Router,
@@ -59,8 +56,25 @@ export class RegisterComponent implements OnInit {
   // Finalizar registro
   finishRegistration(): void {
     if (this.registerForm.valid) {
-      const formData: RegisterFormData = this.registerForm.value;
+      const formValue: RegisterFormData = this.registerForm.value;
       this.isLoading = true;
+
+      const additionalInfo = {
+        informationalItems: formValue.additionalInfo.informationalItems.filter(
+          (item: any) => item.checked && item.name.trim() !== ''
+        ),
+        rulesItems: formValue.additionalInfo.rulesItems.filter(
+          (item: any) => item.checked && item.name.trim() !== ''
+        ),
+        deliveryRulesItems: formValue.additionalInfo.deliveryRulesItems.filter(
+          (item: any) => item.checked && item.name.trim() !== ''
+        ),
+      };
+
+      const formData: RegisterFormData = {
+        ...formValue,
+        additionalInfo,
+      };
 
       this.registerService.register(formData).subscribe({
         next: () => {
@@ -103,6 +117,7 @@ export class RegisterComponent implements OnInit {
           res.forEach((sub: any) => {
             this.informationalItems.push(
               this.fb.group({
+                id: [sub.id],
                 name: [sub.text],
                 checked: [false],
                 icon: [sub.icon || ''],
@@ -187,8 +202,7 @@ export class RegisterComponent implements OnInit {
 
   // Navegação entre etapas
   nextStep(): void {
-    if (true) {
-      // if (this.validateCurrentStep()) {
+    if (this.validateCurrentStep()) {
       this.isLoading = true;
 
       setTimeout(() => {

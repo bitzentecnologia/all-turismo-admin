@@ -33,8 +33,19 @@ export interface EstablishmentData {
   logoPreview?: string;
 }
 
+export interface InformationalItem {
+  id: string;
+  text: string;
+  checked: boolean;
+}
+
 export interface RegisterFormData {
   responsible: ResponsibleData;
   address: AddressData;
   establishment: EstablishmentData;
+  additionalInfo: {
+    informationalItems: InformationalItem[];
+    rulesItems: InformationalItem[];
+    deliveryRulesItems: InformationalItem[];
+  };
 }
