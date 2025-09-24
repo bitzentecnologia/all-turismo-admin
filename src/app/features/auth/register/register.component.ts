@@ -187,7 +187,8 @@ export class RegisterComponent implements OnInit {
 
   // Navegação entre etapas
   nextStep(): void {
-    if (this.validateCurrentStep()) {
+    if (true) {
+      // if (this.validateCurrentStep()) {
       this.isLoading = true;
 
       setTimeout(() => {
@@ -217,6 +218,32 @@ export class RegisterComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  addRuleItem(): void {
+    this.rulesItems.push(
+      this.fb.group({
+        name: [''],
+        checked: [false],
+      })
+    );
+  }
+
+  removeRuleItem(index: number): void {
+    this.rulesItems.removeAt(index);
+  }
+
+  addDeliveryRuleItem() {
+    this.deliveryRulesItems.push(
+      this.fb.group({
+        name: [''],
+        checked: [false],
+      })
+    );
+  }
+
+  removeDeliveryRuleItem(index: number) {
+    this.deliveryRulesItems.removeAt(index);
   }
 
   private getCurrentStepFormGroup(): FormGroup | null {

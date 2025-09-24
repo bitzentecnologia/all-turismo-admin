@@ -425,12 +425,26 @@
               <input
                 type="text"
                 formControlName="name"
+                placeholder="Digite a regra..."
                 [disabled]="item.get('checked')?.value"
                 [class.input-active]="item.get('checked')?.value"
               />
+
+              <button type="button" (click)="removeRuleItem(i)" class="btn-trash">
+                🗑
+              </button>
             </div>
           </div>
+
+          <!-- container centralizado -->
+          <div class="add-btn-container">
+            <button type="button" (click)="addRuleItem()" class="btn-add">
+              + Adicionar regra
+            </button>
+          </div>
         </div>
+
+
 
         <div *ngIf="canShowDeliveryItemsRules()" class="form-group">
           <label class="section-title">Regras de entrega</label>
@@ -446,12 +460,24 @@
               <input
                 type="text"
                 formControlName="name"
+                placeholder="Digite a regra de entrega..."
                 [disabled]="item.get('checked')?.value"
                 [class.input-active]="item.get('checked')?.value"
               />
+
+              <button type="button" (click)="removeDeliveryRuleItem(i)" class="btn-trash">
+                🗑
+              </button>
             </div>
           </div>
+
+          <div class="add-btn-container">
+            <button type="button" (click)="addDeliveryRuleItem()" class="btn-add">
+              + Adicionar regra de entrega
+            </button>
+          </div>
         </div>
+
 
         <div class="form-group">
           <label class="section-title">Informações do estabelecimento</label>
@@ -470,7 +496,6 @@
               <!-- Ícone -->
               <div class="card-icon">
                 <mat-icon class="text-4xl">{{ item.get('icon')?.value }}</mat-icon>
-                <i class="fas fa-check"></i> <!-- substitua pelo ícone desejado -->
               </div>
 
               <!-- Texto -->
@@ -480,8 +505,6 @@
             </div>
           </div>
         </div>
-
-
       </div>
 
 

@@ -430,6 +430,41 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
+.add-btn-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.btn-add {
+  background: #3b82f6;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #2563eb;
+  }
+}
+
+
+.btn-trash {
+  margin-left: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #dc2626; // vermelho
+
+  &:hover {
+    color: #b91c1c;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
