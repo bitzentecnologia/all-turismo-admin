@@ -51,4 +51,18 @@ export class RegisterService {
   getSubcategories(categoryId: string): Observable<DropDownItem[]> {
     return this.http.get<DropDownItem[]>(`${this.apiUrl}/categories/${categoryId}/subcategories`);
   }
+
+  getInformationals(categoryId: string, is_delivery: boolean): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/categories/${categoryId}/informationals`, {
+      params: { is_delivery: is_delivery.toString() },
+    });
+  }
+
+  getRulesTemplates(categoryId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/categories/${categoryId}/rules-templates`);
+  }
+
+  getDeliveryRulesTemplates(categoryId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/categories/${categoryId}/rules-templates-delivery`);
+  }
 }
