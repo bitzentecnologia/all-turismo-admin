@@ -37,6 +37,7 @@ export class RegisterService {
     formData.append('password', data.responsible.password);
     formData.append('phone_whatsapp', data.responsible.phone);
 
+    formData.append('hasDelivery', data.establishment.has_delivery.toString());
     formData.append('informationalItems', JSON.stringify(data.additionalInfo.informationalItems));
     formData.append('rulesItems', JSON.stringify(data.additionalInfo.rulesItems));
     formData.append('deliveryRulesItems', JSON.stringify(data.additionalInfo.deliveryRulesItems));

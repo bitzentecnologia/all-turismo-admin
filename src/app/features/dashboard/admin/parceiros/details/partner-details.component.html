@@ -6,37 +6,160 @@
 
   <!-- Detalhes do parceiro -->
   <div *ngIf="!loading && partner" class="details-container">
-    <h1 class="partner-name">{{ partner.name }}</h1>
-    <div class="partner-info">
-      <p><strong>Status:</strong>
-        <span [ngClass]="{
-          'status-active': partner.status === 'ACTIVE',
-          'status-inactive': partner.status === 'INACTIVE',
-          'status-pending': partner.status === 'PENDING'
-        }">{{ partner.status }}</span>
-      </p>
-      <p><strong>CNPJ:</strong> {{ partner.cnpj }}</p>
-      <p><strong>Telefone:</strong> {{ partner.contact_phone }}</p>
-      <p *ngIf="partner.instagram"><strong>Instagram:</strong> {{ partner.instagram }}</p>
-      <p *ngIf="partner.description"><strong>Descrição:</strong> {{ partner.description }}</p>
+    <div class="partner-header">
+      <button class="btn-back" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <img [src]="getCompanyLogoUri(partner.logo?.id)" alt="Logo do parceiro" class="logo" />
+
+      <h1 class="partner-name">{{ partner.name }}</h1>
     </div>
 
-    <!-- Endereço -->
-    <div *ngIf="partner.address" class="partner-address">
-      <h2>Endereço</h2>
-      <p>{{ partner.address.street }}, {{ partner.address.number }} {{ partner.address.complement }}</p>
-      <p>{{ partner.address.neighborhood }}, {{ partner.address.city }} - {{ partner.address.state }}</p>
-      <p>CEP: {{ partner.address.zip_code }}</p>
+    <!-- Accordion -->
+    <div class="accordion">
+      <!-- Informações gerais -->
+      <div class="accordion-item">
+        <button class="accordion-header" (click)="toggleSection('info')">
+          Informações gerais
+          <span class="chevron" [class.open]="openSection === 'info'">⌄</span>
+        </button>
+        <div class="accordion-body" [class.open]="openSection === 'info'">
+          <label>Nome</label>
+          <input type="text" [(ngModel)]="partner.name" />
+
+          <label>Status</label>
+          <div class="status-row">
+            <select [(ngModel)]="partner.status" [disabled]="approving">
+              <option value="ACTIVE">Ativo</option>
+              <option value="INACTIVE">Inativo</option>
+              <option value="PENDING">Pendente</option>
+            </select>
+
+            <button
+              *ngIf="partner.status === 'PENDING'"
+              class="btn-approve"
+              (click)="approvePartner()"
+              [disabled]="approving"
+            >
+              <span *ngIf="!approving">Aprovar</span>
+              <span *ngIf="approving" class="loading-spinner-small"></span>
+            </button>
+          </div>
+
+          <label>CNPJ</label>
+          <input type="text" [(ngModel)]="partner.cnpj" />
+
+          <label>Telefone</label>
+          <input type="text" [(ngModel)]="partner.contact_phone" />
+
+          <label *ngIf="partner.instagram !== undefined">Instagram</label>
+          <input
+            *ngIf="partner.instagram !== undefined"
+            type="text"
+            [(ngModel)]="partner.instagram"
+          />
+
+          <label *ngIf="partner.description !== undefined">Descrição</label>
+          <textarea
+            *ngIf="partner.description !== undefined"
+            rows="3"
+            [(ngModel)]="partner.description"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Endereço -->
+      <div class="accordion-item" *ngIf="partner.address">
+        <button class="accordion-header" (click)="toggleSection('address')">
+          Endereço
+          <span class="chevron" [class.open]="openSection === 'address'">⌄</span>
+        </button>
+        <div class="accordion-body" [class.open]="openSection === 'address'">
+          <label>Rua</label>
+          <input type="text" [(ngModel)]="partner.address.street" />
+
+          <label>Número</label>
+          <input type="text" [(ngModel)]="partner.address.number" />
+
+          <label>Complemento</label>
+          <input type="text" [(ngModel)]="partner.address.complement" />
+
+          <label>Bairro</label>
+          <input type="text" [(ngModel)]="partner.address.neighborhood" />
+
+          <label>Cidade</label>
+          <input type="text" [(ngModel)]="partner.address.city" />
+
+          <label>Estado</label>
+          <input type="text" [(ngModel)]="partner.address.state" />
+
+          <label>CEP</label>
+          <input type="text" [(ngModel)]="partner.address.zip_code" />
+        </div>
+      </div>
+
+      <!-- Categoria -->
+      <div class="accordion-item" *ngIf="partner.category">
+        <button class="accordion-header" (click)="toggleSection('category')">
+          Categoria
+          <span class="chevron" [class.open]="openSection === 'category'">⌄</span>
+        </button>
+        <div class="accordion-body" [class.open]="openSection === 'category'">
+          <label>Categoria</label>
+          <input disabled type="text" [(ngModel)]="partner.category.name" />
+
+          <label>Sub categoria</label>
+          <input disabled type="text" [(ngModel)]="partner.subcategory.name" />
+        </div>
+      </div>
+
+      <!-- Regras da categoria -->
+      <div class="accordion-item" *ngIf="partnerRules?.length">
+        <button class="accordion-header" (click)="toggleSection('rules')">
+          Regras
+          <span class="chevron" [class.open]="openSection === 'rules'">⌄</span>
+        </button>
+        <div class="accordion-body" [class.open]="openSection === 'rules'">
+          <div *ngFor="let rule of partnerRules" class="rule-item">
+            <textarea disabled rows="2" [(ngModel)]="rule.text"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regras da categoria para delivery -->
+      <div class="accordion-item" *ngIf="partnerDeliveryRules?.length">
+        <button class="accordion-header" (click)="toggleSection('deliveryRules')">
+          Regras de delivery
+          <span class="chevron" [class.open]="openSection === 'deliveryRules'">⌄</span>
+        </button>
+        <div class="accordion-body" [class.open]="openSection === 'deliveryRules'">
+          <div *ngFor="let rule of partnerDeliveryRules" class="rule-item">
+            <textarea disabled rows="2" [(ngModel)]="rule.text"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informações da categoria -->
+      <div class="accordion-item" *ngIf="partner.categoryInformationals?.length">
+        <button class="accordion-header" (click)="toggleSection('infoals')">
+          Informações
+          <span class="chevron" [class.open]="openSection === 'infoals'">⌄</span>
+        </button>
+        <div class="accordion-body" [class.open]="openSection === 'infoals'">
+          <div *ngFor="let info of partner.categoryInformationals" class="info-item">
+            <div class="info-row">
+              <mat-icon>{{ info.icon }}</mat-icon>
+              <textarea disabled rows="1" [(ngModel)]="info.text"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Categoria -->
-    <div *ngIf="partner.category" class="partner-category">
-      <h2>Categoria</h2>
-      <p>{{ partner.category.name }} - {{ partner.category.description }}</p>
+    <!-- Botão Salvar -->
+    <div *ngIf="!loading && partner" class="actions">
+      <button class="btn-save" (click)="savePartner()">Salvar alterações</button>
     </div>
   </div>
 </div>
-
-<style>
-
-</style>

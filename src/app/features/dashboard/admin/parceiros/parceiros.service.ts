@@ -5,6 +5,7 @@ import { environment } from '@env/environment';
 import { AuthService } from '@core/services/auth.service';
 import { Partner } from './parceiros.component';
 import { PaginatedResponse } from '@shared/models/pagination.model';
+import { DropDownItem } from '@shared/models/dropdown.model';
 
 export type PartnerResponse = {
   id: string;
@@ -59,5 +60,25 @@ export class ParceirosService {
 
   getPartnerById(id: string): Observable<Partner> {
     return this.http.get<Partner>(`${this.apiUrl}/admin/companies/${id}`);
+  }
+
+  getCategories(): Observable<DropDownItem[]> {
+    return this.http.get<DropDownItem[]>(`${this.apiUrl}/categories`);
+  }
+
+  getSubcategories(categoryId: string): Observable<DropDownItem[]> {
+    return this.http.get<DropDownItem[]>(`${this.apiUrl}/categories/${categoryId}/subcategories`);
+  }
+
+  approvePartner(id: string): Observable<PartnerDetailsResponse> {
+    return this.http.post<PartnerDetailsResponse>(
+      `${this.apiUrl}/admin/companies/approve/${id}`,
+      {}
+    );
+  }
+
+  updatePartner(id: string, data: any): Observable<PartnerDetailsResponse> {
+    console.log('Updating partner with data:', data);
+    return this.http.put<PartnerDetailsResponse>(`${this.apiUrl}/admin/companies/${id}`, data);
   }
 }

@@ -31,6 +31,7 @@ export interface EstablishmentData {
   description?: string;
   logoFile?: File | null;
   logoPreview?: string;
+  has_delivery: boolean;
 }
 
 export interface InformationalItem {
