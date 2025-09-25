@@ -37,6 +37,16 @@
         </div>
         <span class="step-text">Estabelecimento</span>
       </div>
+      <div class="progress-line" [class.completed]="currentStep > 3"></div>
+      <div class="progress-step" [class.active]="currentStep >= 4" [class.completed]="currentStep > 4">
+        <div class="step-number">
+          <span *ngIf="currentStep > 4" class="check-icon">✓</span>
+          <span *ngIf="currentStep <= 4">4</span>
+        </div>
+        <span class="step-text">Regras e informações</span>
+      </div>
+      <div class="progress-line" [class.completed]="currentStep > 4"></div>
+
     </div>
 
     <!-- Formulário -->
@@ -294,6 +304,19 @@
           </select>
         </div>
 
+        <div *ngIf="canShowDeliveryOption()" class="form-group mb-8">
+          <p class="section-title mb-2">Serviço de delivery</p>
+          <label class="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              id="hasDelivery"
+              formControlName="has_delivery"
+              class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span class="text-gray-700 font-medium">Oferece serviço de delivery</span>
+          </label>
+        </div>
+
         <div class="form-group">
           <label class="section-title">Meios de contato</label>
           <p class="section-subtitle">Ficarão visíveis em seu perfil no app.</p>
@@ -385,6 +408,103 @@
           </div>
         </div>
       </div>
+
+      <!-- Etapa 4: Regras e Informações -->
+      <div *ngIf="isStep4" class="form-step" [formGroupName]="'additionalInfo'">
+        <div class="form-group">
+          <label class="section-title">Regras do estabelecimento</label>
+
+          <div formArrayName="rulesItems">
+            <div
+              *ngFor="let item of rulesItems.controls; let i = index"
+              [formGroupName]="i"
+              class="checkbox-group"
+            >
+              <input type="checkbox" formControlName="checked" />
+
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="Digite a regra..."
+                [disabled]="item.get('checked')?.value"
+                [class.input-active]="item.get('checked')?.value"
+              />
+
+              <button type="button" (click)="removeRuleItem(i)" class="btn-trash">
+                🗑
+              </button>
+            </div>
+          </div>
+
+          <!-- container centralizado -->
+          <div class="add-btn-container">
+            <button type="button" (click)="addRuleItem()" class="btn-add">
+              + Adicionar regra
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="canShowDeliveryItemsRules()" class="form-group">
+          <label class="section-title">Regras de entrega</label>
+
+          <div formArrayName="deliveryRulesItems">
+            <div
+              *ngFor="let item of deliveryRulesItems.controls; let i = index"
+              [formGroupName]="i"
+              class="checkbox-group"
+            >
+              <input type="checkbox" formControlName="checked" />
+
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="Digite a regra de entrega..."
+                [disabled]="item.get('checked')?.value"
+                [class.input-active]="item.get('checked')?.value"
+              />
+
+              <button type="button" (click)="removeDeliveryRuleItem(i)" class="btn-trash">
+                🗑
+              </button>
+            </div>
+          </div>
+
+          <div class="add-btn-container">
+            <button type="button" (click)="addDeliveryRuleItem()" class="btn-add">
+              + Adicionar regra de entrega
+            </button>
+          </div>
+        </div>
+
+
+        <div class="form-group">
+          <label class="section-title">Informações do estabelecimento</label>
+
+          <div formArrayName="informationalItems" class="cards-grid">
+            <div
+              *ngFor="let item of informationalItems.controls; let i = index"
+              [formGroupName]="i"
+              class="card-item"
+              [class.active]="item.get('checked')?.value"
+              (click)="item.get('checked')?.setValue(!item.get('checked')?.value)"
+            >
+              <!-- Checkbox oculto -->
+              <input type="checkbox" formControlName="checked" hidden />
+
+              <!-- Ícone -->
+              <div class="card-icon">
+                <mat-icon class="text-4xl">{{ item.get('icon')?.value }}</mat-icon>
+              </div>
+
+              <!-- Texto -->
+              <div class="card-text">
+                {{ item.get('name')?.value }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
       <!-- Botões de Navegação -->
       <div class="form-actions">

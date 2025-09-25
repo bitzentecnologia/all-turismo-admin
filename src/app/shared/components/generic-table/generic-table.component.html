@@ -1,0 +1,49 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th *ngFor="let col of columns">{{ col.label }}</th>
+      <th *ngIf="showEditAction || showVisualizeAction || showDeleteAction">Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of data">
+      <td *ngFor="let col of columns">
+        <ng-container [ngSwitch]="col.type">
+          <span *ngSwitchCase="'text'">{{ item[col.key] }}</span>
+
+          <span
+            *ngSwitchCase="'badge'"
+            class="badge"
+            [ngClass]="col.badgeClass ? col.badgeClass(item[col.key]) : ''"
+          >
+            {{ item[col.key] }}
+          </span>
+
+          <span *ngSwitchDefault>{{ item[col.key] }}</span>
+        </ng-container>
+      </td>
+
+      <td *ngIf="showEditAction || showVisualizeAction || showDeleteAction" class="actions">
+        <button *ngIf="showVisualizeAction" (click)="onView(item)">
+          <ng-icon name="heroEye" size="24" class="text-blue-500" />
+        </button>
+        <button *ngIf="showEditAction" (click)="onEdit(item)">
+          <ng-icon name="heroPencil" size="24" class="text-yellow-500" />
+        </button>
+        <button *ngIf="showDeleteAction" (click)="onDelete(item)">
+          <ng-icon name="heroTrash" size="24" class="text-red-500" />
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pagination-controls" *ngIf="meta">
+  <button (click)="goToPage(meta.page - 1)" [disabled]="meta.page === 1">
+    Anterior
+  </button>
+  <span>Página {{ meta.page }} de {{ meta.lastPage }}</span>
+  <button (click)="goToPage(meta.page + 1)" [disabled]="meta.page === meta.lastPage">
+    Próxima
+  </button>
+</div>

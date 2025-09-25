@@ -1,22 +1,28 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { environment } from '../../../../environments/environment';
-import { formatCnpj, formatCep, formatPhone, validateNumbersOnly as validateNumbers } from '../../../shared/utils/masks';
+import {
+  formatCnpj,
+  formatCep,
+  formatPhone,
+  validateNumbersOnly as validateNumbers,
+} from '../../../shared/utils/masks';
 import { DropDownItem } from '../../../shared/models/dropdown.model';
 import { RegisterFormData } from './register.model';
 import { CepService } from '../../../shared/services/cep.service';
-import { AuthService } from './auth.service';
+import { RegisterService } from './register.service';
 import { cnpjValidator } from '@shared/utils/cnpj-validator';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
   currentStep: number = 1;
@@ -33,33 +39,49 @@ export class RegisterComponent implements OnInit {
     private cepService: CepService,
     private cdr: ChangeDetectorRef,
     private titleService: Title,
-    private authService: AuthService
+    private registerService: RegisterService
   ) {}
-
 
   ngOnInit(): void {
     this.titleService.setTitle(`Registrar | ${environment.appName}`);
     this.initForm();
 
     // Load categories from API
-    this.authService.getCategories().subscribe({
-      next: (res) => (this.categories = res),
-      error: (err) => console.error('Erro ao carregar categorias:', err),
+    this.registerService.getCategories().subscribe({
+      next: res => (this.categories = res),
+      error: err => console.error('Erro ao carregar categorias:', err),
     });
   }
 
   // Finalizar registro
   finishRegistration(): void {
     if (this.registerForm.valid) {
-      const formData: RegisterFormData = this.registerForm.value;
+      const formValue: RegisterFormData = this.registerForm.value;
       this.isLoading = true;
 
-      this.authService.register(formData).subscribe({
+      const additionalInfo = {
+        informationalItems: formValue.additionalInfo.informationalItems.filter(
+          (item: any) => item.checked && item.name.trim() !== ''
+        ),
+        rulesItems: formValue.additionalInfo.rulesItems.filter(
+          (item: any) => item.checked && item.name.trim() !== ''
+        ),
+        deliveryRulesItems: formValue.additionalInfo.deliveryRulesItems.filter(
+          (item: any) => item.checked && item.name.trim() !== ''
+        ),
+      };
+
+      const formData: RegisterFormData = {
+        ...formValue,
+        additionalInfo,
+      };
+
+      this.registerService.register(formData).subscribe({
         next: () => {
           this.isLoading = false;
           this.router.navigate(['/registro-sucesso']);
         },
-        error: (err) => {
+        error: err => {
           this.isLoading = false;
           console.error('Erro no registro:', err);
         },
@@ -69,18 +91,75 @@ export class RegisterComponent implements OnInit {
 
   // Atualizar subcategorias ao mudar categoria
   onCategoryChange(categoryId: string): void {
+    this.establishmentForm.patchValue({ has_delivery: false });
+
     if (!categoryId) {
       this.subcategories = [];
       this.establishmentForm.patchValue({ subcategoryId: '' });
       return;
     }
 
-    this.authService.getSubcategories(categoryId).subscribe({
-      next: (res) => {
+    this.registerService.getSubcategories(categoryId).subscribe({
+      next: res => {
         this.subcategories = res.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
         this.establishmentForm.patchValue({ subcategoryId: '' });
       },
-      error: (err) => console.error('Erro ao carregar subcategorias:', err)
+      error: err => console.error('Erro ao carregar subcategorias:', err),
+    });
+
+    this.registerService
+      .getInformationals(categoryId, this.establishmentForm.get('has_delivery')?.value)
+      .subscribe({
+        next: res => {
+          if (!this.informationalItems) return;
+          this.informationalItems.clear();
+
+          res.forEach((sub: any) => {
+            this.informationalItems.push(
+              this.fb.group({
+                id: [sub.id],
+                name: [sub.text],
+                checked: [false],
+                icon: [sub.icon || ''],
+              })
+            );
+          });
+        },
+        error: err => console.error('Erro ao carregar informações da categoria:', err),
+      });
+
+    this.registerService.getRulesTemplates(categoryId).subscribe({
+      next: res => {
+        if (!this.rulesItems) return;
+        this.rulesItems.clear();
+
+        res.forEach((sub: any) => {
+          this.rulesItems.push(
+            this.fb.group({
+              name: [sub.text],
+              checked: [false],
+            })
+          );
+        });
+      },
+      error: err => console.error('Erro ao carregar regras templates da categoria:', err),
+    });
+
+    this.registerService.getDeliveryRulesTemplates(categoryId).subscribe({
+      next: res => {
+        if (!this.deliveryRulesItems) return;
+        this.deliveryRulesItems.clear();
+
+        res.forEach((sub: any) => {
+          this.deliveryRulesItems.push(
+            this.fb.group({
+              name: [sub.text],
+              checked: [false],
+            })
+          );
+        });
+      },
+      error: err => console.error('Erro ao carregar regras templates da categoria:', err),
     });
   }
 
@@ -90,7 +169,7 @@ export class RegisterComponent implements OnInit {
         name: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
-        phone: ['', [Validators.required, Validators.minLength(14)]]
+        phone: ['', [Validators.required, Validators.minLength(14)]],
       }),
       address: this.fb.group({
         cep: ['', [Validators.required, Validators.minLength(8)]],
@@ -99,19 +178,25 @@ export class RegisterComponent implements OnInit {
         neighborhood: ['', Validators.required],
         street: ['', Validators.required],
         number: ['', Validators.required],
-        complement: ['']
+        complement: [''],
       }),
       establishment: this.fb.group({
         name: ['', [Validators.required, Validators.minLength(2)]],
         cnpj: ['', [Validators.required, Validators.minLength(18), cnpjValidator()]],
         categoryId: ['', Validators.required],
         subcategoryId: [''],
+        has_delivery: [false],
         phone: ['', [Validators.required, Validators.minLength(14)]],
         instagram: [''],
         description: ['', Validators.maxLength(100)],
         logoFile: [null],
-        logoPreview: ['']
-      })
+        logoPreview: [''],
+      }),
+      additionalInfo: this.fb.group({
+        informationalItems: this.fb.array([]),
+        rulesItems: this.fb.array([]),
+        deliveryRulesItems: this.fb.array([]),
+      }),
     });
   }
 
@@ -122,7 +207,7 @@ export class RegisterComponent implements OnInit {
 
       setTimeout(() => {
         this.isLoading = false;
-        if (this.currentStep < 3) {
+        if (this.currentStep < 4) {
           this.currentStep++;
         } else {
           this.finishRegistration();
@@ -149,12 +234,44 @@ export class RegisterComponent implements OnInit {
     return true;
   }
 
+  addRuleItem(): void {
+    this.rulesItems.push(
+      this.fb.group({
+        name: [''],
+        checked: [false],
+      })
+    );
+  }
+
+  removeRuleItem(index: number): void {
+    this.rulesItems.removeAt(index);
+  }
+
+  addDeliveryRuleItem() {
+    this.deliveryRulesItems.push(
+      this.fb.group({
+        name: [''],
+        checked: [false],
+      })
+    );
+  }
+
+  removeDeliveryRuleItem(index: number) {
+    this.deliveryRulesItems.removeAt(index);
+  }
+
   private getCurrentStepFormGroup(): FormGroup | null {
     switch (this.currentStep) {
-      case 1: return this.registerForm.get('responsible') as FormGroup;
-      case 2: return this.registerForm.get('address') as FormGroup;
-      case 3: return this.registerForm.get('establishment') as FormGroup;
-      default: return null;
+      case 1:
+        return this.registerForm.get('responsible') as FormGroup;
+      case 2:
+        return this.registerForm.get('address') as FormGroup;
+      case 3:
+        return this.registerForm.get('establishment') as FormGroup;
+      case 4:
+        return this.registerForm.get('additionalInfo') as FormGroup;
+      default:
+        return null;
     }
   }
 
@@ -187,7 +304,7 @@ export class RegisterComponent implements OnInit {
     this.isConsultingCep = true;
 
     this.cepService.consultarCep(cep).subscribe({
-      next: (response) => {
+      next: response => {
         // Preenche automaticamente os campos de endereço
         this.registerForm.patchValue({
           address: {
@@ -195,12 +312,12 @@ export class RegisterComponent implements OnInit {
             state: response.uf,
             city: response.localidade,
             neighborhood: response.bairro,
-            street: response.logradouro
-          }
+            street: response.logradouro,
+          },
         });
         this.isConsultingCep = false;
       },
-      error: (error) => {
+      error: error => {
         console.log('CEP não encontrado ou erro na consulta:', error.message);
         // Limpa os campos de endereço em caso de erro
         this.registerForm.patchValue({
@@ -208,11 +325,11 @@ export class RegisterComponent implements OnInit {
             state: '',
             city: '',
             neighborhood: '',
-            street: ''
-          }
+            street: '',
+          },
         });
         this.isConsultingCep = false;
-      }
+      },
     });
   }
 
@@ -243,7 +360,7 @@ export class RegisterComponent implements OnInit {
         this.registerForm.get('establishment.logoFile')?.setValue(file);
         console.log('Valores do formulário após upload:', {
           logoPreview: this.registerForm.get('establishment.logoPreview')?.value,
-          logoFile: this.registerForm.get('establishment.logoFile')?.value
+          logoFile: this.registerForm.get('establishment.logoFile')?.value,
         });
         this.cdr.detectChanges();
       };
@@ -256,6 +373,23 @@ export class RegisterComponent implements OnInit {
     this.registerForm.get('establishment.logoPreview')?.setValue('');
     this.registerForm.get('establishment.logoFile')?.setValue(null);
     this.cdr.detectChanges();
+  }
+
+  canShowDeliveryOption(): boolean {
+    const categoryId = this.registerForm.get('establishment.categoryId')?.value;
+    return this.categories.some(
+      cat => cat.id === categoryId && cat.name.toLowerCase() === 'gastronomia'
+    );
+  }
+
+  canShowDeliveryItemsRules(): boolean {
+    const categoryId = this.registerForm.get('establishment.categoryId')?.value;
+    const hasGastronomiaCategory = this.categories.some(
+      cat => cat.id === categoryId && cat.name.toLowerCase() === 'gastronomia'
+    );
+    const hasDelivery = this.establishmentForm.get('has_delivery')?.value;
+
+    return hasGastronomiaCategory && hasDelivery;
   }
 
   // Obter subcategorias filtradas por categoria
@@ -280,16 +414,26 @@ export class RegisterComponent implements OnInit {
     return this.currentStep === 3;
   }
 
+  get isStep4(): boolean {
+    return this.currentStep === 4;
+  }
+
   get isLastStep(): boolean {
-    return this.currentStep === 3;
+    return this.currentStep === 4;
   }
 
   get stepTitle(): string {
     switch (this.currentStep) {
-      case 1: return 'Dados do responsável';
-      case 2: return 'Endereço';
-      case 3: return 'Estabelecimento';
-      default: return '';
+      case 1:
+        return 'Dados do responsável';
+      case 2:
+        return 'Endereço';
+      case 3:
+        return 'Estabelecimento';
+      case 4:
+        return 'Regras e informações';
+      default:
+        return '';
     }
   }
 
@@ -308,5 +452,21 @@ export class RegisterComponent implements OnInit {
 
   get establishmentForm(): FormGroup {
     return this.registerForm.get('establishment') as FormGroup;
+  }
+
+  get additionalInfoForm(): FormGroup {
+    return this.registerForm.get('additionalInfo') as FormGroup;
+  }
+
+  get informationalItems(): FormArray {
+    return this.additionalInfoForm.get('informationalItems') as FormArray;
+  }
+
+  get rulesItems(): FormArray {
+    return this.additionalInfoForm.get('rulesItems') as FormArray;
+  }
+
+  get deliveryRulesItems(): FormArray {
+    return this.additionalInfoForm.get('deliveryRulesItems') as FormArray;
   }
 }

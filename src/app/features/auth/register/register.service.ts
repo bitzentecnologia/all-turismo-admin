@@ -8,7 +8,7 @@ import { RegisterFormData } from './register.model';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
+export class RegisterService {
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
@@ -37,6 +37,11 @@ export class AuthService {
     formData.append('password', data.responsible.password);
     formData.append('phone_whatsapp', data.responsible.phone);
 
+    formData.append('hasDelivery', data.establishment.has_delivery.toString());
+    formData.append('informationalItems', JSON.stringify(data.additionalInfo.informationalItems));
+    formData.append('rulesItems', JSON.stringify(data.additionalInfo.rulesItems));
+    formData.append('deliveryRulesItems', JSON.stringify(data.additionalInfo.deliveryRulesItems));
+
     if (data.establishment.logoFile) {
       formData.append('logo', data.establishment.logoFile);
     }
@@ -44,13 +49,25 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/companies`, formData);
   }
 
-
-
   getCategories(): Observable<DropDownItem[]> {
     return this.http.get<DropDownItem[]>(`${this.apiUrl}/categories`);
   }
 
   getSubcategories(categoryId: string): Observable<DropDownItem[]> {
     return this.http.get<DropDownItem[]>(`${this.apiUrl}/categories/${categoryId}/subcategories`);
+  }
+
+  getInformationals(categoryId: string, is_delivery: boolean): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/categories/${categoryId}/informationals`, {
+      params: { is_delivery: is_delivery.toString() },
+    });
+  }
+
+  getRulesTemplates(categoryId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/categories/${categoryId}/rules-templates`);
+  }
+
+  getDeliveryRulesTemplates(categoryId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/categories/${categoryId}/rules-templates-delivery`);
   }
 }

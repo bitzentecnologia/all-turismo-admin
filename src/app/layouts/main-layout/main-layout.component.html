@@ -5,12 +5,14 @@
       <!-- User dropdown -->
       <div class="user-dropdown" (click)="toggleUserDropdown()">
         <div class="user-info">
-          <span class="user-name">Pizzaria Bela Massa</span>
+          <span class="user-name">
+            {{ getName() }}
+          </span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6,9 12,15 18,9"></polyline>
           </svg>
         </div>
-        
+
         <div class="dropdown-menu" *ngIf="isUserDropdownOpen">
           <a href="#" class="dropdown-item">Minha Conta</a>
           <a href="#" class="dropdown-item" (click)="logout(); $event.preventDefault()">Sair</a>
@@ -32,7 +34,7 @@
 
     <!-- Mobile overlay -->
     <div class="mobile-overlay" *ngIf="isSidebarOpen" (click)="toggleSidebar()"></div>
-    
+
     <!-- Sidebar -->
     <aside class="sidebar" [class.sidebar-closed]="!isSidebarOpen">
       <!-- Logo section -->
@@ -48,9 +50,9 @@
         <div class="nav-section">
           <ul class="nav-list">
             <li *ngFor="let item of menuItems" class="nav-item" [class.mobile-only]="item.mobileOnly">
-              <a 
-                [routerLink]="item.route" 
-                class="nav-link" 
+              <a
+                [routerLink]="item.route"
+                class="nav-link"
                 [class.active]="item.active"
                 (click)="setActiveItem(item)"
               >
@@ -95,16 +97,16 @@
         </div>
 
         <!-- Divider -->
-        <div class="nav-divider"></div>
+        <div *ngIf="boostItems.length > 0" class="nav-divider"></div>
 
         <!-- Boost section -->
-        <div class="nav-section">
+        <div *ngIf="boostItems.length > 0" class="nav-section">
           <h3 class="nav-section-title">Potencializar</h3>
           <ul class="nav-list">
             <li *ngFor="let item of boostItems" class="nav-item">
-              <a 
-                [routerLink]="item.route" 
-                class="nav-link" 
+              <a
+                [routerLink]="item.route"
+                class="nav-link"
                 [class.active]="item.active"
                 (click)="setActiveItem(item)"
               >

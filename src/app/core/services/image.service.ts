@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
+import { environment } from '@env/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ImageService {
-  
+  private apiUrl = environment.apiUrl;
+
   // Base path para imagens
   private readonly basePath = 'assets/images';
 
@@ -59,5 +61,9 @@ export class ImageService {
   async getImageWithFallback(primaryPath: string, fallbackPath: string): Promise<string> {
     const exists = await this.imageExists(primaryPath);
     return exists ? primaryPath : fallbackPath;
+  }
+
+  getLogoUriImageById(id: string): string {
+    return `${this.apiUrl}/companies/logo/${id}`;
   }
 }

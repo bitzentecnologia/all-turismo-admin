@@ -31,10 +31,22 @@ export interface EstablishmentData {
   description?: string;
   logoFile?: File | null;
   logoPreview?: string;
+  has_delivery: boolean;
+}
+
+export interface InformationalItem {
+  id: string;
+  text: string;
+  checked: boolean;
 }
 
 export interface RegisterFormData {
   responsible: ResponsibleData;
   address: AddressData;
   establishment: EstablishmentData;
+  additionalInfo: {
+    informationalItems: InformationalItem[];
+    rulesItems: InformationalItem[];
+    deliveryRulesItems: InformationalItem[];
+  };
 }
