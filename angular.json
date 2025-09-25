@@ -73,6 +73,16 @@
                 }
               ]
             },
+            "hmg": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.hmg.ts"
+                }
+              ],
+              "optimization": false,
+              "outputHashing": "all"
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,

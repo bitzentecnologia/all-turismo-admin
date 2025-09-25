@@ -16,6 +16,7 @@
     "start": "ng serve",
     "build": "ng build",
     "build:dev": "ng build --configuration=development",
+    "build:hmg": "ng build --configuration=hmg",
     "build:prod": "ng build --configuration=production",
     "watch": "ng build --watch --configuration=development",
     "test": "ng test",
