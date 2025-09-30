@@ -137,7 +137,7 @@ export class RegisterComponent implements OnInit {
           this.rulesItems.push(
             this.fb.group({
               name: [sub.text],
-              checked: [false],
+              checked: [true], // Pré-marcar todas as regras
             })
           );
         });
@@ -154,7 +154,7 @@ export class RegisterComponent implements OnInit {
           this.deliveryRulesItems.push(
             this.fb.group({
               name: [sub.text],
-              checked: [false],
+              checked: [true], // Pré-marcar todas as regras de delivery
             })
           );
         });
@@ -207,7 +207,7 @@ export class RegisterComponent implements OnInit {
 
       setTimeout(() => {
         this.isLoading = false;
-        if (this.currentStep < 4) {
+        if (this.currentStep < 5) {
           this.currentStep++;
         } else {
           this.finishRegistration();
@@ -238,7 +238,7 @@ export class RegisterComponent implements OnInit {
     this.rulesItems.push(
       this.fb.group({
         name: [''],
-        checked: [false],
+        checked: [true], // Pré-marcar nova regra
       })
     );
   }
@@ -251,7 +251,7 @@ export class RegisterComponent implements OnInit {
     this.deliveryRulesItems.push(
       this.fb.group({
         name: [''],
-        checked: [false],
+        checked: [true], // Pré-marcar nova regra de delivery
       })
     );
   }
@@ -269,6 +269,8 @@ export class RegisterComponent implements OnInit {
       case 3:
         return this.registerForm.get('establishment') as FormGroup;
       case 4:
+        return null; // Etapa 4 não tem validação de formulário
+      case 5:
         return this.registerForm.get('additionalInfo') as FormGroup;
       default:
         return null;
@@ -418,8 +420,12 @@ export class RegisterComponent implements OnInit {
     return this.currentStep === 4;
   }
 
+  get isStep5(): boolean {
+    return this.currentStep === 5;
+  }
+
   get isLastStep(): boolean {
-    return this.currentStep === 4;
+    return this.currentStep === 5;
   }
 
   get stepTitle(): string {
@@ -431,6 +437,8 @@ export class RegisterComponent implements OnInit {
       case 3:
         return 'Estabelecimento';
       case 4:
+        return 'Promoção obrigatória';
+      case 5:
         return 'Regras e informações';
       default:
         return '';

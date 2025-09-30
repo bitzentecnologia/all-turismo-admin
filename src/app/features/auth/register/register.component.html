@@ -43,9 +43,17 @@
           <span *ngIf="currentStep > 4" class="check-icon">✓</span>
           <span *ngIf="currentStep <= 4">4</span>
         </div>
-        <span class="step-text">Regras e informações</span>
+        <span class="step-text">Promoção obrigatória</span>
       </div>
       <div class="progress-line" [class.completed]="currentStep > 4"></div>
+      <div class="progress-step" [class.active]="currentStep >= 5" [class.completed]="currentStep > 5">
+        <div class="step-number">
+          <span *ngIf="currentStep > 5" class="check-icon">✓</span>
+          <span *ngIf="currentStep <= 5">5</span>
+        </div>
+        <span class="step-text">Regras e informações</span>
+      </div>
+      <div class="progress-line" [class.completed]="currentStep > 5"></div>
 
     </div>
 
@@ -409,8 +417,13 @@
         </div>
       </div>
 
-      <!-- Etapa 4: Regras e Informações -->
-      <div *ngIf="isStep4" class="form-step" [formGroupName]="'additionalInfo'">
+      <!-- Etapa 4: Promoção obrigatória -->
+      <div *ngIf="isStep4" class="form-step">
+        <!-- Conteúdo em branco para a etapa de promoção -->
+      </div>
+
+      <!-- Etapa 5: Regras e Informações -->
+      <div *ngIf="isStep5" class="form-step" [formGroupName]="'additionalInfo'">
         <div class="form-group">
           <label class="section-title">Regras do estabelecimento</label>
 
