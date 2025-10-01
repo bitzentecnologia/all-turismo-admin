@@ -11,42 +11,12 @@ import { RegisterFormData } from './register.model';
 export class RegisterService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  register(data: RegisterFormData): Observable<any> {
-    const formData = new FormData();
-
-    formData.append('companyName', data.establishment.name);
-    formData.append('description', data.establishment.description || '');
-    formData.append('cnpj', data.establishment.cnpj);
-    formData.append('contact_phone', data.establishment.phone);
-    formData.append('instagram', data.establishment.instagram || '');
-    formData.append('categoryId', data.establishment.categoryId || '');
-    formData.append('subCategoryId', data.establishment.subcategoryId || '');
-
-    formData.append('street', data.address.street);
-    formData.append('number', data.address.number);
-    formData.append('complement', data.address.complement || '');
-    formData.append('neighborhood', data.address.neighborhood);
-    formData.append('city', data.address.city);
-    formData.append('state', data.address.state);
-    formData.append('zip_code', data.address.cep);
-
-    formData.append('partnerName', data.responsible.name);
-    formData.append('email', data.responsible.email);
-    formData.append('password', data.responsible.password);
-    formData.append('phone_whatsapp', data.responsible.phone);
-
-    formData.append('hasDelivery', data.establishment.has_delivery.toString());
-    formData.append('informationalItems', JSON.stringify(data.additionalInfo.informationalItems));
-    formData.append('rulesItems', JSON.stringify(data.additionalInfo.rulesItems));
-    formData.append('deliveryRulesItems', JSON.stringify(data.additionalInfo.deliveryRulesItems));
-
-    if (data.establishment.logoFile) {
-      formData.append('logo', data.establishment.logoFile);
-    }
-
-    return this.http.post(`${this.apiUrl}/companies`, formData);
+  register(data: any): Observable<any> {
+    // Enviar dados como JSON (não mais FormData)
+    // Os arquivos já foram enviados separadamente via upload service
+    return this.http.post(`${this.apiUrl}/companies`, data);
   }
 
   getCategories(): Observable<DropDownItem[]> {

@@ -40,10 +40,24 @@ export interface InformationalItem {
   checked: boolean;
 }
 
+export interface OperatingHoursData {
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  isClosed: boolean;
+}
+
+export interface PromotionData {
+  text: string;
+  photos?: any[];
+}
+
 export interface RegisterFormData {
   responsible: ResponsibleData;
   address: AddressData;
   establishment: EstablishmentData;
+  operatingHours: OperatingHoursData[];
+  promotion: PromotionData;
   additionalInfo: {
     informationalItems: InformationalItem[];
     rulesItems: InformationalItem[];

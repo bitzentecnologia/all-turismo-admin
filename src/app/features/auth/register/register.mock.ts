@@ -21,7 +21,7 @@ export const REGISTER_MOCK_DATA = {
   // ETAPA 3: Estabelecimento
   establishment: {
     name: "Restaurante Sabor & Arte",
-    cnpj: "12.345.678/0001-90",
+    cnpj: "29.870.654/0001-58",
     categoryId: "gastronomia",
     subcategoryId: "restaurante",
     has_delivery: true,
@@ -35,15 +35,15 @@ export const REGISTER_MOCK_DATA = {
     { dayOfWeek: "sunday", startTime: "10:00", endTime: "22:00", isClosed: false },
     { dayOfWeek: "monday", startTime: "09:00", endTime: "23:00", isClosed: false },
     { dayOfWeek: "tuesday", startTime: "09:00", endTime: "23:00", isClosed: false },
-    { dayOfWeek: "wednesday", startTime: "09:00", endTime: "23:00", isClosed: false },
-    { dayOfWeek: "thursday", startTime: "09:00", endTime: "23:00", isClosed: false },
-    { dayOfWeek: "friday", startTime: "09:00", endTime: "24:00", isClosed: false },
-    { dayOfWeek: "saturday", startTime: "10:00", endTime: "24:00", isClosed: false }
+    { dayOfWeek: "wednesday", startTime: "09:00", endTime: "23:00", isClosed: true },
+    { dayOfWeek: "thursday", startTime: "09:00", endTime: "23:00", isClosed: true },
+    { dayOfWeek: "friday", startTime: "09:00", endTime: "24:00", isClosed: true },
+    { dayOfWeek: "saturday", startTime: "10:00", endTime: "24:00", isClosed: true }
   ],
 
   // ETAPA 4: Promoção
   promotion: {
-    text: "🎉 PROMOÇÃO ESPECIAL! 25% de desconto em todos os pratos principais do nosso cardápio. Aproveite esta oferta imperdível! Válido por 60 dias. Não acumula com outras promoções. Consulte condições no estabelecimento."
+    text: "🎉 PROMOÇÃO ESPECIAL! 25% de desconto em todos os pratos principais do nosso cardápio. Aproveite esta oferta imperdível! Válido por 60 dias. Não acumula com outras promoções."
   },
 
   // ETAPA 5: Regras e Informações

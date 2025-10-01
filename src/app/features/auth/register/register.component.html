@@ -18,7 +18,16 @@
         <div class="error-icon">⚠️</div>
         <div class="error-text">
           <h4>Erro no cadastro</h4>
-          <p>{{ errorMessage }}</p>
+          <!-- Exibir lista de erros se houver -->
+          <div *ngIf="errorMessages.length > 0; else singleMessage">
+            <ul class="error-list">
+              <li *ngFor="let msg of errorMessages">{{ msg }}</li>
+            </ul>
+          </div>
+          <!-- Exibir mensagem única se não houver lista -->
+          <ng-template #singleMessage>
+            <p>{{ errorMessage }}</p>
+          </ng-template>
         </div>
         <button type="button" class="error-close-btn" (click)="hideErrorMessage()">
           ×
@@ -325,6 +334,7 @@
             id="subcategory"
             formControlName="subcategoryId"
             [disabled]="!establishmentForm.get('categoryId')?.value"
+            [class.error]="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched"
           >
             <option value="">Selecione uma subcategoria</option>
             <option
@@ -334,6 +344,9 @@
               {{ subcategory.name }}
             </option>
           </select>
+          <div *ngIf="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched" class="error-message">
+            <span *ngIf="establishmentForm.get('subcategoryId')?.errors?.['required']">Subcategoria é obrigatória</span>
+          </div>
         </div>
 
         <div *ngIf="canShowDeliveryOption()" class="form-group mb-8">
@@ -399,10 +412,10 @@
         </div>
 
         <div class="form-group">
-          <label class="section-title">Logo (Opcional)</label>
+          <label class="section-title">Logo</label>
           <p class="section-subtitle">Envie a logo do seu estabelecimento.</p>
 
-          <div class="logo-upload-area">
+          <div class="logo-upload-area" [class.error]="establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched">
             <div class="upload-placeholder">
               <input
                 type="file"
@@ -420,6 +433,11 @@
               >
                 Selecionar imagem
               </button>
+              <!-- Debug: mostrar status do campo -->
+              <div class="debug-info" style="font-size: 12px; color: #666; margin-top: 5px;">
+                Status: {{ establishmentForm.get('logoFile')?.valid ? 'Válido' : 'Inválido' }} | 
+                Valor: {{ establishmentForm.get('logoFile')?.value ? 'Arquivo selecionado' : 'Nenhum arquivo' }}
+              </div>
             </div>
 
             <div *ngIf="establishmentForm.get('logoPreview')?.value" class="logo-preview">
@@ -433,9 +451,8 @@
               </button>
             </div>
 
-            <!-- Debug: Mostrar valor do logoPreview -->
-            <div style="margin-top: 10px; font-size: 12px; color: #666;">
-              Debug - logoPreview: {{ establishmentForm.get('logoPreview')?.value ? 'Tem valor' : 'Sem valor' }}
+            <div *ngIf="establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched" class="error-message">
+              <span *ngIf="establishmentForm.get('logoFile')?.errors?.['required']">Logo é obrigatória</span>
             </div>
           </div>
         </div>

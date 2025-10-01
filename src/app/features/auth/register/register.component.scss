@@ -399,6 +399,22 @@
         font-size: 0.9rem;
         line-height: 1.5;
       }
+
+      .error-list {
+        margin: 0;
+        padding-left: 1.25rem;
+        color: #991b1b;
+        font-size: 0.9rem;
+        line-height: 1.5;
+
+        li {
+          margin-bottom: 0.25rem;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
     }
 
     .error-close-btn {
@@ -464,6 +480,15 @@
 
         p {
           font-size: 0.85rem;
+        }
+
+        .error-list {
+          font-size: 0.85rem;
+          padding-left: 1rem;
+
+          li {
+            margin-bottom: 0.2rem;
+          }
         }
       }
 
