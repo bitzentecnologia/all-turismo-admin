@@ -12,6 +12,30 @@
       </div>
     </div>
 
+    <!-- Mensagem de Erro -->
+    <div *ngIf="showError" class="error-alert">
+      <div class="error-content">
+        <div class="error-icon">⚠️</div>
+        <div class="error-text">
+          <h4>Erro no cadastro</h4>
+          <p>{{ errorMessage }}</p>
+        </div>
+        <button type="button" class="error-close-btn" (click)="hideErrorMessage()">
+          ×
+        </button>
+      </div>
+    </div>
+
+    <!-- Botões de Debug (apenas em desenvolvimento) -->
+    <div class="debug-buttons" *ngIf="!environment.production">
+      <button type="button" class="debug-btn" (click)="fillWithMockData()">
+        📝 Preencher Mock
+      </button>
+      <button type="button" class="debug-btn" (click)="fillWithRandomMockData()">
+        🎲 Mock Aleatório
+      </button>
+    </div>
+
     <!-- Barra de Progresso -->
     <div class="progress-bar">
       <div class="progress-step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
@@ -419,7 +443,149 @@
 
       <!-- Etapa 4: Promoção obrigatória -->
       <div *ngIf="isStep4" class="form-step">
-        <!-- Conteúdo em branco para a etapa de promoção -->
+        <!-- Seção de Promoção Obrigatória -->
+        <div class="form-group" [formGroup]="promotionForm">
+          <label class="section-title">Promoção obrigatória</label>
+          <p class="section-subtitle">Crie uma promoção que aparecerá no aplicativo para atrair clientes.</p>
+          
+          <!-- Alerta informativo sobre regras da promoção -->
+          <div class="promotion-alert">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <h4>Regras importantes para sua promoção:</h4>
+              <ul>
+                <li><strong>Desconto mínimo:</strong> Sua promoção deve oferecer pelo menos <strong>15% de desconto</strong> para ser aprovada</li>
+                <li><strong>Validade:</strong> A promoção deve ter validade mínima de 30 dias a partir da aprovação</li>
+                <li><strong>Disponibilidade:</strong> Você deve ter estoque suficiente para atender a demanda durante todo o período da promoção</li>
+                <li><strong>Restrições:</strong> Não é permitido alterar ou cancelar a promoção após a aprovação</li>
+                <li><strong>Qualidade:</strong> O produto/serviço promocionado deve manter a mesma qualidade padrão</li>
+                <li><strong>Transparência:</strong> Todas as condições devem estar claramente descritas no texto da promoção</li>
+              </ul>
+              <p class="alert-note">
+                <strong>Importante:</strong> A promoção será revisada pela nossa equipe e poderá ser rejeitada se não atender aos critérios estabelecidos.
+              </p>
+            </div>
+          </div>
+          
+          <div class="promotion-container">
+            <!-- Campo de texto da promoção -->
+            <div class="form-group">
+              <label for="promotionText">Texto da promoção</label>
+              <textarea
+                id="promotionText"
+                formControlName="text"
+                placeholder="Descreva sua promoção especial que aparecerá no app..."
+                maxlength="200"
+                rows="4"
+                [class.error]="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched"
+                class="promotion-textarea"
+              ></textarea>
+              <div class="char-counter">{{ promotionForm.get('text')?.value?.length || 0 }}/200</div>
+              <div *ngIf="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched" class="error-message">
+                <span *ngIf="promotionForm.get('text')?.errors?.['required']">Texto da promoção é obrigatório</span>
+                <span *ngIf="promotionForm.get('text')?.errors?.['minlength']">Texto deve ter pelo menos 10 caracteres</span>
+                <span *ngIf="promotionForm.get('text')?.errors?.['maxlength']">Texto deve ter no máximo 200 caracteres</span>
+              </div>
+            </div>
+
+            <!-- Upload de fotos -->
+            <div class="form-group">
+              <label>Fotos da promoção (máximo 3)</label>
+              <p class="section-subtitle">Adicione até 3 fotos para ilustrar sua promoção.</p>
+              
+              <div class="photos-upload-container">
+                <!-- Área de upload -->
+                <div class="photos-upload-area" *ngIf="promotionPhotos.length < 3">
+                  <input
+                    type="file"
+                    id="promotionPhotos"
+                    accept="image/*"
+                    multiple
+                    (change)="onPromotionPhotoSelected($event)"
+                    style="display: none;"
+                    #photoInput
+                  >
+                  <div class="upload-placeholder" (click)="photoInput.click()">
+                    <div class="upload-icon">📷</div>
+                    <span class="upload-text">Adicionar fotos</span>
+                    <span class="upload-hint">{{ promotionPhotos.length }}/3 fotos</span>
+                  </div>
+                </div>
+
+                <!-- Preview das fotos -->
+                <div class="photos-preview" *ngIf="promotionPhotos.length > 0">
+                  <div 
+                    *ngFor="let photo of promotionPhotos.controls; let i = index" 
+                    class="photo-item"
+                  >
+                    <img [src]="photo.get('preview')?.value" alt="Preview da promoção" class="photo-preview">
+                    <button 
+                      type="button" 
+                      class="remove-photo-btn"
+                      (click)="removePromotionPhoto(i)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção de Horários de Funcionamento -->
+        <div class="form-group">
+          <label class="section-title">Horários de funcionamento</label>
+          <p class="section-subtitle">Defina os horários de funcionamento do seu estabelecimento.</p>
+          
+          <div class="operating-hours-container">
+            <div class="operating-hours-table">
+              <div 
+                *ngFor="let dayForm of operatingHoursArray.controls; let i = index" 
+                class="operating-hours-row"
+              >
+                <div class="day-label">
+                  <span>{{ getDayLabel(dayForm.get('dayOfWeek')?.value) }}</span>
+                </div>
+                
+                <div class="time-inputs">
+                  <input
+                    type="text"
+                    [value]="dayForm.get('startTime')?.value"
+                    placeholder="09:00"
+                    maxlength="5"
+                    (input)="formatTime($event); dayForm.get('startTime')?.setValue($event.target.value)"
+                    [disabled]="dayForm.get('isClosed')?.value"
+                    class="time-input"
+                  >
+                  
+                  <span class="time-separator">até</span>
+                  
+                  <input
+                    type="text"
+                    [value]="dayForm.get('endTime')?.value"
+                    placeholder="18:00"
+                    maxlength="5"
+                    (input)="formatTime($event); dayForm.get('endTime')?.setValue($event.target.value)"
+                    [disabled]="dayForm.get('isClosed')?.value"
+                    class="time-input"
+                  >
+                </div>
+                
+                <div class="closed-checkbox">
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      [checked]="dayForm.get('isClosed')?.value"
+                      (change)="onDayClosedChange(i, $event.target.checked)"
+                    >
+                    <span class="checkbox-text">Fechado</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Etapa 5: Regras e Informações -->

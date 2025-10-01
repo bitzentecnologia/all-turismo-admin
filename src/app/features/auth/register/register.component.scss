@@ -148,6 +148,559 @@
   }
 }
 
+// Estilos para horários de funcionamento
+.operating-hours-container {
+  margin-top: 1.5rem;
+}
+
+.operating-hours-table {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.operating-hours-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: #f9fafb;
+  }
+
+  .day-label {
+    flex: 0 0 140px;
+    
+    span {
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.95rem;
+      letter-spacing: -0.025em;
+    }
+  }
+
+  .time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+
+    .time-input {
+      width: 80px;
+      padding: 0.625rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+      background: white;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      color: #374151;
+
+      &:focus {
+        outline: none;
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      &:disabled {
+        background: #f9fafb;
+        color: #9ca3af;
+        cursor: not-allowed;
+        border-color: #e5e7eb;
+      }
+
+      &::placeholder {
+        color: #9ca3af;
+        font-weight: 400;
+      }
+    }
+
+    .time-separator {
+      font-size: 0.9rem;
+      color: #6b7280;
+      font-weight: 500;
+      margin: 0 0.25rem;
+    }
+  }
+
+  .closed-checkbox {
+    flex: 0 0 auto;
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0.25rem;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #f3f4f6;
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        cursor: pointer;
+        accent-color: #3B82F6;
+        border-radius: 3px;
+      }
+
+      .checkbox-text {
+        color: #374151;
+        font-weight: 500;
+        user-select: none;
+      }
+
+      &:hover .checkbox-text {
+        color: #1f2937;
+      }
+    }
+  }
+}
+
+// Responsividade para horários
+@media (max-width: 768px) {
+  .operating-hours-table {
+    border-radius: 6px;
+  }
+  
+  .operating-hours-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+
+    .day-label {
+      flex: none;
+      width: 100%;
+    }
+
+    .time-inputs {
+      flex: none;
+      width: 100%;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .closed-checkbox {
+      flex: none;
+      width: 100%;
+      text-align: left;
+    }
+  }
+}
+
+// Estilos para botões de debug
+.debug-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  border: 1px solid #0288d1;
+  border-radius: 8px;
+
+  .debug-btn {
+    padding: 0.75rem 1.5rem;
+    background: #0288d1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &:hover {
+      background: #0277bd;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(2, 136, 209, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &:focus {
+      outline: 2px solid #0288d1;
+      outline-offset: 2px;
+    }
+  }
+}
+
+// Responsividade para botões de debug
+@media (max-width: 768px) {
+  .debug-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .debug-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 0.875rem 1rem;
+    }
+  }
+}
+
+// Estilos para mensagem de erro
+.error-alert {
+  margin: 1rem 0 2rem 0;
+  animation: slideDown 0.3s ease-out;
+
+  .error-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.1);
+    position: relative;
+
+    .error-icon {
+      flex-shrink: 0;
+      font-size: 1.5rem;
+      margin-top: 0.125rem;
+    }
+
+    .error-text {
+      flex: 1;
+
+      h4 {
+        margin: 0 0 0.5rem 0;
+        color: #dc2626;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        color: #991b1b;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+    }
+
+    .error-close-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: none;
+      border: none;
+      color: #dc2626;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(220, 38, 38, 0.1);
+        transform: scale(1.1);
+      }
+
+      &:focus {
+        outline: 2px solid #dc2626;
+        outline-offset: 2px;
+      }
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsividade para mensagem de erro
+@media (max-width: 768px) {
+  .error-alert {
+    margin: 0.75rem 0 1.5rem 0;
+
+    .error-content {
+      padding: 1rem;
+      gap: 0.75rem;
+
+      .error-icon {
+        font-size: 1.25rem;
+      }
+
+      .error-text {
+        h4 {
+          font-size: 0.95rem;
+        }
+
+        p {
+          font-size: 0.85rem;
+        }
+      }
+
+      .error-close-btn {
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 1.25rem;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+// Estilos para promoção
+.promotion-alert {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.1);
+
+  .alert-icon {
+    flex-shrink: 0;
+    font-size: 1.5rem;
+    margin-top: 0.125rem;
+  }
+
+  .alert-content {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 1rem 0;
+      color: #92400e;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    ul {
+      margin: 0 0 1rem 0;
+      padding-left: 1.25rem;
+      
+      li {
+        margin-bottom: 0.5rem;
+        color: #92400e;
+        font-size: 0.9rem;
+        line-height: 1.5;
+
+        strong {
+          color: #78350f;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .alert-note {
+      margin: 0;
+      padding: 0.75rem;
+      background: rgba(139, 69, 19, 0.1);
+      border-left: 3px solid #d97706;
+      border-radius: 4px;
+      color: #78350f;
+      font-size: 0.85rem;
+      font-weight: 500;
+      line-height: 1.4;
+
+      strong {
+        color: #92400e;
+      }
+    }
+  }
+}
+
+.promotion-container {
+  margin-top: 1.5rem;
+}
+
+.promotion-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  transition: all 0.2s ease;
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  line-height: 1.5;
+
+  &:focus {
+    outline: none;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  &.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+}
+
+.photos-upload-container {
+  margin-top: 1rem;
+}
+
+.photos-upload-area {
+  margin-bottom: 1rem;
+}
+
+.upload-placeholder {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #3B82F6;
+    background: #f0f7ff;
+  }
+
+  .upload-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .upload-text {
+    display: block;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+  }
+
+  .upload-hint {
+    display: block;
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+}
+
+.photos-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.photo-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.photo-preview {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+.remove-photo-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: rgba(220, 38, 38, 0.9);
+  }
+}
+
+// Responsividade para promoção
+@media (max-width: 768px) {
+  .promotion-alert {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+
+    .alert-icon {
+      align-self: flex-start;
+      margin-top: 0;
+    }
+
+    .alert-content {
+      h4 {
+        font-size: 0.95rem;
+      }
+
+      ul li {
+        font-size: 0.85rem;
+      }
+
+      .alert-note {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+      }
+    }
+  }
+
+  .photos-preview {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .photo-preview {
+    height: 100px;
+  }
+
+  .upload-placeholder {
+    padding: 1.5rem;
+  }
+}
+
 .registrar-form {
   text-align: left;
 
@@ -220,17 +773,19 @@
   }
 
   .section-title {
-    font-size: 1rem !important;
-    font-weight: 600 !important;
-    color: #333 !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
     margin-bottom: 0.5rem !important;
+    letter-spacing: -0.025em;
   }
 
   .section-subtitle {
-    font-size: 0.85rem;
-    color: #666;
-    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0 0 1.5rem 0;
     font-weight: 400;
+    line-height: 1.5;
   }
 
   .category-grid {

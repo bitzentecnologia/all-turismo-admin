@@ -16,6 +16,9 @@ import { CepService } from '../../../shared/services/cep.service';
 import { RegisterService } from './register.service';
 import { cnpjValidator } from '@shared/utils/cnpj-validator';
 import { MatIconModule } from '@angular/material/icon';
+import { OperatingHours } from './operating-hours.model';
+import { timeFormatValidator, operatingHoursValidator } from './operating-hours.validators';
+import { fillFormWithMockData, generateRandomMockData } from './register.mock';
 
 @Component({
   selector: 'app-register',
@@ -29,9 +32,23 @@ export class RegisterComponent implements OnInit {
   isLoading: boolean = false;
   isConsultingCep: boolean = false;
   registerForm!: FormGroup;
+  showError: boolean = false;
+  errorMessage: string = '';
+  environment = environment;
 
   categories: DropDownItem[] = [];
   subcategories: DropDownItem[] = [];
+
+  // Dias da semana para os horários (iniciando no domingo)
+  daysOfWeek = [
+    { key: 'sunday', label: 'Domingo' },
+    { key: 'monday', label: 'Segunda-feira' },
+    { key: 'tuesday', label: 'Terça-feira' },
+    { key: 'wednesday', label: 'Quarta-feira' },
+    { key: 'thursday', label: 'Quinta-feira' },
+    { key: 'friday', label: 'Sexta-feira' },
+    { key: 'saturday', label: 'Sábado' }
+  ];
 
   constructor(
     private router: Router,
@@ -56,27 +73,91 @@ export class RegisterComponent implements OnInit {
   // Finalizar registro
   finishRegistration(): void {
     if (this.registerForm.valid) {
-      const formValue: RegisterFormData = this.registerForm.value;
+      const formValue = this.registerForm.value;
       this.isLoading = true;
+      this.hideErrorMessage(); // Ocultar qualquer erro anterior
 
-      const additionalInfo = {
-        informationalItems: formValue.additionalInfo.informationalItems.filter(
-          (item: any) => item.checked && item.name.trim() !== ''
-        ),
-        rulesItems: formValue.additionalInfo.rulesItems.filter(
-          (item: any) => item.checked && item.name.trim() !== ''
-        ),
-        deliveryRulesItems: formValue.additionalInfo.deliveryRulesItems.filter(
-          (item: any) => item.checked && item.name.trim() !== ''
-        ),
+      // Preparar dados estruturados conforme o modelo solicitado
+      const registerData = {
+        // ETAPA 1: Dados do Responsável
+        responsible: {
+          name: formValue.responsible?.name || '',
+          email: formValue.responsible?.email || '',
+          password: formValue.responsible?.password || '',
+          phone: formValue.responsible?.phone || ''
+        },
+
+        // ETAPA 2: Endereço
+        address: {
+          cep: formValue.address?.cep || '',
+          state: formValue.address?.state || '',
+          city: formValue.address?.city || '',
+          neighborhood: formValue.address?.neighborhood || '',
+          street: formValue.address?.street || '',
+          number: formValue.address?.number || '',
+          complement: formValue.address?.complement || ''
+        },
+
+        // ETAPA 3: Estabelecimento
+        establishment: {
+          name: formValue.establishment?.name || '',
+          cnpj: formValue.establishment?.cnpj || '',
+          categoryId: formValue.establishment?.categoryId || '',
+          subcategoryId: formValue.establishment?.subcategoryId || '',
+          has_delivery: formValue.establishment?.has_delivery || false,
+          phone: formValue.establishment?.phone || '',
+          instagram: formValue.establishment?.instagram || '',
+          description: formValue.establishment?.description || ''
+        },
+
+        // ETAPA 4: Horários de Funcionamento
+        operatingHours: (formValue.operatingHours || []).map((day: any) => ({
+          dayOfWeek: day.dayOfWeek || '',
+          startTime: day.startTime || '',
+          endTime: day.endTime || '',
+          isClosed: day.isClosed || false
+        })),
+
+        // ETAPA 4: Promoção
+        promotion: {
+          text: formValue.promotion?.text || ''
+        },
+
+        // ETAPA 5: Regras e Informações
+        additionalInfo: {
+          // Incluir todos os itens, marcados ou não
+          rulesItems: (formValue.additionalInfo?.rulesItems || []).map((item: any) => ({
+            name: item.name || '',
+            checked: item.checked || false
+          })),
+          
+          deliveryRulesItems: (formValue.additionalInfo?.deliveryRulesItems || []).map((item: any) => ({
+            name: item.name || '',
+            checked: item.checked || false
+          })),
+          
+          informationalItems: (formValue.additionalInfo?.informationalItems || []).map((item: any) => ({
+            id: item.id || '',
+            name: item.name || '',
+            checked: item.checked || false,
+            icon: item.icon || ''
+          }))
+        }
       };
 
-      const formData: RegisterFormData = {
-        ...formValue,
-        additionalInfo,
-      };
+      console.log('=== DEBUG: DADOS DO FORMULÁRIO ===');
+      console.log('Formulário válido:', this.registerForm.valid);
+      console.log('Erros do formulário:', this.registerForm.errors);
+      console.log('Dados completos do formulário:', this.registerForm.value);
+      console.log('=== DEBUG: DADOS ESTRUTURADOS ===');
+      console.log('Dados estruturados para o backend:', registerData);
+      console.log('Total de horários:', registerData.operatingHours.length);
+      console.log('Texto da promoção:', registerData.promotion.text);
+      console.log('Total de itens informativos:', registerData.additionalInfo.informationalItems.length);
+      console.log('Total de regras:', registerData.additionalInfo.rulesItems.length);
+      console.log('Total de regras de delivery:', registerData.additionalInfo.deliveryRulesItems.length);
 
-      this.registerService.register(formData).subscribe({
+      this.registerService.register(registerData).subscribe({
         next: () => {
           this.isLoading = false;
           this.router.navigate(['/registro-sucesso']);
@@ -84,8 +165,26 @@ export class RegisterComponent implements OnInit {
         error: err => {
           this.isLoading = false;
           console.error('Erro no registro:', err);
+          
+          // Verificar se o backend retornou uma mensagem específica
+          let errorMsg = '';
+          if (err?.error?.message) {
+            errorMsg = err.error.message;
+          } else if (err?.message) {
+            errorMsg = err.message;
+          } else if (err?.error?.error) {
+            errorMsg = err.error.error;
+          } else {
+            // Mensagem genérica se não houver mensagem específica
+            errorMsg = 'Ocorreu um erro inesperado ao processar seu cadastro. Por favor, tente novamente em alguns instantes.';
+          }
+          
+          this.showErrorMessage(errorMsg);
         },
       });
+    } else {
+      // Se o formulário não for válido, mostrar erro
+      this.showErrorMessage('Por favor, preencha todos os campos obrigatórios corretamente.');
     }
   }
 
@@ -163,6 +262,17 @@ export class RegisterComponent implements OnInit {
     });
   }
 
+  private createOperatingHoursArray(): FormGroup[] {
+    return this.daysOfWeek.map(day => 
+      this.fb.group({
+        dayOfWeek: [day.key],
+        startTime: ['09:00', [timeFormatValidator()]],
+        endTime: ['18:00', [timeFormatValidator()]],
+        isClosed: [false]
+      })
+    );
+  }
+
   private initForm(): void {
     this.registerForm = this.fb.group({
       responsible: this.fb.group({
@@ -197,6 +307,11 @@ export class RegisterComponent implements OnInit {
         rulesItems: this.fb.array([]),
         deliveryRulesItems: this.fb.array([]),
       }),
+      operatingHours: this.fb.array(this.createOperatingHoursArray(), [operatingHoursValidator()]),
+      promotion: this.fb.group({
+        text: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(200)]],
+        photos: this.fb.array([])
+      }),
     });
   }
 
@@ -212,6 +327,7 @@ export class RegisterComponent implements OnInit {
         } else {
           this.finishRegistration();
         }
+        this.scrollToTop();
       }, 1000);
     }
   }
@@ -219,6 +335,7 @@ export class RegisterComponent implements OnInit {
   previousStep(): void {
     if (this.currentStep > 1) {
       this.currentStep--;
+      this.scrollToTop();
     } else {
       this.router.navigate(['/login']);
     }
@@ -260,6 +377,152 @@ export class RegisterComponent implements OnInit {
     this.deliveryRulesItems.removeAt(index);
   }
 
+  // Métodos para horários de funcionamento
+  get operatingHoursArray(): FormArray {
+    return this.registerForm.get('operatingHours') as FormArray;
+  }
+
+  onDayClosedChange(index: number, isClosed: boolean): void {
+    const dayFormGroup = this.operatingHoursArray.at(index) as FormGroup;
+    dayFormGroup.patchValue({ isClosed });
+    
+    if (isClosed) {
+      dayFormGroup.get('startTime')?.disable();
+      dayFormGroup.get('endTime')?.disable();
+    } else {
+      dayFormGroup.get('startTime')?.enable();
+      dayFormGroup.get('endTime')?.enable();
+    }
+  }
+
+  formatTime(event: any): void {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, '');
+    
+    if (value.length >= 2) {
+      value = value.substring(0, 2) + ':' + value.substring(2, 4);
+    }
+    
+    if (value.length === 5) {
+      value = value.substring(0, 5);
+    }
+    
+    input.value = value;
+  }
+
+  getDayLabel(dayKey: string): string {
+    const day = this.daysOfWeek.find(d => d.key === dayKey);
+    return day ? day.label : dayKey;
+  }
+
+  // Métodos para promoção
+  get promotionForm(): FormGroup {
+    return this.registerForm.get('promotion') as FormGroup;
+  }
+
+  get promotionPhotos(): FormArray {
+    return this.promotionForm.get('photos') as FormArray;
+  }
+
+  onPromotionPhotoSelected(event: any): void {
+    const files = event.target.files;
+    const currentPhotos = this.promotionPhotos.length;
+    const remainingSlots = 3 - currentPhotos;
+
+    if (remainingSlots <= 0) {
+      alert('Você já adicionou o máximo de 3 fotos.');
+      return;
+    }
+
+    const filesToAdd = Array.from(files).slice(0, remainingSlots);
+
+    filesToAdd.forEach((file: any) => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.promotionPhotos.push(
+            this.fb.group({
+              file: [file],
+              preview: [e.target.result]
+            })
+          );
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  removePromotionPhoto(index: number): void {
+    this.promotionPhotos.removeAt(index);
+  }
+
+  // Scroll para o topo da página
+  scrollToTop(): void {
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 100);
+  }
+
+  // Exibir mensagem de erro
+  showErrorMessage(message: string): void {
+    this.showError = true;
+    this.errorMessage = message;
+    this.scrollToTop();
+  }
+
+  // Ocultar mensagem de erro
+  hideErrorMessage(): void {
+    this.showError = false;
+    this.errorMessage = '';
+  }
+
+  // Preencher formulário com dados mock
+  fillWithMockData(): void {
+    fillFormWithMockData(this.registerForm);
+    
+    // Simular seleção de categoria para carregar subcategorias e regras
+    const categoryId = this.registerForm.get('establishment.categoryId')?.value;
+    if (categoryId) {
+      this.onCategoryChange(categoryId);
+    }
+    
+    console.log('Formulário preenchido com dados mock');
+  }
+
+  // Preencher formulário com dados aleatórios
+  fillWithRandomMockData(): void {
+    const randomData = generateRandomMockData();
+    
+    // Preencher dados básicos
+    this.registerForm.patchValue({
+      responsible: randomData.responsible,
+      address: randomData.address,
+      establishment: randomData.establishment,
+      promotion: { text: randomData.promotion.text }
+    });
+
+    // Preencher horários
+    const operatingHoursArray = this.registerForm.get('operatingHours') as FormArray;
+    randomData.operatingHours.forEach((day, index) => {
+      if (operatingHoursArray && operatingHoursArray.at(index)) {
+        operatingHoursArray.at(index).patchValue(day);
+      }
+    });
+
+    // Simular seleção de categoria para carregar subcategorias e regras
+    const categoryId = randomData.establishment.categoryId;
+    if (categoryId) {
+      this.onCategoryChange(categoryId);
+    }
+    
+    console.log('Formulário preenchido com dados aleatórios mock');
+  }
+
+
+
   private getCurrentStepFormGroup(): FormGroup | null {
     switch (this.currentStep) {
       case 1:
@@ -269,7 +532,11 @@ export class RegisterComponent implements OnInit {
       case 3:
         return this.registerForm.get('establishment') as FormGroup;
       case 4:
-        return null; // Etapa 4 não tem validação de formulário
+        // Validar tanto horários quanto promoção
+        const operatingHoursGroup = this.registerForm.get('operatingHours')?.parent as FormGroup;
+        const promotionGroup = this.registerForm.get('promotion') as FormGroup;
+        // Retorna o grupo pai que contém ambos
+        return this.registerForm;
       case 5:
         return this.registerForm.get('additionalInfo') as FormGroup;
       default:
