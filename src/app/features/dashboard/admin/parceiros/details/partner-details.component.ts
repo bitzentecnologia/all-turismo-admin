@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ParceirosService, PartnerDetailsResponse } from '../parceiros.service';
+import { ParceirosService, PartnerDetailsResponse, InformationalData } from '../parceiros.service';
 import { CommonModule } from '@angular/common';
 import { ImageService } from '@core/services/image.service';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -21,6 +21,11 @@ export type Partner = PartnerDetailsResponse & {
   users: any[];
 };
 
+export interface SelectedInformational {
+  id: string;
+  checked: boolean;
+}
+
 @Component({
   selector: 'app-partner-detail',
   standalone: true,
@@ -36,6 +41,8 @@ export class PartnerDetailComponent implements OnInit {
 
   categories: DropDownItem[] = [];
   subcategories: DropDownItem[] = [];
+  informationals: InformationalData[] = [];
+  selectedInformationals: SelectedInformational[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -66,6 +73,11 @@ export class PartnerDetailComponent implements OnInit {
               operating_hours: (p as any).operating_hours || {},
               users: (p as any).users || [],
             };
+
+            // Se as informações já foram carregadas, inicializar agora
+            if (this.informationals.length > 0) {
+              this.initializeSelectedInformationals();
+            }
           },
           error: (err: any) => {
             console.error('Erro ao carregar parceiro', err);
@@ -80,6 +92,18 @@ export class PartnerDetailComponent implements OnInit {
     this.parceirosService.getCategories().subscribe({
       next: res => (this.categories = res),
       error: err => console.error('Erro ao carregar categorias:', err),
+    });
+
+    this.parceirosService.getInformationals().subscribe({
+      next: res => {
+        this.informationals = res;
+
+        // Se o parceiro já foi carregado, inicializar agora
+        if (this.partner) {
+          this.initializeSelectedInformationals();
+        }
+      },
+      error: err => console.error('Erro ao carregar dados informacionais:', err),
     });
   }
 
@@ -99,8 +123,18 @@ export class PartnerDetailComponent implements OnInit {
     return this.partner?.category_informationals || [];
   }
 
+  get filteredInformationals(): InformationalData[] {
+    if (!this.partner?.category?.id || !this.informationals?.length) {
+      return [];
+    }
+    return this.informationals.filter(info => info.category_id === this.partner!.category!.id);
+  }
+
   savePartner() {
     if (!this.partner) return;
+
+    // Salvar informações selecionadas
+    this.saveInformationals();
 
     // Preservar os valores de horário mesmo quando fechado
     const partnerToSave = { ...this.partner };
@@ -137,6 +171,7 @@ export class PartnerDetailComponent implements OnInit {
           operating_hours: (updated as any).operating_hours || {},
           users: (updated as any).users || [],
         };
+        this.initializeSelectedInformationals();
       },
       error: err => console.error('Erro ao salvar parceiro', err),
       complete: () => (this.loading = false),
@@ -161,7 +196,6 @@ export class PartnerDetailComponent implements OnInit {
           operating_hours: (p as any).operating_hours || {},
           users: (p as any).users || [],
         };
-        console.log('Parceiro aprovado!', this.partner);
         this.approving = false;
       },
       error: err => {
@@ -251,5 +285,61 @@ export class PartnerDetailComponent implements OnInit {
 
   cleanPhoneNumber(phone: string): string {
     return phone.replace(/\D/g, '');
+  }
+
+  // Métodos para gerenciar informações selecionadas (seguindo padrão do registro)
+  initializeSelectedInformationals() {
+    if (!this.partner || !this.informationals.length) return;
+
+    console.log('iniciando método');
+    const availableInformationals = this.filteredInformationals;
+    const existingInformationals = this.partner.category_informationals || [];
+
+    console.log('Inicializando informações selecionadas:', {
+      availableInformationals,
+      existingInformationals,
+      partnerCategory: this.partner.category
+    });
+
+    this.selectedInformationals = availableInformationals.map(info => {
+      const existingInfo = existingInformationals.find((ei: any) => ei.id === info.id);
+      const checked = !!existingInfo;
+
+      return {
+        id: info.id,
+        checked: checked
+      };
+    });
+  }
+
+  toggleInformationalSelection(selectedInfo: SelectedInformational) {
+    const index = this.selectedInformationals.findIndex(si => si.id === selectedInfo.id);
+    if (index >= 0) {
+      this.selectedInformationals[index].checked = !this.selectedInformationals[index].checked;
+    }
+  }
+
+  saveInformationals() {
+    if (!this.partner) return;
+
+    const selectedInfos = this.selectedInformationals.filter(si => si.checked);
+    this.partner.category_informationals = selectedInfos.map(si => {
+      const existingInfo = this.partner?.category_informationals?.find((ci: any) => ci.informational_id === si.id);
+      return {
+        id: existingInfo?.id || Date.now().toString(),
+        informational_id: si.id,
+        text: this.getInformationalTitle(si.id) // Usar o texto padrão da API
+      };
+    });
+  }
+
+  getInformationalIcon(id: string): string {
+    const info = this.filteredInformationals.find(i => i.id === id);
+    return info?.icon || 'info';
+  }
+
+  getInformationalTitle(id: string): string {
+    const info = this.filteredInformationals.find(i => i.id === id);
+    return info?.text || 'Informação';
   }
 }

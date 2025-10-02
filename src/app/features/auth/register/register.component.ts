@@ -202,20 +202,9 @@ export class RegisterComponent implements OnInit {
         isClosed: day.isClosed || false
       })),
       additionalInfo: {
-        rulesItems: (formValue.additionalInfo?.rulesItems || []).map((item: any) => ({
-          name: item.name || '',
-          checked: item.checked || false
-        })),
-        deliveryRulesItems: (formValue.additionalInfo?.deliveryRulesItems || []).map((item: any) => ({
-          name: item.name || '',
-          checked: item.checked || false
-        })),
-        informationalItems: (formValue.additionalInfo?.informationalItems || []).map((item: any) => ({
-          id: item.id || '',
-          name: item.name || '',
-          checked: item.checked || false,
-          icon: item.icon || ''
-        }))
+        rulesItems: this.getCheckedItems(formValue.additionalInfo?.rulesItems || []),
+        deliveryRulesItems: this.getCheckedItems(formValue.additionalInfo?.deliveryRulesItems || []),
+        informationalItems: this.getCheckedInformationalItems(formValue.additionalInfo?.informationalItems || [])
       }
     };
 
@@ -253,6 +242,28 @@ export class RegisterComponent implements OnInit {
         this.showErrorMessage(errorMsg, errorList);
       }
     });
+  }
+
+  // Método para filtrar apenas itens marcados como verificados (checked: true) para regras normais
+  private getCheckedItems(items: any[]): any[] {
+    return items
+      .filter(item => item.checked === true)
+      .map(item => ({
+        name: item.name || '',
+        checked: true
+      }));
+  }
+
+  // Método para filtrar apenas itens informacionais marcados como verificados (checked: true)
+  private getCheckedInformationalItems(items: any[]): any[] {
+    return items
+      .filter(item => item.checked === true)
+      .map(item => ({
+        id: item.id || '',
+        name: item.name || '',
+        checked: true,
+        icon: item.icon || ''
+      }));
   }
 
   // Atualizar subcategorias ao mudar categoria

@@ -236,7 +236,7 @@
       </div>
 
       <!-- Informações da categoria -->
-      <div class="accordion-item" *ngIf="partnerCategoryInformationals?.length">
+      <div class="accordion-item">
         <button class="accordion-header" (click)="toggleSection('infoals')">
           <span class="section-title">
             <mat-icon>description</mat-icon>
@@ -245,10 +245,23 @@
           <span class="chevron" [class.open]="openSection === 'infoals'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'infoals'">
-          <div *ngFor="let info of partnerCategoryInformationals" class="info-item">
-            <div class="info-row">
-              <mat-icon>{{ info.icon }}</mat-icon>
-              <textarea disabled rows="1" [(ngModel)]="info.text"></textarea>
+          <div class="cards-grid">
+            <div *ngFor="let selectedInfo of selectedInformationals" class="card-item"
+              [class.active]="selectedInfo.checked" (click)="toggleInformationalSelection(selectedInfo)">
+
+              <!-- Checkbox oculto -->
+              <input type="checkbox" [checked]="selectedInfo.checked" [id]="'info-' + selectedInfo.id"
+                style="display: none;">
+
+              <!-- Ícone -->
+              <div class="card-icon">
+                <mat-icon>{{ getInformationalIcon(selectedInfo.id) }}</mat-icon>
+              </div>
+
+              <!-- Texto -->
+              <div class="card-text">
+                {{ getInformationalTitle(selectedInfo.id) }}
+              </div>
             </div>
           </div>
         </div>
