@@ -13,7 +13,19 @@
 
       <img [src]="imageService.getImageById(partner.logo_url)" alt="Logo do parceiro" class="logo" />
 
-      <h1 class="partner-name">{{ partner.name }}</h1>
+      <div class="partner-info-section">
+        <h1 class="partner-name">{{ partner.name }}</h1>
+
+        <!-- Informações de Categoria -->
+        <div class="category-badges" *ngIf="partner.category">
+          <div class="category-badge primary">
+            <span>{{ partner.category.name }}</span>
+          </div>
+          <div class="category-badge secondary" *ngIf="partner.subcategory.name">
+            <span>{{ partner.subcategory.name }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Accordion -->
@@ -107,14 +119,14 @@
           <span class="chevron" [class.open]="openSection === 'address'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'address'">
-          <!-- Row 1: Rua (largura completa) -->
+          <!-- Linha 1: Rua (largura completa) -->
           <div class="field-row full-width">
             <label>Rua</label>
             <input type="text" [(ngModel)]="partner.address.street" />
           </div>
 
-          <!-- Row 2: Número e Complemento lado a lado -->
-          <div class="field-row two-columns">
+          <!-- Linha 2: Número, Complemento e Bairro lado a lado -->
+          <div class="field-row three-columns">
             <div class="field-group">
               <label>Número</label>
               <input type="text" [(ngModel)]="partner.address.number" />
@@ -123,23 +135,14 @@
               <label>Complemento</label>
               <input type="text" [(ngModel)]="partner.address.complement" />
             </div>
-          </div>
-
-          <!-- Row 3: Bairro e CEP lado a lado -->
-          <div class="field-row two-columns">
             <div class="field-group">
               <label>Bairro</label>
               <input type="text" [(ngModel)]="partner.address.neighborhood" />
             </div>
-            <div class="field-group">
-              <label>CEP</label>
-              <input type="text" [(ngModel)]="partner.address.zip_code" (input)="onCepInput($event)"
-                placeholder="00000-000" maxlength="9" />
-            </div>
           </div>
 
-          <!-- Row 4: Cidade e Estado lado a lado -->
-          <div class="field-row two-columns">
+          <!-- Linha 3: Cidade, Estado e CEP lado a lado -->
+          <div class="field-row three-columns">
             <div class="field-group">
               <label>Cidade</label>
               <input type="text" [(ngModel)]="partner.address.city" />
@@ -148,32 +151,15 @@
               <label>Estado</label>
               <input type="text" [(ngModel)]="partner.address.state" />
             </div>
+            <div class="field-group">
+              <label>CEP</label>
+              <input type="text" [(ngModel)]="partner.address.zip_code" (input)="onCepInput($event)"
+                placeholder="00000-000" maxlength="9" />
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Categoria -->
-      <div class="accordion-item" *ngIf="partner.category">
-        <button class="accordion-header" (click)="toggleSection('category')">
-          <span class="section-title">
-            <mat-icon>category</mat-icon>
-            Categoria
-          </span>
-          <span class="chevron" [class.open]="openSection === 'category'">⌄</span>
-        </button>
-        <div class="accordion-body" [class.open]="openSection === 'category'">
-          <div class="field-row two-columns">
-            <div class="field-group">
-              <label>Categoria</label>
-              <input disabled type="text" [(ngModel)]="partner.category.name" />
-            </div>
-            <div class="field-group">
-              <label>Sub categoria</label>
-              <input disabled type="text" [(ngModel)]="partner.subcategory.name" />
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Fotos -->
       <div class="accordion-item" *ngIf="partner.photos?.length">
