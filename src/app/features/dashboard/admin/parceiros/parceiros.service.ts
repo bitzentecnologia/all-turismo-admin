@@ -7,6 +7,13 @@ import { Partner } from './parceiros.component';
 import { PaginatedResponse } from '@shared/models/pagination.model';
 import { DropDownItem } from '@shared/models/dropdown.model';
 
+export interface InformationalData {
+  id: string;
+  text: string;
+  icon: string;
+  category_id: string;
+}
+
 export type PartnerResponse = {
   id: string;
   name: string;
@@ -82,5 +89,9 @@ export class ParceirosService {
   updatePartner(id: string, data: any): Observable<PartnerDetailsResponse> {
     console.log('Updating partner with data:', data);
     return this.http.put<PartnerDetailsResponse>(`${this.apiUrl}/admin/companies/${id}`, data);
+  }
+
+  getInformationals(): Observable<InformationalData[]> {
+    return this.http.get<InformationalData[]>(`${this.apiUrl}/categories/informationals`);
   }
 }

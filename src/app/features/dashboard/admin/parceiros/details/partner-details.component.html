@@ -13,7 +13,19 @@
 
       <img [src]="imageService.getImageById(partner.logo_url)" alt="Logo do parceiro" class="logo" />
 
-      <h1 class="partner-name">{{ partner.name }}</h1>
+      <div class="partner-info-section">
+        <h1 class="partner-name">{{ partner.name }}</h1>
+
+        <!-- Informações de Categoria -->
+        <div class="category-badges" *ngIf="partner.category">
+          <div class="category-badge primary">
+            <span>{{ partner.category.name }}</span>
+          </div>
+          <div class="category-badge secondary" *ngIf="partner.subcategory.name">
+            <span>{{ partner.subcategory.name }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Accordion -->
@@ -21,47 +33,78 @@
       <!-- Informações gerais -->
       <div class="accordion-item">
         <button class="accordion-header" (click)="toggleSection('info')">
-          Informações gerais
+          <span class="section-title">
+            <mat-icon>info</mat-icon>
+            Informações gerais
+          </span>
           <span class="chevron" [class.open]="openSection === 'info'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'info'">
-          <label>Nome</label>
-          <input type="text" [(ngModel)]="partner.name" required maxlength="100" placeholder="Nome da empresa" />
-
-          <label>Status</label>
-          <div class="status-row">
-            <select [(ngModel)]="partner.status" [disabled]="approving">
-              <option value="ACTIVE">Ativo</option>
-              <option value="INACTIVE">Inativo</option>
-              <option value="PENDING">Pendente</option>
-            </select>
-
-            <button *ngIf="partner.status === 'PENDING'" class="btn-approve" (click)="approvePartner()"
-              [disabled]="approving">
-              <span *ngIf="!approving">Aprovar</span>
-              <span *ngIf="approving" class="loading-spinner-small"></span>
-            </button>
+          <!-- Row 1: Nome (largura completa) -->
+          <div class="field-row full-width">
+            <label>Nome</label>
+            <input type="text" [(ngModel)]="partner.name" required maxlength="100" placeholder="Nome da empresa" />
           </div>
 
-          <label>CNPJ</label>
-          <input type="text" [(ngModel)]="partner.cnpj" (input)="onCnpjInput($event)" placeholder="00.000.000/0000-00"
-            maxlength="18" />
+          <!-- Linha 2: Status e CNPJ lado a lado -->
+          <div class="field-row two-columns">
+            <div class="field-group">
+              <label>Status</label>
+              <div class="status-row">
+                <select [(ngModel)]="partner.status" [disabled]="approving">
+                  <option value="ACTIVE">Ativo</option>
+                  <option value="INACTIVE">Inativo</option>
+                  <option value="PENDING">Pendente</option>
+                </select>
 
-          <label>Telefone</label>
-          <input type="text" [(ngModel)]="partner.contact_phone" (input)="onPhoneInput($event)"
-            placeholder="(11) 99999-9999" maxlength="15" />
+                <button *ngIf="partner.status === 'PENDING'" class="btn-approve" (click)="approvePartner()"
+                  [disabled]="approving">
+                  <span *ngIf="!approving">Aprovar</span>
+                  <span *ngIf="approving" class="loading-spinner-small"></span>
+                </button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>CNPJ</label>
+              <input type="text" [(ngModel)]="partner.cnpj" (input)="onCnpjInput($event)"
+                placeholder="00.000.000/0000-00" maxlength="18" />
+            </div>
+          </div>
 
-          <label *ngIf="partner.instagram !== undefined">Instagram</label>
-          <input *ngIf="partner.instagram !== undefined" type="url" [(ngModel)]="partner.instagram"
-            placeholder="https://instagram.com/usuario" />
+          <!-- Linha 3: Telefone e Instagram lado a lado -->
+          <div class="field-row two-columns">
+            <div class="field-group">
+              <label>Telefone</label>
+              <input type="text" [(ngModel)]="partner.contact_phone" (input)="onPhoneInput($event)"
+                placeholder="(11) 99999-9999" maxlength="15" />
+            </div>
+            <div class="field-group">
+              <label *ngIf="partner.instagram !== undefined">Instagram</label>
+              <input *ngIf="partner.instagram !== undefined" type="url" [(ngModel)]="partner.instagram"
+                placeholder="https://instagram.com/usuario" />
+            </div>
+          </div>
 
-          <label *ngIf="partner.description !== undefined">Descrição</label>
-          <textarea *ngIf="partner.description !== undefined" rows="3" [(ngModel)]="partner.description" maxlength="500"
-            placeholder="Descrição da empresa"></textarea>
+          <!-- Linha 4: Descrição e Promoção lado a lado (3 linhas de altura) -->
+          <div class="field-row two-columns">
+            <div class="field-group" *ngIf="partner.description !== undefined">
+              <label>Descrição</label>
+              <textarea rows="3" [(ngModel)]="partner.description" maxlength="500"
+                placeholder="Descrição da empresa"></textarea>
+            </div>
+            <div class="field-group">
+              <label>Promoção</label>
+              <textarea rows="3" [(ngModel)]="partner.promotion" placeholder="Digite a promoção..."
+                maxlength="1000"></textarea>
+            </div>
+          </div>
 
-          <label>Promoção</label>
-          <textarea rows="4" [(ngModel)]="partner.promotion" placeholder="Digite a promoção..."
-            maxlength="1000"></textarea>
+          <!-- Se não houver descrição, promoção ocupa linha inteira -->
+          <div class="field-row full-width" *ngIf="partner.description === undefined">
+            <label>Promoção</label>
+            <textarea rows="3" [(ngModel)]="partner.promotion" placeholder="Digite a promoção..."
+              maxlength="1000"></textarea>
+          </div>
 
         </div>
       </div>
@@ -69,53 +112,62 @@
       <!-- Endereço -->
       <div class="accordion-item" *ngIf="partner.address">
         <button class="accordion-header" (click)="toggleSection('address')">
-          Endereço
+          <span class="section-title">
+            <mat-icon>location_on</mat-icon>
+            Endereço
+          </span>
           <span class="chevron" [class.open]="openSection === 'address'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'address'">
-          <label>Rua</label>
-          <input type="text" [(ngModel)]="partner.address.street" />
+          <!-- Linha 1: Rua (largura completa) -->
+          <div class="field-row full-width">
+            <label>Rua</label>
+            <input type="text" [(ngModel)]="partner.address.street" />
+          </div>
 
-          <label>Número</label>
-          <input type="text" [(ngModel)]="partner.address.number" />
+          <!-- Linha 2: Número, Complemento e Bairro lado a lado -->
+          <div class="field-row three-columns">
+            <div class="field-group">
+              <label>Número</label>
+              <input type="text" [(ngModel)]="partner.address.number" />
+            </div>
+            <div class="field-group">
+              <label>Complemento</label>
+              <input type="text" [(ngModel)]="partner.address.complement" />
+            </div>
+            <div class="field-group">
+              <label>Bairro</label>
+              <input type="text" [(ngModel)]="partner.address.neighborhood" />
+            </div>
+          </div>
 
-          <label>Complemento</label>
-          <input type="text" [(ngModel)]="partner.address.complement" />
-
-          <label>Bairro</label>
-          <input type="text" [(ngModel)]="partner.address.neighborhood" />
-
-          <label>Cidade</label>
-          <input type="text" [(ngModel)]="partner.address.city" />
-
-          <label>Estado</label>
-          <input type="text" [(ngModel)]="partner.address.state" />
-
-          <label>CEP</label>
-          <input type="text" [(ngModel)]="partner.address.zip_code" (input)="onCepInput($event)" placeholder="00000-000"
-            maxlength="9" />
+          <!-- Linha 3: Cidade, Estado e CEP lado a lado -->
+          <div class="field-row three-columns">
+            <div class="field-group">
+              <label>Cidade</label>
+              <input type="text" [(ngModel)]="partner.address.city" />
+            </div>
+            <div class="field-group">
+              <label>Estado</label>
+              <input type="text" [(ngModel)]="partner.address.state" />
+            </div>
+            <div class="field-group">
+              <label>CEP</label>
+              <input type="text" [(ngModel)]="partner.address.zip_code" (input)="onCepInput($event)"
+                placeholder="00000-000" maxlength="9" />
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Categoria -->
-      <div class="accordion-item" *ngIf="partner.category">
-        <button class="accordion-header" (click)="toggleSection('category')">
-          Categoria
-          <span class="chevron" [class.open]="openSection === 'category'">⌄</span>
-        </button>
-        <div class="accordion-body" [class.open]="openSection === 'category'">
-          <label>Categoria</label>
-          <input disabled type="text" [(ngModel)]="partner.category.name" />
-
-          <label>Sub categoria</label>
-          <input disabled type="text" [(ngModel)]="partner.subcategory.name" />
-        </div>
-      </div>
 
       <!-- Fotos -->
       <div class="accordion-item" *ngIf="partner.photos?.length">
         <button class="accordion-header" (click)="toggleSection('photos')">
-          Fotos
+          <span class="section-title">
+            <mat-icon>photo_library</mat-icon>
+            Fotos
+          </span>
           <span class="chevron" [class.open]="openSection === 'photos'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'photos'">
@@ -130,7 +182,10 @@
       <!-- Regras da categoria -->
       <div class="accordion-item">
         <button class="accordion-header" (click)="toggleSection('rules')">
-          Regras
+          <span class="section-title">
+            <mat-icon>rule</mat-icon>
+            Regras
+          </span>
           <span class="chevron" [class.open]="openSection === 'rules'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'rules'">
@@ -154,7 +209,10 @@
       <!-- Regras da categoria para delivery -->
       <div class="accordion-item" *ngIf="partner.has_delivery">
         <button class="accordion-header" (click)="toggleSection('deliveryRules')">
-          Regras de delivery
+          <span class="section-title">
+            <mat-icon>delivery_dining</mat-icon>
+            Regras de delivery
+          </span>
           <span class="chevron" [class.open]="openSection === 'deliveryRules'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'deliveryRules'">
@@ -178,16 +236,32 @@
       </div>
 
       <!-- Informações da categoria -->
-      <div class="accordion-item" *ngIf="partnerCategoryInformationals?.length">
+      <div class="accordion-item">
         <button class="accordion-header" (click)="toggleSection('infoals')">
-          Informações
+          <span class="section-title">
+            <mat-icon>description</mat-icon>
+            Informações
+          </span>
           <span class="chevron" [class.open]="openSection === 'infoals'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'infoals'">
-          <div *ngFor="let info of partnerCategoryInformationals" class="info-item">
-            <div class="info-row">
-              <mat-icon>{{ info.icon }}</mat-icon>
-              <textarea disabled rows="1" [(ngModel)]="info.text"></textarea>
+          <div class="cards-grid">
+            <div *ngFor="let selectedInfo of selectedInformationals" class="card-item"
+              [class.active]="selectedInfo.checked" (click)="toggleInformationalSelection(selectedInfo)">
+
+              <!-- Checkbox oculto -->
+              <input type="checkbox" [checked]="selectedInfo.checked" [id]="'info-' + selectedInfo.id"
+                style="display: none;">
+
+              <!-- Ícone -->
+              <div class="card-icon">
+                <mat-icon>{{ getInformationalIcon(selectedInfo.id) }}</mat-icon>
+              </div>
+
+              <!-- Texto -->
+              <div class="card-text">
+                {{ getInformationalTitle(selectedInfo.id) }}
+              </div>
             </div>
           </div>
         </div>
@@ -196,7 +270,10 @@
       <!-- Horários de Funcionamento -->
       <div class="accordion-item" *ngIf="partner.operating_hours">
         <button class="accordion-header" (click)="toggleSection('hours')">
-          Horários de Funcionamento
+          <span class="section-title">
+            <mat-icon>schedule</mat-icon>
+            Horários de Funcionamento
+          </span>
           <span class="chevron" [class.open]="openSection === 'hours'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'hours'">
@@ -213,12 +290,10 @@
               <tr *ngFor="let day of getDaysOfWeek()">
                 <td class="day-cell">{{ getDayName(day) }}</td>
                 <td class="time-cell">
-                  <input type="time" [(ngModel)]="partner.operating_hours[day].startTime"
-                    [disabled]="partner.operating_hours[day].isClosed" class="time-input" />
+                  <input type="time" [(ngModel)]="partner.operating_hours[day].startTime" class="time-input" />
                 </td>
                 <td class="time-cell">
-                  <input type="time" [(ngModel)]="partner.operating_hours[day].endTime"
-                    [disabled]="partner.operating_hours[day].isClosed" class="time-input" />
+                  <input type="time" [(ngModel)]="partner.operating_hours[day].endTime" class="time-input" />
                 </td>
                 <td class="checkbox-cell">
                   <label class="closed-checkbox">
@@ -235,7 +310,10 @@
       <!-- Usuários -->
       <div class="accordion-item" *ngIf="partner.users?.length">
         <button class="accordion-header" (click)="toggleSection('users')">
-          Usuários
+          <span class="section-title">
+            <mat-icon>people</mat-icon>
+            Usuários
+          </span>
           <span class="chevron" [class.open]="openSection === 'users'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'users'">

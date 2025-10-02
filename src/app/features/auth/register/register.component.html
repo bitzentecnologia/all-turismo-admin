@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <!-- Botões de Debug (apenas em desenvolvimento) -->
+    <!-- Botões de Debug (apenas em desenvolvimento) 
     <div class="debug-buttons" *ngIf="!environment.production">
       <button type="button" class="debug-btn" (click)="fillWithMockData()">
         📝 Preencher Mock
@@ -43,7 +43,7 @@
       <button type="button" class="debug-btn" (click)="fillWithRandomMockData()">
         🎲 Mock Aleatório
       </button>
-    </div>
+    </div>-->
 
     <!-- Barra de Progresso -->
     <div class="progress-bar">
@@ -97,29 +97,22 @@
       <div *ngIf="isStep1" class="form-step" [formGroupName]="'responsible'">
         <div class="form-group">
           <label for="name">Nome</label>
-          <input
-            type="text"
-            id="name"
-            formControlName="name"
-            placeholder="Digite seu nome completo"
-            [class.error]="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched"
-          >
-          <div *ngIf="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched" class="error-message">
+          <input type="text" id="name" formControlName="name" placeholder="Digite seu nome completo"
+            [class.error]="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched">
+          <div *ngIf="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched"
+            class="error-message">
             <span *ngIf="responsibleForm.get('name')?.errors?.['required']">Nome é obrigatório</span>
-            <span *ngIf="responsibleForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2 caracteres</span>
+            <span *ngIf="responsibleForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2
+              caracteres</span>
           </div>
         </div>
 
         <div class="form-group">
           <label for="email">E-mail</label>
-          <input
-            type="email"
-            id="email"
-            formControlName="email"
-            placeholder="Digite seu e-mail"
-            [class.error]="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched"
-          >
-          <div *ngIf="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched" class="error-message">
+          <input type="email" id="email" formControlName="email" placeholder="Digite seu e-mail"
+            [class.error]="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched">
+          <div *ngIf="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched"
+            class="error-message">
             <span *ngIf="responsibleForm.get('email')?.errors?.['required']">E-mail é obrigatório</span>
             <span *ngIf="responsibleForm.get('email')?.errors?.['email']">E-mail inválido</span>
           </div>
@@ -127,34 +120,26 @@
 
         <div class="form-group">
           <label for="password">Senha</label>
-          <input
-            type="password"
-            id="password"
-            formControlName="password"
-            placeholder="Senha para acessar a plataforma"
-            [class.error]="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched"
-          >
-          <div *ngIf="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched" class="error-message">
+          <input type="password" id="password" formControlName="password" placeholder="Senha para acessar a plataforma"
+            [class.error]="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched">
+          <div *ngIf="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched"
+            class="error-message">
             <span *ngIf="responsibleForm.get('password')?.errors?.['required']">Senha é obrigatória</span>
-            <span *ngIf="responsibleForm.get('password')?.errors?.['minlength']">Senha deve ter pelo menos 6 caracteres</span>
+            <span *ngIf="responsibleForm.get('password')?.errors?.['minlength']">Senha deve ter pelo menos 6
+              caracteres</span>
           </div>
         </div>
 
         <div class="form-group">
           <label for="phone">WhatsApp</label>
-          <input
-            type="tel"
-            id="phone"
-            formControlName="phone"
-            (input)="formatPhone($event)"
-            (keypress)="validateNumbersOnly($event)"
-            placeholder="(XX) XXXXX-XXXX"
-            maxlength="15"
-            [class.error]="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched"
-          >
-          <div *ngIf="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched" class="error-message">
+          <input type="tel" id="phone" formControlName="phone" (input)="formatPhone($event)"
+            (keypress)="validateNumbersOnly($event)" placeholder="(XX) XXXXX-XXXX" maxlength="15"
+            [class.error]="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched">
+          <div *ngIf="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched"
+            class="error-message">
             <span *ngIf="responsibleForm.get('phone')?.errors?.['required']">WhatsApp é obrigatório</span>
-            <span *ngIf="responsibleForm.get('phone')?.errors?.['minlength']">WhatsApp deve ter pelo menos 14 caracteres</span>
+            <span *ngIf="responsibleForm.get('phone')?.errors?.['minlength']">WhatsApp deve ter pelo menos 14
+              caracteres</span>
           </div>
         </div>
       </div>
@@ -164,17 +149,10 @@
         <div class="form-group">
           <label for="cep">CEP</label>
           <div class="cep-input-container">
-            <input
-              type="text"
-              id="cep"
-              formControlName="cep"
-              (input)="formatCep($event)"
-              (keypress)="validateNumbersOnly($event)"
-              placeholder="00000-000"
-              maxlength="9"
+            <input type="text" id="cep" formControlName="cep" (input)="formatCep($event)"
+              (keypress)="validateNumbersOnly($event)" placeholder="00000-000" maxlength="9"
               [class.error]="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched"
-              [disabled]="isConsultingCep"
-            >
+              [disabled]="isConsultingCep">
             <div *ngIf="isConsultingCep" class="cep-loading">
               <span>Consultando...</span>
             </div>
@@ -188,13 +166,8 @@
         <div class="form-row">
           <div class="form-group">
             <label for="state">Estado</label>
-            <input
-              type="text"
-              id="state"
-              formControlName="state"
-              placeholder="Digite o estado"
-              [class.error]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched"
-            >
+            <input type="text" id="state" formControlName="state" placeholder="Digite o estado"
+              [class.error]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched">
             <div *ngIf="addressForm.get('state')?.invalid && addressForm.get('state')?.touched" class="error-message">
               <span *ngIf="addressForm.get('state')?.errors?.['required']">Estado é obrigatório</span>
             </div>
@@ -202,13 +175,8 @@
 
           <div class="form-group">
             <label for="city">Cidade</label>
-            <input
-              type="text"
-              id="city"
-              formControlName="city"
-              placeholder="Digite a cidade"
-              [class.error]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched"
-            >
+            <input type="text" id="city" formControlName="city" placeholder="Digite a cidade"
+              [class.error]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched">
             <div *ngIf="addressForm.get('city')?.invalid && addressForm.get('city')?.touched" class="error-message">
               <span *ngIf="addressForm.get('city')?.errors?.['required']">Cidade é obrigatória</span>
             </div>
@@ -217,27 +185,18 @@
 
         <div class="form-group">
           <label for="neighborhood">Bairro</label>
-          <input
-            type="text"
-            id="neighborhood"
-            formControlName="neighborhood"
-            placeholder="Digite o bairro"
-            [class.error]="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched"
-          >
-          <div *ngIf="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched" class="error-message">
+          <input type="text" id="neighborhood" formControlName="neighborhood" placeholder="Digite o bairro"
+            [class.error]="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched">
+          <div *ngIf="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched"
+            class="error-message">
             <span *ngIf="addressForm.get('neighborhood')?.errors?.['required']">Bairro é obrigatório</span>
           </div>
         </div>
 
         <div class="form-group">
           <label for="street">Rua/Avenida</label>
-          <input
-            type="text"
-            id="street"
-            formControlName="street"
-            placeholder="Digite a rua ou avenida"
-            [class.error]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched"
-          >
+          <input type="text" id="street" formControlName="street" placeholder="Digite a rua ou avenida"
+            [class.error]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched">
           <div *ngIf="addressForm.get('street')?.invalid && addressForm.get('street')?.touched" class="error-message">
             <span *ngIf="addressForm.get('street')?.errors?.['required']">Rua/Avenida é obrigatória</span>
           </div>
@@ -246,13 +205,8 @@
         <div class="form-row">
           <div class="form-group">
             <label for="number">Número</label>
-            <input
-              type="text"
-              id="number"
-              formControlName="number"
-              placeholder="Digite o número"
-              [class.error]="addressForm.get('number')?.invalid && addressForm.get('number')?.touched"
-            >
+            <input type="text" id="number" formControlName="number" placeholder="Digite o número"
+              [class.error]="addressForm.get('number')?.invalid && addressForm.get('number')?.touched">
             <div *ngIf="addressForm.get('number')?.invalid && addressForm.get('number')?.touched" class="error-message">
               <span *ngIf="addressForm.get('number')?.errors?.['required']">Número é obrigatório</span>
             </div>
@@ -260,12 +214,7 @@
 
           <div class="form-group">
             <label for="complement">Complemento (opcional)</label>
-            <input
-              type="text"
-              id="complement"
-              formControlName="complement"
-              placeholder="Digite o complemento"
-            >
+            <input type="text" id="complement" formControlName="complement" placeholder="Digite o complemento">
           </div>
         </div>
       </div>
@@ -274,77 +223,59 @@
       <div *ngIf="isStep3" class="form-step" [formGroupName]="'establishment'">
         <div class="form-group">
           <label for="establishmentName">Nome do estabelecimento (como aparecerá no app)</label>
-          <input
-            type="text"
-            id="establishmentName"
-            formControlName="name"
-            placeholder="Ex.: Pizzaria Bela Massas"
-            [class.error]="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched"
-          >
-          <div *ngIf="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched" class="error-message">
-            <span *ngIf="establishmentForm.get('name')?.errors?.['required']">Nome do estabelecimento é obrigatório</span>
-            <span *ngIf="establishmentForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2 caracteres</span>
+          <input type="text" id="establishmentName" formControlName="name" placeholder="Ex.: Pizzaria Bela Massas"
+            [class.error]="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched">
+          <div *ngIf="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched"
+            class="error-message">
+            <span *ngIf="establishmentForm.get('name')?.errors?.['required']">Nome do estabelecimento é
+              obrigatório</span>
+            <span *ngIf="establishmentForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2
+              caracteres</span>
           </div>
         </div>
 
         <div class="form-group">
           <label for="cnpj">CNPJ</label>
-          <input
-            type="text"
-            id="cnpj"
-            formControlName="cnpj"
-            (input)="formatCnpj($event)"
-            (keypress)="validateNumbersOnly($event)"
-            placeholder="00.000.000/0001-00"
-            maxlength="18"
-            [class.error]="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched"
-          >
-          <div *ngIf="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched" class="error-message">
+          <input type="text" id="cnpj" formControlName="cnpj" (input)="formatCnpj($event)"
+            (keypress)="validateNumbersOnly($event)" placeholder="00.000.000/0001-00" maxlength="18"
+            [class.error]="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched">
+          <div *ngIf="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched"
+            class="error-message">
             <span *ngIf="establishmentForm.get('cnpj')?.errors?.['required']">CNPJ é obrigatório</span>
-            <span *ngIf="establishmentForm.get('cnpj')?.errors?.['minlength']">CNPJ deve ter pelo menos 18 caracteres</span>
+            <span *ngIf="establishmentForm.get('cnpj')?.errors?.['minlength']">CNPJ deve ter pelo menos 18
+              caracteres</span>
             <span *ngIf="establishmentForm.get('cnpj')?.errors?.['invalidCnpj']">CNPJ inválido</span>
           </div>
         </div>
 
         <div class="category-grid">
-          <div
-            *ngFor="let category of categories"
-            class="category-option"
+          <div *ngFor="let category of categories" class="category-option"
             [class.selected]="establishmentForm.get('categoryId')?.value === category.id"
-            (click)="establishmentForm.patchValue({categoryId: category.id}); onCategoryChange(category.id)"
-          >
-            <input
-              type="radio"
-              [id]="'category-' + category.id"
-              name="categoryId"
-              [value]="category.id"
-              formControlName="categoryId"
-            >
+            (click)="establishmentForm.patchValue({categoryId: category.id}); onCategoryChange(category.id)">
+            <input type="radio" [id]="'category-' + category.id" name="categoryId" [value]="category.id"
+              formControlName="categoryId">
             <label [for]="'category-' + category.id">{{ category.name }}</label>
           </div>
         </div>
 
-        <div *ngIf="establishmentForm.get('categoryId')?.invalid && establishmentForm.get('categoryId')?.touched" class="error-message">
+        <div *ngIf="establishmentForm.get('categoryId')?.invalid && establishmentForm.get('categoryId')?.touched"
+          class="error-message">
           <span *ngIf="establishmentForm.get('categoryId')?.errors?.['required']">Categoria é obrigatória</span>
         </div>
 
         <div class="form-group">
           <label for="subcategory">Subcategoria</label>
-          <select
-            id="subcategory"
-            formControlName="subcategoryId"
+          <select id="subcategory" formControlName="subcategoryId"
             [disabled]="!establishmentForm.get('categoryId')?.value"
-            [class.error]="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched"
-          >
+            [class.error]="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched">
             <option value="">Selecione uma subcategoria</option>
-            <option
-              *ngFor="let subcategory of subcategories"
-              [value]="subcategory.id"
-            >
+            <option *ngFor="let subcategory of subcategories" [value]="subcategory.id">
               {{ subcategory.name }}
             </option>
           </select>
-          <div *ngIf="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched" class="error-message">
+          <div
+            *ngIf="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched"
+            class="error-message">
             <span *ngIf="establishmentForm.get('subcategoryId')?.errors?.['required']">Subcategoria é obrigatória</span>
           </div>
         </div>
@@ -352,12 +283,8 @@
         <div *ngIf="canShowDeliveryOption()" class="form-group mb-8">
           <p class="section-title mb-2">Serviço de delivery</p>
           <label class="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              id="hasDelivery"
-              formControlName="has_delivery"
-              class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
+            <input type="checkbox" id="hasDelivery" formControlName="has_delivery"
+              class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
             <span class="text-gray-700 font-medium">Oferece serviço de delivery</span>
           </label>
         </div>
@@ -368,46 +295,33 @@
 
           <div class="form-group">
             <label for="establishmentPhone">Telefone/WhatsApp</label>
-            <input
-              type="tel"
-              id="establishmentPhone"
-              formControlName="phone"
-              (input)="formatEstablishmentPhone($event)"
-              (keypress)="validateNumbersOnly($event)"
-              placeholder="(XX) XXXXX-XXXX"
-              maxlength="15"
-              [class.error]="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched"
-            >
-            <div *ngIf="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched" class="error-message">
+            <input type="tel" id="establishmentPhone" formControlName="phone" (input)="formatEstablishmentPhone($event)"
+              (keypress)="validateNumbersOnly($event)" placeholder="(XX) XXXXX-XXXX" maxlength="15"
+              [class.error]="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched">
+            <div *ngIf="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched"
+              class="error-message">
               <span *ngIf="establishmentForm.get('phone')?.errors?.['required']">Telefone/WhatsApp é obrigatório</span>
-              <span *ngIf="establishmentForm.get('phone')?.errors?.['minlength']">Telefone deve ter pelo menos 14 caracteres</span>
+              <span *ngIf="establishmentForm.get('phone')?.errors?.['minlength']">Telefone deve ter pelo menos 14
+                caracteres</span>
             </div>
           </div>
 
           <div class="form-group">
             <label for="instagram">Instagram</label>
-            <input
-              type="url"
-              id="instagram"
-              formControlName="instagram"
-              placeholder="Insira o link do seu perfil"
-            >
+            <input type="url" id="instagram" formControlName="instagram" placeholder="Insira o link do seu perfil">
           </div>
         </div>
 
         <div class="form-group">
-          <label for="description">Descreva a atividade do estabelecimento</label>
-          <textarea
-            id="description"
-            formControlName="description"
-            placeholder="Ex.: Bar especializado em petiscos."
-            maxlength="100"
-            rows="4"
-            [class.error]="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched"
-          ></textarea>
+          <label for="description">Descreva a atividade do estabelecimento <span class="required">*</span></label>
+          <textarea id="description" formControlName="description" placeholder="Ex.: Bar especializado em petiscos."
+            maxlength="100" rows="4"
+            [class.error]="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched"></textarea>
           <div class="char-counter">{{ establishmentForm.get('description')?.value?.length || 0 }}/100</div>
-          <div *ngIf="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched" class="error-message">
-            <span *ngIf="establishmentForm.get('description')?.errors?.['maxlength']">Descrição deve ter no máximo 100 caracteres</span>
+          <div *ngIf="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched"
+            class="error-message">
+            <span *ngIf="establishmentForm.get('description')?.errors?.['maxlength']">Descrição deve ter no máximo 100
+              caracteres</span>
           </div>
         </div>
 
@@ -415,43 +329,26 @@
           <label class="section-title">Logo</label>
           <p class="section-subtitle">Envie a logo do seu estabelecimento.</p>
 
-          <div class="logo-upload-area" [class.error]="establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched">
+          <div class="logo-upload-area"
+            [class.error]="establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched">
             <div class="upload-placeholder">
-              <input
-                type="file"
-                id="logoFile"
-                accept="image/*"
-                (change)="onLogoSelected($event)"
-                style="display: none;"
-                #fileInput
-              >
+              <input type="file" id="logoFile" accept="image/*" (change)="onLogoSelected($event)" style="display: none;"
+                #fileInput>
               <div class="upload-icon">↑</div>
-              <button
-                type="button"
-                class="upload-btn"
-                (click)="fileInput.click()"
-              >
+              <button type="button" class="upload-btn" (click)="fileInput.click()">
                 Selecionar imagem
               </button>
-              <!-- Debug: mostrar status do campo -->
-              <div class="debug-info" style="font-size: 12px; color: #666; margin-top: 5px;">
-                Status: {{ establishmentForm.get('logoFile')?.valid ? 'Válido' : 'Inválido' }} | 
-                Valor: {{ establishmentForm.get('logoFile')?.value ? 'Arquivo selecionado' : 'Nenhum arquivo' }}
-              </div>
             </div>
 
             <div *ngIf="establishmentForm.get('logoPreview')?.value" class="logo-preview">
               <img [src]="establishmentForm.get('logoPreview')?.value" alt="Logo preview" class="preview-image">
-              <button
-                type="button"
-                class="remove-btn"
-                (click)="removeLogo()"
-              >
+              <button type="button" class="remove-btn" (click)="removeLogo()">
                 Remover
               </button>
             </div>
 
-            <div *ngIf="establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched" class="error-message">
+            <div *ngIf="establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched"
+              class="error-message">
               <span *ngIf="establishmentForm.get('logoFile')?.errors?.['required']">Logo é obrigatória</span>
             </div>
           </div>
@@ -464,64 +361,59 @@
         <div class="form-group" [formGroup]="promotionForm">
           <label class="section-title">Promoção obrigatória</label>
           <p class="section-subtitle">Crie uma promoção que aparecerá no aplicativo para atrair clientes.</p>
-          
+
           <!-- Alerta informativo sobre regras da promoção -->
           <div class="promotion-alert">
             <div class="alert-icon">⚠️</div>
             <div class="alert-content">
               <h4>Regras importantes para sua promoção:</h4>
               <ul>
-                <li><strong>Desconto mínimo:</strong> Sua promoção deve oferecer pelo menos <strong>15% de desconto</strong> para ser aprovada</li>
+                <li><strong>Desconto mínimo:</strong> Sua promoção deve oferecer pelo menos <strong>15% de
+                    desconto</strong> para ser aprovada</li>
                 <li><strong>Validade:</strong> A promoção deve ter validade mínima de 30 dias a partir da aprovação</li>
-                <li><strong>Disponibilidade:</strong> Você deve ter estoque suficiente para atender a demanda durante todo o período da promoção</li>
+                <li><strong>Disponibilidade:</strong> Você deve ter estoque suficiente para atender a demanda durante
+                  todo o período da promoção</li>
                 <li><strong>Restrições:</strong> Não é permitido alterar ou cancelar a promoção após a aprovação</li>
                 <li><strong>Qualidade:</strong> O produto/serviço promocionado deve manter a mesma qualidade padrão</li>
-                <li><strong>Transparência:</strong> Todas as condições devem estar claramente descritas no texto da promoção</li>
+                <li><strong>Transparência:</strong> Todas as condições devem estar claramente descritas no texto da
+                  promoção</li>
               </ul>
               <p class="alert-note">
-                <strong>Importante:</strong> A promoção será revisada pela nossa equipe e poderá ser rejeitada se não atender aos critérios estabelecidos.
+                <strong>Importante:</strong> A promoção será revisada pela nossa equipe e poderá ser rejeitada se não
+                atender aos critérios estabelecidos.
               </p>
             </div>
           </div>
-          
+
           <div class="promotion-container">
             <!-- Campo de texto da promoção -->
             <div class="form-group">
               <label for="promotionText">Texto da promoção</label>
-              <textarea
-                id="promotionText"
-                formControlName="text"
-                placeholder="Descreva sua promoção especial que aparecerá no app..."
-                maxlength="200"
-                rows="4"
+              <textarea id="promotionText" formControlName="text"
+                placeholder="Descreva sua promoção especial que aparecerá no app..." maxlength="200" rows="4"
                 [class.error]="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched"
-                class="promotion-textarea"
-              ></textarea>
+                class="promotion-textarea"></textarea>
               <div class="char-counter">{{ promotionForm.get('text')?.value?.length || 0 }}/200</div>
-              <div *ngIf="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched" class="error-message">
+              <div *ngIf="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched"
+                class="error-message">
                 <span *ngIf="promotionForm.get('text')?.errors?.['required']">Texto da promoção é obrigatório</span>
-                <span *ngIf="promotionForm.get('text')?.errors?.['minlength']">Texto deve ter pelo menos 10 caracteres</span>
-                <span *ngIf="promotionForm.get('text')?.errors?.['maxlength']">Texto deve ter no máximo 200 caracteres</span>
+                <span *ngIf="promotionForm.get('text')?.errors?.['minlength']">Texto deve ter pelo menos 10
+                  caracteres</span>
+                <span *ngIf="promotionForm.get('text')?.errors?.['maxlength']">Texto deve ter no máximo 200
+                  caracteres</span>
               </div>
             </div>
 
             <!-- Upload de fotos -->
             <div class="form-group">
-              <label>Fotos da promoção (máximo 3)</label>
-              <p class="section-subtitle">Adicione até 3 fotos para ilustrar sua promoção.</p>
-              
+              <label>Fotos da promoção (máximo 3) <span class="required">*</span></label>
+              <p class="section-subtitle">Adicione pelo menos 1 foto para ilustrar sua promoção.</p>
+
               <div class="photos-upload-container">
                 <!-- Área de upload -->
                 <div class="photos-upload-area" *ngIf="promotionPhotos.length < 3">
-                  <input
-                    type="file"
-                    id="promotionPhotos"
-                    accept="image/*"
-                    multiple
-                    (change)="onPromotionPhotoSelected($event)"
-                    style="display: none;"
-                    #photoInput
-                  >
+                  <input type="file" id="promotionPhotos" accept="image/*" multiple
+                    (change)="onPromotionPhotoSelected($event)" style="display: none;" #photoInput>
                   <div class="upload-placeholder" (click)="photoInput.click()">
                     <div class="upload-icon">📷</div>
                     <span class="upload-text">Adicionar fotos</span>
@@ -531,16 +423,9 @@
 
                 <!-- Preview das fotos -->
                 <div class="photos-preview" *ngIf="promotionPhotos.length > 0">
-                  <div 
-                    *ngFor="let photo of promotionPhotos.controls; let i = index" 
-                    class="photo-item"
-                  >
+                  <div *ngFor="let photo of promotionPhotos.controls; let i = index" class="photo-item">
                     <img [src]="photo.get('preview')?.value" alt="Preview da promoção" class="photo-preview">
-                    <button 
-                      type="button" 
-                      class="remove-photo-btn"
-                      (click)="removePromotionPhoto(i)"
-                    >
+                    <button type="button" class="remove-photo-btn" (click)="removePromotionPhoto(i)">
                       ×
                     </button>
                   </div>
@@ -554,48 +439,30 @@
         <div class="form-group">
           <label class="section-title">Horários de funcionamento</label>
           <p class="section-subtitle">Defina os horários de funcionamento do seu estabelecimento.</p>
-          
+
           <div class="operating-hours-container">
             <div class="operating-hours-table">
-              <div 
-                *ngFor="let dayForm of operatingHoursArray.controls; let i = index" 
-                class="operating-hours-row"
-              >
+              <div *ngFor="let dayForm of operatingHoursArray.controls; let i = index" class="operating-hours-row">
                 <div class="day-label">
                   <span>{{ getDayLabel(dayForm.get('dayOfWeek')?.value) }}</span>
                 </div>
-                
+
                 <div class="time-inputs">
-                  <input
-                    type="text"
-                    [value]="dayForm.get('startTime')?.value"
-                    placeholder="09:00"
-                    maxlength="5"
+                  <input type="text" [value]="dayForm.get('startTime')?.value" placeholder="09:00" maxlength="5"
                     (input)="formatTime($event); dayForm.get('startTime')?.setValue($event.target.value)"
-                    [disabled]="dayForm.get('isClosed')?.value"
-                    class="time-input"
-                  >
-                  
+                    [disabled]="dayForm.get('isClosed')?.value" class="time-input">
+
                   <span class="time-separator">até</span>
-                  
-                  <input
-                    type="text"
-                    [value]="dayForm.get('endTime')?.value"
-                    placeholder="18:00"
-                    maxlength="5"
+
+                  <input type="text" [value]="dayForm.get('endTime')?.value" placeholder="18:00" maxlength="5"
                     (input)="formatTime($event); dayForm.get('endTime')?.setValue($event.target.value)"
-                    [disabled]="dayForm.get('isClosed')?.value"
-                    class="time-input"
-                  >
+                    [disabled]="dayForm.get('isClosed')?.value" class="time-input">
                 </div>
-                
+
                 <div class="closed-checkbox">
                   <label class="checkbox-label">
-                    <input
-                      type="checkbox"
-                      [checked]="dayForm.get('isClosed')?.value"
-                      (change)="onDayClosedChange(i, $event.target.checked)"
-                    >
+                    <input type="checkbox" [checked]="dayForm.get('isClosed')?.value"
+                      (change)="onDayClosedChange(i, $event.target.checked)">
                     <span class="checkbox-text">Fechado</span>
                   </label>
                 </div>
@@ -611,20 +478,11 @@
           <label class="section-title">Regras do estabelecimento</label>
 
           <div formArrayName="rulesItems">
-            <div
-              *ngFor="let item of rulesItems.controls; let i = index"
-              [formGroupName]="i"
-              class="checkbox-group"
-            >
+            <div *ngFor="let item of rulesItems.controls; let i = index" [formGroupName]="i" class="checkbox-group">
               <input type="checkbox" formControlName="checked" />
 
-              <input
-                type="text"
-                formControlName="name"
-                placeholder="Digite a regra..."
-                [disabled]="item.get('checked')?.value"
-                [class.input-active]="item.get('checked')?.value"
-              />
+              <input type="text" formControlName="name" placeholder="Digite a regra..."
+                [disabled]="item.get('checked')?.value" [class.input-active]="item.get('checked')?.value" />
 
               <button type="button" (click)="removeRuleItem(i)" class="btn-trash">
                 🗑
@@ -644,20 +502,12 @@
           <label class="section-title">Regras de entrega</label>
 
           <div formArrayName="deliveryRulesItems">
-            <div
-              *ngFor="let item of deliveryRulesItems.controls; let i = index"
-              [formGroupName]="i"
-              class="checkbox-group"
-            >
+            <div *ngFor="let item of deliveryRulesItems.controls; let i = index" [formGroupName]="i"
+              class="checkbox-group">
               <input type="checkbox" formControlName="checked" />
 
-              <input
-                type="text"
-                formControlName="name"
-                placeholder="Digite a regra de entrega..."
-                [disabled]="item.get('checked')?.value"
-                [class.input-active]="item.get('checked')?.value"
-              />
+              <input type="text" formControlName="name" placeholder="Digite a regra de entrega..."
+                [disabled]="item.get('checked')?.value" [class.input-active]="item.get('checked')?.value" />
 
               <button type="button" (click)="removeDeliveryRuleItem(i)" class="btn-trash">
                 🗑
@@ -677,13 +527,9 @@
           <label class="section-title">Informações do estabelecimento</label>
 
           <div formArrayName="informationalItems" class="cards-grid">
-            <div
-              *ngFor="let item of informationalItems.controls; let i = index"
-              [formGroupName]="i"
-              class="card-item"
+            <div *ngFor="let item of informationalItems.controls; let i = index" [formGroupName]="i" class="card-item"
               [class.active]="item.get('checked')?.value"
-              (click)="item.get('checked')?.setValue(!item.get('checked')?.value)"
-            >
+              (click)="item.get('checked')?.setValue(!item.get('checked')?.value)">
               <!-- Checkbox oculto -->
               <input type="checkbox" formControlName="checked" hidden />
 
@@ -707,11 +553,7 @@
         <a href="#" (click)="previousStep(); $event.preventDefault()" class="btn-back">
           Voltar
         </a>
-        <button
-          type="submit"
-          class="btn-continue"
-          [disabled]="isLoading"
-        >
+        <button type="submit" class="btn-continue" [disabled]="isLoading">
           <span *ngIf="!isLoading">{{ buttonText }}</span>
           <span *ngIf="isLoading">Carregando...</span>
         </button>
