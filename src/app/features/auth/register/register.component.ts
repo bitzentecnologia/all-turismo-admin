@@ -14,8 +14,12 @@ import { DropDownItem } from '../../../shared/models/dropdown.model';
 import { RegisterFormData } from './register.model';
 import { CepService } from '../../../shared/services/cep.service';
 import { RegisterService } from './register.service';
+import { UploadService } from '../../../core/services/upload.service';
 import { cnpjValidator } from '@shared/utils/cnpj-validator';
 import { MatIconModule } from '@angular/material/icon';
+import { OperatingHours } from './operating-hours.model';
+import { timeFormatValidator, operatingHoursValidator } from './operating-hours.validators';
+import { fillFormWithMockData, generateRandomMockData } from './register.mock';
 
 @Component({
   selector: 'app-register',
@@ -29,9 +33,24 @@ export class RegisterComponent implements OnInit {
   isLoading: boolean = false;
   isConsultingCep: boolean = false;
   registerForm!: FormGroup;
+  showError: boolean = false;
+  errorMessage: string = '';
+  errorMessages: string[] = [];
+  environment = environment;
 
   categories: DropDownItem[] = [];
   subcategories: DropDownItem[] = [];
+
+  // Dias da semana para os horários (iniciando no domingo)
+  daysOfWeek = [
+    { key: 'sunday', label: 'Domingo' },
+    { key: 'monday', label: 'Segunda-feira' },
+    { key: 'tuesday', label: 'Terça-feira' },
+    { key: 'wednesday', label: 'Quarta-feira' },
+    { key: 'thursday', label: 'Quinta-feira' },
+    { key: 'friday', label: 'Sexta-feira' },
+    { key: 'saturday', label: 'Sábado' }
+  ];
 
   constructor(
     private router: Router,
@@ -39,8 +58,9 @@ export class RegisterComponent implements OnInit {
     private cepService: CepService,
     private cdr: ChangeDetectorRef,
     private titleService: Title,
-    private registerService: RegisterService
-  ) {}
+    private registerService: RegisterService,
+    private uploadService: UploadService
+  ) { }
 
   ngOnInit(): void {
     this.titleService.setTitle(`Registrar | ${environment.appName}`);
@@ -53,40 +73,184 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  // Finalizar registro
-  finishRegistration(): void {
-    if (this.registerForm.valid) {
-      const formValue: RegisterFormData = this.registerForm.value;
-      this.isLoading = true;
-
-      const additionalInfo = {
-        informationalItems: formValue.additionalInfo.informationalItems.filter(
-          (item: any) => item.checked && item.name.trim() !== ''
-        ),
-        rulesItems: formValue.additionalInfo.rulesItems.filter(
-          (item: any) => item.checked && item.name.trim() !== ''
-        ),
-        deliveryRulesItems: formValue.additionalInfo.deliveryRulesItems.filter(
-          (item: any) => item.checked && item.name.trim() !== ''
-        ),
-      };
-
-      const formData: RegisterFormData = {
-        ...formValue,
-        additionalInfo,
-      };
-
-      this.registerService.register(formData).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.router.navigate(['/registro-sucesso']);
-        },
-        error: err => {
-          this.isLoading = false;
-          console.error('Erro no registro:', err);
-        },
-      });
+  // Finalizar registro - NOVO PROCESSO EM 3 ETAPAS
+  async finishRegistration(): Promise<void> {
+    // Validar se o formulário está completo
+    if (!this.registerForm.valid) {
+      this.showErrorMessage('Por favor, preencha todos os campos obrigatórios corretamente.');
+      return;
     }
+
+    // Verificar se há logo e fotos para enviar
+    const logoFile = this.registerForm.get('establishment.logoFile')?.value;
+    const promotionPhotos = this.registerForm.get('promotion.photos')?.value || [];
+
+    // Validar se logo está presente (obrigatório)
+    if (!logoFile || !(logoFile instanceof File)) {
+      this.showErrorMessage('É obrigatório enviar a logo do estabelecimento.');
+      return;
+    }
+
+    // Validar se pelo menos 1 foto da promoção está presente (obrigatório)
+    if (!promotionPhotos || promotionPhotos.length === 0) {
+      this.showErrorMessage('É obrigatório enviar pelo menos 1 foto da promoção.');
+      return;
+    }
+
+    // Iniciar processo de upload
+    this.isLoading = true;
+    this.hideErrorMessage();
+
+    try {
+      // ETAPA 1: Upload da Logo (obrigatória)
+      const logoId = await this.uploadFileAndGetId(logoFile, 'Logo');
+
+      // ETAPA 2: Upload das Fotos da Promoção
+      const photoIds = await this.uploadPromotionPhotos(promotionPhotos);
+
+      // ETAPA 3: Salvar dados do registro
+      this.saveRegistrationData(logoId, photoIds);
+
+    } catch (error: any) {
+      this.showErrorMessage('Erro ao enviar os arquivos. Tente novamente.');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  /**
+   * Método para fazer upload de um arquivo e retornar o ID
+   * @param file Arquivo a ser enviado
+   * @param fileType Tipo do arquivo (para logs)
+   * @returns Promise com o ID do arquivo
+   */
+  private uploadFileAndGetId(file: File, fileType: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.uploadService.uploadFile(file).subscribe({
+        next: (response: { id: string }) => {
+          resolve(response.id);
+        },
+        error: (error: any) => {
+          reject(error);
+        }
+      });
+    });
+  }
+
+  // Método para fazer upload das fotos da promoção
+  private async uploadPromotionPhotos(photos: any[]): Promise<string[]> {
+    try {
+      // Criar array de Promises para upload paralelo
+      const uploadPromises = photos.map((photo, index) => {
+        const photoNumber = index + 1;
+        return this.uploadFileAndGetId(photo.file, `Foto ${photoNumber}`);
+      });
+
+      // Aguardar todos os uploads terminarem
+      const photoIds = await Promise.all(uploadPromises);
+
+      return photoIds;
+
+    } catch (error: any) {
+      this.showErrorMessage('Erro ao enviar as fotos. Tente novamente.');
+      throw error;
+    }
+  }
+
+  // Método para salvar os dados do registro (ETAPA 3)
+  private saveRegistrationData(logoId: string, photoIds: string[]): void {
+    const formValue = this.registerForm.value;
+
+    // Preparar dados no formato da API
+    const registrationData = {
+      responsible: {
+        name: formValue.responsible?.name || '',
+        email: formValue.responsible?.email || '',
+        password: formValue.responsible?.password || '',
+        phone: formValue.responsible?.phone || ''
+      },
+      address: {
+        cep: formValue.address?.cep || '',
+        state: formValue.address?.state || '',
+        city: formValue.address?.city || '',
+        neighborhood: formValue.address?.neighborhood || '',
+        street: formValue.address?.street || '',
+        number: formValue.address?.number || '',
+        complement: formValue.address?.complement || ''
+      },
+      establishment: {
+        name: formValue.establishment?.name || '',
+        cnpj: formValue.establishment?.cnpj || '',
+        categoryId: formValue.establishment?.categoryId || '',
+        subcategoryId: formValue.establishment?.subcategoryId || '',
+        has_delivery: formValue.establishment?.has_delivery || false,
+        phone: formValue.establishment?.phone || '',
+        instagram: formValue.establishment?.instagram || '',
+        description: formValue.establishment?.description || '',
+        file_upload_id: logoId, // Logo (obrigatória)
+        photo_company_1_id: photoIds[0] || null, // Primeira foto (obrigatória)
+        photo_company_2_id: photoIds[1] || null, // Segunda foto (opcional)
+        photo_company_3_id: photoIds[2] || null, // Terceira foto (opcional)
+        promotion: formValue.promotion?.text || '' // Texto da promoção
+      },
+      operatingHours: (formValue.operatingHours || []).map((day: any) => ({
+        dayOfWeek: day.dayOfWeek || '',
+        startTime: day.startTime || '',
+        endTime: day.endTime || '',
+        isClosed: day.isClosed || false
+      })),
+      additionalInfo: {
+        rulesItems: (formValue.additionalInfo?.rulesItems || []).map((item: any) => ({
+          name: item.name || '',
+          checked: item.checked || false
+        })),
+        deliveryRulesItems: (formValue.additionalInfo?.deliveryRulesItems || []).map((item: any) => ({
+          name: item.name || '',
+          checked: item.checked || false
+        })),
+        informationalItems: (formValue.additionalInfo?.informationalItems || []).map((item: any) => ({
+          id: item.id || '',
+          name: item.name || '',
+          checked: item.checked || false,
+          icon: item.icon || ''
+        }))
+      }
+    };
+
+    // Enviar dados para a API
+    this.registerService.register(registrationData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.router.navigate(['/registro-sucesso']);
+      },
+      error: (error) => {
+        this.isLoading = false;
+
+        // Tratamento de erro com lista de mensagens
+        let errorMsg = '';
+        let errorList: string[] = [];
+
+        if (error?.error?.message) {
+          if (Array.isArray(error.error.message)) {
+            errorList = error.error.message;
+            errorMsg = '';
+          } else {
+            errorMsg = error.error.message;
+          }
+        } else if (error?.message) {
+          if (Array.isArray(error.message)) {
+            errorList = error.message;
+            errorMsg = '';
+          } else {
+            errorMsg = error.message;
+          }
+        } else {
+          errorMsg = 'Erro inesperado ao salvar o registro. Tente novamente.';
+        }
+
+        this.showErrorMessage(errorMsg, errorList);
+      }
+    });
   }
 
   // Atualizar subcategorias ao mudar categoria
@@ -137,7 +301,7 @@ export class RegisterComponent implements OnInit {
           this.rulesItems.push(
             this.fb.group({
               name: [sub.text],
-              checked: [false],
+              checked: [true], // Pré-marcar todas as regras
             })
           );
         });
@@ -154,13 +318,24 @@ export class RegisterComponent implements OnInit {
           this.deliveryRulesItems.push(
             this.fb.group({
               name: [sub.text],
-              checked: [false],
+              checked: [true], // Pré-marcar todas as regras de delivery
             })
           );
         });
       },
       error: err => console.error('Erro ao carregar regras templates da categoria:', err),
     });
+  }
+
+  private createOperatingHoursArray(): FormGroup[] {
+    return this.daysOfWeek.map(day =>
+      this.fb.group({
+        dayOfWeek: [day.key],
+        startTime: ['09:00', [timeFormatValidator()]],
+        endTime: ['18:00', [timeFormatValidator()]],
+        isClosed: [false]
+      })
+    );
   }
 
   private initForm(): void {
@@ -184,12 +359,12 @@ export class RegisterComponent implements OnInit {
         name: ['', [Validators.required, Validators.minLength(2)]],
         cnpj: ['', [Validators.required, Validators.minLength(18), cnpjValidator()]],
         categoryId: ['', Validators.required],
-        subcategoryId: [''],
+        subcategoryId: ['', Validators.required],
         has_delivery: [false],
         phone: ['', [Validators.required, Validators.minLength(14)]],
         instagram: [''],
         description: ['', Validators.maxLength(100)],
-        logoFile: [null],
+        logoFile: [null, Validators.required],
         logoPreview: [''],
       }),
       additionalInfo: this.fb.group({
@@ -197,28 +372,42 @@ export class RegisterComponent implements OnInit {
         rulesItems: this.fb.array([]),
         deliveryRulesItems: this.fb.array([]),
       }),
+      operatingHours: this.fb.array(this.createOperatingHoursArray(), [operatingHoursValidator()]),
+      promotion: this.fb.group({
+        text: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(200)]],
+        photos: this.fb.array([])
+      }),
     });
   }
 
   // Navegação entre etapas
   nextStep(): void {
+    // Forçar validação de todos os campos da etapa atual
+    const formGroup = this.getCurrentStepFormGroup();
+    if (formGroup) {
+      this.markFormGroupTouched(formGroup);
+    }
+
     if (this.validateCurrentStep()) {
       this.isLoading = true;
 
       setTimeout(() => {
         this.isLoading = false;
-        if (this.currentStep < 4) {
+        if (this.currentStep < 5) {
           this.currentStep++;
         } else {
           this.finishRegistration();
         }
+        this.scrollToTop();
       }, 1000);
+    } else {
     }
   }
 
   previousStep(): void {
     if (this.currentStep > 1) {
       this.currentStep--;
+      this.scrollToTop();
     } else {
       this.router.navigate(['/login']);
     }
@@ -227,10 +416,44 @@ export class RegisterComponent implements OnInit {
   // Validação por etapa
   validateCurrentStep(): boolean {
     const formGroup = this.getCurrentStepFormGroup();
+
     if (formGroup && formGroup.invalid) {
       this.markFormGroupTouched(formGroup);
       return false;
     }
+
+    // Validação adicional para etapa 3 (estabelecimento)
+    if (this.currentStep === 3) {
+      const categoryId = this.registerForm.get('establishment.categoryId')?.value;
+      const subcategoryId = this.registerForm.get('establishment.subcategoryId')?.value;
+      const logoFile = this.registerForm.get('establishment.logoFile')?.value;
+
+      // Debug do formulário establishment
+      const establishmentForm = this.registerForm.get('establishment') as FormGroup;
+
+      // Verificar erros de cada campo
+      Object.keys(establishmentForm.controls).forEach(key => {
+        const control = establishmentForm.get(key);
+        if (control && control.invalid) {
+        }
+      });
+
+      // Verificar se o logoFile é realmente um arquivo válido
+      if (!logoFile || !(logoFile instanceof File)) {
+        this.showErrorMessage('É obrigatório enviar a logo do estabelecimento para continuar.');
+        return false;
+      }
+
+      if (!categoryId || !subcategoryId) {
+        let missingFields = [];
+        if (!categoryId) missingFields.push('categoria');
+        if (!subcategoryId) missingFields.push('subcategoria');
+
+        this.showErrorMessage(`É obrigatório selecionar: ${missingFields.join(', ')} para continuar.`);
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -238,7 +461,7 @@ export class RegisterComponent implements OnInit {
     this.rulesItems.push(
       this.fb.group({
         name: [''],
-        checked: [false],
+        checked: [true], // Pré-marcar nova regra
       })
     );
   }
@@ -251,7 +474,7 @@ export class RegisterComponent implements OnInit {
     this.deliveryRulesItems.push(
       this.fb.group({
         name: [''],
-        checked: [false],
+        checked: [true], // Pré-marcar nova regra de delivery
       })
     );
   }
@@ -260,16 +483,173 @@ export class RegisterComponent implements OnInit {
     this.deliveryRulesItems.removeAt(index);
   }
 
+  // Métodos para horários de funcionamento
+  get operatingHoursArray(): FormArray {
+    return this.registerForm.get('operatingHours') as FormArray;
+  }
+
+  onDayClosedChange(index: number, isClosed: boolean): void {
+    const dayFormGroup = this.operatingHoursArray.at(index) as FormGroup;
+    dayFormGroup.patchValue({ isClosed });
+
+    if (isClosed) {
+      dayFormGroup.get('startTime')?.disable();
+      dayFormGroup.get('endTime')?.disable();
+    } else {
+      dayFormGroup.get('startTime')?.enable();
+      dayFormGroup.get('endTime')?.enable();
+    }
+  }
+
+  formatTime(event: any): void {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, '');
+
+    if (value.length >= 2) {
+      value = value.substring(0, 2) + ':' + value.substring(2, 4);
+    }
+
+    if (value.length === 5) {
+      value = value.substring(0, 5);
+    }
+
+    input.value = value;
+  }
+
+  getDayLabel(dayKey: string): string {
+    const day = this.daysOfWeek.find(d => d.key === dayKey);
+    return day ? day.label : dayKey;
+  }
+
+  // Métodos para promoção
+  get promotionForm(): FormGroup {
+    return this.registerForm.get('promotion') as FormGroup;
+  }
+
+  get promotionPhotos(): FormArray {
+    return this.promotionForm.get('photos') as FormArray;
+  }
+
+  onPromotionPhotoSelected(event: any): void {
+    const files = event.target.files;
+    const currentPhotos = this.promotionPhotos.length;
+    const remainingSlots = 3 - currentPhotos;
+
+    if (remainingSlots <= 0) {
+      alert('Você já adicionou o máximo de 3 fotos.');
+      return;
+    }
+
+    const filesToAdd = Array.from(files).slice(0, remainingSlots);
+
+    filesToAdd.forEach((file: any) => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.promotionPhotos.push(
+            this.fb.group({
+              file: [file],
+              preview: [e.target.result]
+            })
+          );
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  removePromotionPhoto(index: number): void {
+    this.promotionPhotos.removeAt(index);
+  }
+
+  // Scroll para o topo da página
+  scrollToTop(): void {
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 100);
+  }
+
+  // Exibir mensagem de erro
+  showErrorMessage(message: string, messagesList: string[] = []): void {
+    this.showError = true;
+    this.errorMessage = message;
+    this.errorMessages = messagesList;
+    this.scrollToTop();
+  }
+
+  // Ocultar mensagem de erro
+  hideErrorMessage(): void {
+    this.showError = false;
+    this.errorMessage = '';
+    this.errorMessages = [];
+  }
+
+  // Preencher formulário com dados mock
+  fillWithMockData(): void {
+    fillFormWithMockData(this.registerForm);
+
+    // Simular seleção de categoria para carregar subcategorias e regras
+    const categoryId = this.registerForm.get('establishment.categoryId')?.value;
+    if (categoryId) {
+      this.onCategoryChange(categoryId);
+    }
+
+  }
+
+  // Preencher formulário com dados aleatórios
+  fillWithRandomMockData(): void {
+    const randomData = generateRandomMockData();
+
+    // Preencher dados básicos
+    this.registerForm.patchValue({
+      responsible: randomData.responsible,
+      address: randomData.address,
+      establishment: randomData.establishment,
+      promotion: { text: randomData.promotion.text }
+    });
+
+    // Preencher horários
+    const operatingHoursArray = this.registerForm.get('operatingHours') as FormArray;
+    randomData.operatingHours.forEach((day, index) => {
+      if (operatingHoursArray && operatingHoursArray.at(index)) {
+        operatingHoursArray.at(index).patchValue(day);
+      }
+    });
+
+    // Simular seleção de categoria para carregar subcategorias e regras
+    const categoryId = randomData.establishment.categoryId;
+    if (categoryId) {
+      this.onCategoryChange(categoryId);
+    }
+
+  }
+
+
+
   private getCurrentStepFormGroup(): FormGroup | null {
+
     switch (this.currentStep) {
       case 1:
-        return this.registerForm.get('responsible') as FormGroup;
+        const responsibleGroup = this.registerForm.get('responsible') as FormGroup;
+        return responsibleGroup;
       case 2:
-        return this.registerForm.get('address') as FormGroup;
+        const addressGroup = this.registerForm.get('address') as FormGroup;
+        return addressGroup;
       case 3:
-        return this.registerForm.get('establishment') as FormGroup;
+        const establishmentGroup = this.registerForm.get('establishment') as FormGroup;
+        return establishmentGroup;
       case 4:
-        return this.registerForm.get('additionalInfo') as FormGroup;
+        // Validar tanto horários quanto promoção
+        const operatingHoursGroup = this.registerForm.get('operatingHours')?.parent as FormGroup;
+        const promotionGroup = this.registerForm.get('promotion') as FormGroup;
+        // Retorna o grupo pai que contém ambos
+        return this.registerForm;
+      case 5:
+        const additionalInfoGroup = this.registerForm.get('additionalInfo') as FormGroup;
+        return additionalInfoGroup;
       default:
         return null;
     }
@@ -278,7 +658,15 @@ export class RegisterComponent implements OnInit {
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach(key => {
       const control = formGroup.get(key);
-      control?.markAsTouched();
+      if (control) {
+        control.markAsTouched();
+        control.updateValueAndValidity();
+
+        // Se for um FormGroup aninhado, marcar todos os campos como touched
+        if (control instanceof FormGroup) {
+          this.markFormGroupTouched(control);
+        }
+      }
     });
   }
 
@@ -318,7 +706,6 @@ export class RegisterComponent implements OnInit {
         this.isConsultingCep = false;
       },
       error: error => {
-        console.log('CEP não encontrado ou erro na consulta:', error.message);
         // Limpa os campos de endereço em caso de erro
         this.registerForm.patchValue({
           address: {
@@ -351,20 +738,29 @@ export class RegisterComponent implements OnInit {
   // Upload de logo
   onLogoSelected(event: any): void {
     const file = event.target.files[0];
-    console.log('Arquivo selecionado:', file);
     if (file) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        console.log('Preview gerado:', e.target.result);
         this.registerForm.get('establishment.logoPreview')?.setValue(e.target.result);
         this.registerForm.get('establishment.logoFile')?.setValue(file);
-        console.log('Valores do formulário após upload:', {
-          logoPreview: this.registerForm.get('establishment.logoPreview')?.value,
-          logoFile: this.registerForm.get('establishment.logoFile')?.value,
-        });
+
+        const logoFileControl = this.registerForm.get('establishment.logoFile');
+
+        logoFileControl?.markAsTouched();
+        logoFileControl?.updateValueAndValidity();
+
         this.cdr.detectChanges();
       };
       reader.readAsDataURL(file);
+    } else {
+      // Limpar o campo se nenhum arquivo foi selecionado
+      this.registerForm.get('establishment.logoPreview')?.setValue('');
+      this.registerForm.get('establishment.logoFile')?.setValue(null);
+
+      // Forçar validação e marcação como touched
+      const logoFileControl = this.registerForm.get('establishment.logoFile');
+      logoFileControl?.markAsTouched();
+      logoFileControl?.updateValueAndValidity();
     }
   }
 
@@ -372,6 +768,12 @@ export class RegisterComponent implements OnInit {
   removeLogo(): void {
     this.registerForm.get('establishment.logoPreview')?.setValue('');
     this.registerForm.get('establishment.logoFile')?.setValue(null);
+
+    // Forçar validação e marcação como touched
+    const logoFileControl = this.registerForm.get('establishment.logoFile');
+    logoFileControl?.markAsTouched();
+    logoFileControl?.updateValueAndValidity();
+
     this.cdr.detectChanges();
   }
 
@@ -418,8 +820,12 @@ export class RegisterComponent implements OnInit {
     return this.currentStep === 4;
   }
 
+  get isStep5(): boolean {
+    return this.currentStep === 5;
+  }
+
   get isLastStep(): boolean {
-    return this.currentStep === 4;
+    return this.currentStep === 5;
   }
 
   get stepTitle(): string {
@@ -431,6 +837,8 @@ export class RegisterComponent implements OnInit {
       case 3:
         return 'Estabelecimento';
       case 4:
+        return 'Promoção obrigatória';
+      case 5:
         return 'Regras e informações';
       default:
         return '';

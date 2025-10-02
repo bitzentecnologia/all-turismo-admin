@@ -63,7 +63,8 @@ export class ImageService {
     return exists ? primaryPath : fallbackPath;
   }
 
-  getLogoUriImageById(id: string): string {
-    return `${this.apiUrl}/companies/logo/${id}`;
+  getImageById(id: string): string {
+
+    return `${this.apiUrl}${id}`;
   }
 }

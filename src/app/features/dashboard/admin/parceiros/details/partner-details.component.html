@@ -11,7 +11,7 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
 
-      <img [src]="getCompanyLogoUri(partner.logo?.id)" alt="Logo do parceiro" class="logo" />
+      <img [src]="imageService.getImageById(partner.logo_url)" alt="Logo do parceiro" class="logo" />
 
       <h1 class="partner-name">{{ partner.name }}</h1>
     </div>
@@ -26,7 +26,7 @@
         </button>
         <div class="accordion-body" [class.open]="openSection === 'info'">
           <label>Nome</label>
-          <input type="text" [(ngModel)]="partner.name" />
+          <input type="text" [(ngModel)]="partner.name" required maxlength="100" placeholder="Nome da empresa" />
 
           <label>Status</label>
           <div class="status-row">
@@ -36,36 +36,33 @@
               <option value="PENDING">Pendente</option>
             </select>
 
-            <button
-              *ngIf="partner.status === 'PENDING'"
-              class="btn-approve"
-              (click)="approvePartner()"
-              [disabled]="approving"
-            >
+            <button *ngIf="partner.status === 'PENDING'" class="btn-approve" (click)="approvePartner()"
+              [disabled]="approving">
               <span *ngIf="!approving">Aprovar</span>
               <span *ngIf="approving" class="loading-spinner-small"></span>
             </button>
           </div>
 
           <label>CNPJ</label>
-          <input type="text" [(ngModel)]="partner.cnpj" />
+          <input type="text" [(ngModel)]="partner.cnpj" (input)="onCnpjInput($event)" placeholder="00.000.000/0000-00"
+            maxlength="18" />
 
           <label>Telefone</label>
-          <input type="text" [(ngModel)]="partner.contact_phone" />
+          <input type="text" [(ngModel)]="partner.contact_phone" (input)="onPhoneInput($event)"
+            placeholder="(11) 99999-9999" maxlength="15" />
 
           <label *ngIf="partner.instagram !== undefined">Instagram</label>
-          <input
-            *ngIf="partner.instagram !== undefined"
-            type="text"
-            [(ngModel)]="partner.instagram"
-          />
+          <input *ngIf="partner.instagram !== undefined" type="url" [(ngModel)]="partner.instagram"
+            placeholder="https://instagram.com/usuario" />
 
           <label *ngIf="partner.description !== undefined">Descrição</label>
-          <textarea
-            *ngIf="partner.description !== undefined"
-            rows="3"
-            [(ngModel)]="partner.description"
-          ></textarea>
+          <textarea *ngIf="partner.description !== undefined" rows="3" [(ngModel)]="partner.description" maxlength="500"
+            placeholder="Descrição da empresa"></textarea>
+
+          <label>Promoção</label>
+          <textarea rows="4" [(ngModel)]="partner.promotion" placeholder="Digite a promoção..."
+            maxlength="1000"></textarea>
+
         </div>
       </div>
 
@@ -95,7 +92,8 @@
           <input type="text" [(ngModel)]="partner.address.state" />
 
           <label>CEP</label>
-          <input type="text" [(ngModel)]="partner.address.zip_code" />
+          <input type="text" [(ngModel)]="partner.address.zip_code" (input)="onCepInput($event)" placeholder="00000-000"
+            maxlength="9" />
         </div>
       </div>
 
@@ -114,45 +112,157 @@
         </div>
       </div>
 
+      <!-- Fotos -->
+      <div class="accordion-item" *ngIf="partner.photos?.length">
+        <button class="accordion-header" (click)="toggleSection('photos')">
+          Fotos
+          <span class="chevron" [class.open]="openSection === 'photos'">⌄</span>
+        </button>
+        <div class="accordion-body" [class.open]="openSection === 'photos'">
+          <div class="photos-grid">
+            <div *ngFor="let photo of partner.photos" class="photo-item">
+              <img [src]="imageService.getImageById(photo)" alt="Foto do estabelecimento" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Regras da categoria -->
-      <div class="accordion-item" *ngIf="partnerRules?.length">
+      <div class="accordion-item">
         <button class="accordion-header" (click)="toggleSection('rules')">
           Regras
           <span class="chevron" [class.open]="openSection === 'rules'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'rules'">
-          <div *ngFor="let rule of partnerRules" class="rule-item">
-            <textarea disabled rows="2" [(ngModel)]="rule.text"></textarea>
+          <div class="rules-list">
+            <div *ngFor="let rule of partnerRules; let i = index" class="rule-item">
+              <div class="rule-row">
+                <input type="text" [(ngModel)]="rule.text" class="rule-input" placeholder="Digite uma regra..." />
+                <button type="button" class="btn-delete" (click)="removeRule(i)" title="Excluir regra">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="btn-add-rule" (click)="addRule()">
+              <mat-icon>add</mat-icon>
+              Adicionar Regra
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Regras da categoria para delivery -->
-      <div class="accordion-item" *ngIf="partnerDeliveryRules?.length">
+      <div class="accordion-item" *ngIf="partner.has_delivery">
         <button class="accordion-header" (click)="toggleSection('deliveryRules')">
           Regras de delivery
           <span class="chevron" [class.open]="openSection === 'deliveryRules'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'deliveryRules'">
-          <div *ngFor="let rule of partnerDeliveryRules" class="rule-item">
-            <textarea disabled rows="2" [(ngModel)]="rule.text"></textarea>
+          <div class="rules-list">
+            <div *ngFor="let rule of partnerDeliveryRules; let i = index" class="rule-item">
+              <div class="rule-row">
+                <input type="text" [(ngModel)]="rule.text" class="rule-input"
+                  placeholder="Digite uma regra de delivery..." />
+                <button type="button" class="btn-delete" (click)="removeDeliveryRule(i)"
+                  title="Excluir regra de delivery">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="btn-add-rule" (click)="addDeliveryRule()">
+              <mat-icon>add</mat-icon>
+              Adicionar Regra de Delivery
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Informações da categoria -->
-      <div class="accordion-item" *ngIf="partner.categoryInformationals?.length">
+      <div class="accordion-item" *ngIf="partnerCategoryInformationals?.length">
         <button class="accordion-header" (click)="toggleSection('infoals')">
           Informações
           <span class="chevron" [class.open]="openSection === 'infoals'">⌄</span>
         </button>
         <div class="accordion-body" [class.open]="openSection === 'infoals'">
-          <div *ngFor="let info of partner.categoryInformationals" class="info-item">
+          <div *ngFor="let info of partnerCategoryInformationals" class="info-item">
             <div class="info-row">
               <mat-icon>{{ info.icon }}</mat-icon>
               <textarea disabled rows="1" [(ngModel)]="info.text"></textarea>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Horários de Funcionamento -->
+      <div class="accordion-item" *ngIf="partner.operating_hours">
+        <button class="accordion-header" (click)="toggleSection('hours')">
+          Horários de Funcionamento
+          <span class="chevron" [class.open]="openSection === 'hours'">⌄</span>
+        </button>
+        <div class="accordion-body" [class.open]="openSection === 'hours'">
+          <table class="hours-table">
+            <thead>
+              <tr>
+                <th>Dia</th>
+                <th>Abertura</th>
+                <th>Fechamento</th>
+                <th>Fechado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let day of getDaysOfWeek()">
+                <td class="day-cell">{{ getDayName(day) }}</td>
+                <td class="time-cell">
+                  <input type="time" [(ngModel)]="partner.operating_hours[day].startTime"
+                    [disabled]="partner.operating_hours[day].isClosed" class="time-input" />
+                </td>
+                <td class="time-cell">
+                  <input type="time" [(ngModel)]="partner.operating_hours[day].endTime"
+                    [disabled]="partner.operating_hours[day].isClosed" class="time-input" />
+                </td>
+                <td class="checkbox-cell">
+                  <label class="closed-checkbox">
+                    <input type="checkbox" [(ngModel)]="partner.operating_hours[day].isClosed" />
+                    <span>Fechado</span>
+                  </label>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Usuários -->
+      <div class="accordion-item" *ngIf="partner.users?.length">
+        <button class="accordion-header" (click)="toggleSection('users')">
+          Usuários
+          <span class="chevron" [class.open]="openSection === 'users'">⌄</span>
+        </button>
+        <div class="accordion-body" [class.open]="openSection === 'users'">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>WhatsApp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of partner.users">
+                <td class="name-cell">{{ user.name }}</td>
+                <td class="email-cell">
+                  <a [href]="'mailto:' + user.email" class="email-link">{{ user.email }}</a>
+                </td>
+                <td class="whatsapp-cell">
+                  <a *ngIf="user.phone_whatsapp" [href]="'https://wa.me/55' + cleanPhoneNumber(user.phone_whatsapp)"
+                    target="_blank" class="whatsapp-link">
+                    {{ user.phone_whatsapp }}
+                  </a>
+                  <span *ngIf="!user.phone_whatsapp" class="no-phone">-</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
