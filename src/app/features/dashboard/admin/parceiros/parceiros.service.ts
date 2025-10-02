@@ -11,6 +11,8 @@ export type PartnerResponse = {
   id: string;
   name: string;
   status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
+  created_at: string;
+  contact_phone: string;
 };
 
 export type PartnerDetailsResponse = PartnerResponse & {
@@ -50,10 +52,10 @@ export class ParceirosService {
   constructor(
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) { }
 
-  getParceiros(page = 1, limit = 10): Observable<PaginatedResponse<Partner>> {
-    return this.http.get<PaginatedResponse<Partner>>(
+  getParceiros(page = 1, limit = 10): Observable<PaginatedResponse<PartnerResponse>> {
+    return this.http.get<PaginatedResponse<PartnerResponse>>(
       `${this.apiUrl}/admin/companies?page=${page}&limit=${limit}`
     );
   }

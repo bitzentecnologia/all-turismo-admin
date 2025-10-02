@@ -7,11 +7,14 @@ import {
 import { ParceirosService } from './parceiros.service';
 import { PaginationMeta } from '@shared/models/pagination.model';
 import { Router } from '@angular/router';
+import { translateStatus } from '@shared/utils/status-translator';
 
 export type Partner = {
   id: string;
   name: string;
   status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
+  created_at: string;
+  contact_phone: string;
 };
 
 @Component({
@@ -33,7 +36,13 @@ export class ParceirosComponent implements OnInit {
   };
 
   columns: TableColumn<Partner>[] = [
-    { key: 'name', label: 'Nome da Empresa', type: 'text' },
+    { key: 'name', label: 'Nome', type: 'text' },
+    {
+      key: 'created_at',
+      label: 'Data de Criação',
+      type: 'date'
+    },
+    { key: 'contact_phone', label: 'Telefone de Contato', type: 'text' },
     {
       key: 'status',
       label: 'Status',
@@ -43,13 +52,14 @@ export class ParceirosComponent implements OnInit {
         if (status === 'PENDING') return 'badge-warning';
         return 'badge-danger';
       },
+      translateValue: translateStatus,
     },
   ];
 
   constructor(
     private parceirosService: ParceirosService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.fetchPartners();
@@ -64,6 +74,8 @@ export class ParceirosComponent implements OnInit {
           name: p.name,
           status:
             p.status === 'ACTIVE' ? 'ACTIVE' : p.status === 'PENDING' ? 'PENDING' : 'INACTIVE',
+          created_at: p.created_at || '',
+          contact_phone: p.contact_phone || '',
         }));
 
         this.meta = {

@@ -1,13 +1,14 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroEye, heroPencil, heroTrash } from '@ng-icons/heroicons/outline';
 
 export type TableColumn<T> = {
   key: keyof T;
   label: string;
-  type?: 'text' | 'badge';
+  type?: 'text' | 'badge' | 'date';
   badgeClass?: (value: any) => string;
+  translateValue?: (value: any) => string;
 };
 
 export interface PaginationMeta {
@@ -20,7 +21,7 @@ export interface PaginationMeta {
 @Component({
   selector: 'app-generic-table',
   standalone: true,
-  imports: [CommonModule, NgIcon],
+  imports: [CommonModule, NgIcon, DatePipe],
   viewProviders: [provideIcons({ heroEye, heroPencil, heroTrash })],
   templateUrl: './generic-table.component.html',
   styleUrls: ['./generic-table.component.scss'],

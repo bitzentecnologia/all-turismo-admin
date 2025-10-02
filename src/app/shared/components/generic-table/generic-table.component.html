@@ -16,8 +16,10 @@
             class="badge"
             [ngClass]="col.badgeClass ? col.badgeClass(item[col.key]) : ''"
           >
-            {{ item[col.key] }}
+            {{ col.translateValue ? col.translateValue(item[col.key]) : item[col.key] }}
           </span>
+
+          <span *ngSwitchCase="'date'">{{ item[col.key] | date:'dd/MM/yyyy HH:mm':'pt-BR' }}</span>
 
           <span *ngSwitchDefault>{{ item[col.key] }}</span>
         </ng-container>
