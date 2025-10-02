@@ -102,8 +102,25 @@ export class PartnerDetailComponent implements OnInit {
   savePartner() {
     if (!this.partner) return;
 
+    // Preservar os valores de horário mesmo quando fechado
+    const partnerToSave = { ...this.partner };
+    if (partnerToSave.operating_hours) {
+      const preservedHours = { ...partnerToSave.operating_hours };
+      Object.keys(preservedHours).forEach(day => {
+        if (preservedHours[day]) {
+          // Manter os valores de startTime e endTime mesmo se isClosed for true
+          preservedHours[day] = {
+            ...preservedHours[day],
+            startTime: preservedHours[day].startTime || '09:00',
+            endTime: preservedHours[day].endTime || '18:00'
+          };
+        }
+      });
+      partnerToSave.operating_hours = preservedHours;
+    }
+
     this.loading = true;
-    this.parceirosService.updatePartner(this.partner.id, this.partner).subscribe({
+    this.parceirosService.updatePartner(this.partner.id, partnerToSave).subscribe({
       next: updated => {
         this.partner = {
           ...updated,

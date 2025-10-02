@@ -75,6 +75,9 @@ export class RegisterComponent implements OnInit {
 
   // Finalizar registro - NOVO PROCESSO EM 3 ETAPAS
   async finishRegistration(): Promise<void> {
+    // Esconder mensagem de erro ao iniciar o processo
+    this.hideErrorMessage();
+
     // Validar se o formulário está completo
     if (!this.registerForm.valid) {
       this.showErrorMessage('Por favor, preencha todos os campos obrigatórios corretamente.');
@@ -99,7 +102,6 @@ export class RegisterComponent implements OnInit {
 
     // Iniciar processo de upload
     this.isLoading = true;
-    this.hideErrorMessage();
 
     try {
       // ETAPA 1: Upload da Logo (obrigatória)
@@ -363,7 +365,7 @@ export class RegisterComponent implements OnInit {
         has_delivery: [false],
         phone: ['', [Validators.required, Validators.minLength(14)]],
         instagram: [''],
-        description: ['', Validators.maxLength(100)],
+        description: ['', [Validators.required, Validators.maxLength(100)]],
         logoFile: [null, Validators.required],
         logoPreview: [''],
       }),
@@ -398,7 +400,6 @@ export class RegisterComponent implements OnInit {
         } else {
           this.finishRegistration();
         }
-        this.scrollToTop();
       }, 1000);
     } else {
     }
@@ -454,6 +455,17 @@ export class RegisterComponent implements OnInit {
       }
     }
 
+    // Validação adicional para etapa 4 (promoção)
+    if (this.currentStep === 4) {
+      const promotionPhotos = this.promotionPhotos;
+
+      // Verificar se pelo menos 1 foto da promoção foi enviada
+      if (!promotionPhotos || promotionPhotos.length === 0) {
+        this.showErrorMessage('É obrigatório enviar pelo menos 1 foto da promoção para continuar.');
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -492,13 +504,9 @@ export class RegisterComponent implements OnInit {
     const dayFormGroup = this.operatingHoursArray.at(index) as FormGroup;
     dayFormGroup.patchValue({ isClosed });
 
-    if (isClosed) {
-      dayFormGroup.get('startTime')?.disable();
-      dayFormGroup.get('endTime')?.disable();
-    } else {
-      dayFormGroup.get('startTime')?.enable();
-      dayFormGroup.get('endTime')?.enable();
-    }
+    // Manter campos de horário sempre habilitados para enviar valores mesmo quando fechado
+    dayFormGroup.get('startTime')?.enable();
+    dayFormGroup.get('endTime')?.enable();
   }
 
   formatTime(event: any): void {

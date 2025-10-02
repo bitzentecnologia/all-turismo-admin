@@ -213,12 +213,10 @@
               <tr *ngFor="let day of getDaysOfWeek()">
                 <td class="day-cell">{{ getDayName(day) }}</td>
                 <td class="time-cell">
-                  <input type="time" [(ngModel)]="partner.operating_hours[day].startTime"
-                    [disabled]="partner.operating_hours[day].isClosed" class="time-input" />
+                  <input type="time" [(ngModel)]="partner.operating_hours[day].startTime" class="time-input" />
                 </td>
                 <td class="time-cell">
-                  <input type="time" [(ngModel)]="partner.operating_hours[day].endTime"
-                    [disabled]="partner.operating_hours[day].isClosed" class="time-input" />
+                  <input type="time" [(ngModel)]="partner.operating_hours[day].endTime" class="time-input" />
                 </td>
                 <td class="checkbox-cell">
                   <label class="closed-checkbox">
