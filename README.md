@@ -13,7 +13,7 @@ Aplicação web responsiva para gestão de dados do aplicativo All Turismo, dese
 
 ## 📁 Estrutura do Projeto
 
-```
+```text
 src/
 ├── app/
 │   ├── core/                 # Serviços, guards, interceptors e modelos
@@ -38,36 +38,54 @@ src/
 
 ## 🛠️ Pré-requisitos
 
-- Node.js 18+ 
+- Node.js 18+
 - npm 9+
 
 ## 📦 Instalação
 
 1. **Clone o repositório:**
+
    ```bash
    git clone <url-do-repositorio>
    cd all-turismo-admin
    ```
 
 2. **Instale as dependências:**
+
    ```bash
    npm install
    ```
 
 3. **Execute o projeto em modo de desenvolvimento:**
+
    ```bash
    npm start
    # ou
    ng serve
    ```
 
+   > Para usar o ambiente de desenvolvimento/homologação (API hospedada), execute:
+   >
+   > ```bash
+   > npm run start:dev
+   > ```
+
+   > Para usar o ambiente local (API `localhost`), execute:
+   >
+   > ```bash
+   > npm run start:local
+   > ```
+
 4. **Abra o navegador em:** `http://localhost:4200`
 
 ## 🔧 Scripts Disponíveis
 
-- `npm start` - Inicia o servidor de desenvolvimento
+- `npm start` - Inicia o servidor com o ambiente de desenvolvimento/homologação
+- `npm run start:dev` - Inicia explicitamente o servidor usando o ambiente de desenvolvimento/homologação
+- `npm run start:local` - Inicia o servidor usando o ambiente local
 - `npm run build` - Constrói o projeto para produção
-- `npm run build:dev` - Constrói o projeto para desenvolvimento
+- `npm run build:dev` - Constrói o projeto para desenvolvimento/homologação
+- `npm run build:local` - Constrói o projeto para o ambiente local
 - `npm run test` - Executa os testes unitários
 - `npm run lint` - Executa o linting do código
 - `npm run lint:fix` - Corrige automaticamente problemas de linting
@@ -75,6 +93,7 @@ src/
 ## 🎨 Tema e Estilos
 
 O projeto utiliza o tema **Azure Blue** do Angular Material, que oferece:
+
 - Paleta de cores moderna e profissional
 - Componentes com design consistente
 - Suporte a temas claro/escuro (configurável)
@@ -83,6 +102,7 @@ O projeto utiliza o tema **Azure Blue** do Angular Material, que oferece:
 ## 📱 Responsividade
 
 A aplicação é totalmente responsiva e inclui:
+
 - Breakpoints para mobile, tablet e desktop
 - Classes utilitárias para ocultar/mostrar elementos
 - Layout adaptativo para diferentes tamanhos de tela
@@ -96,27 +116,32 @@ A aplicação é totalmente responsiva e inclui:
 ## 📋 Convenções de Código
 
 ### Nomenclatura
+
 - **Componentes:** `kebab-case` (ex: `user-profile.component.ts`)
 - **Serviços:** `kebab-case` (ex: `auth.service.ts`)
 - **Interfaces:** `PascalCase` (ex: `UserProfile`)
 - **Constantes:** `UPPER_SNAKE_CASE` (ex: `API_ENDPOINTS`)
 
 ### Estrutura de Arquivos
+
 - Um arquivo por classe/interface
 - Nomes descritivos e significativos
 - Agrupamento lógico em pastas
 
 ### Imports
+
 - Imports organizados por tipo (Angular, Material, terceiros, locais)
 - Uso de aliases de path (@core, @shared, etc.)
 
 ## 🌐 Links de Teste
 
 ### Sistemas Publicados
+
 - **Painel Administrativo:** [https://brave-smoke-03ac6f10f.1.azurestaticapps.net/](https://brave-smoke-03ac6f10f.1.azurestaticapps.net/)
 - **Landing Page:** [https://icy-ground-0dd3e000f.1.azurestaticapps.net/](https://icy-ground-0dd3e000f.1.azurestaticapps.net/)
 
 ### Status dos Ambientes
+
 - 🧪 **Teste:** Ativo e funcionando
 - 🔄 **Deploy Automático:** Configurado via GitHub Actions
 - 📊 **Monitoramento:** Azure Static Web Apps
@@ -124,9 +149,11 @@ A aplicação é totalmente responsiva e inclui:
 ## 🚀 Deploy
 
 ### GitHub Actions + Azure Static Web Apps
+
 O projeto está configurado para deploy automático via GitHub Actions para Azure Static Web Apps.
 
 ### Build de Produção
+
 ```bash
 npm run build
 ```
@@ -134,6 +161,7 @@ npm run build
 O build será gerado na pasta `dist/all-turismo-admin/`.
 
 ### Configuração de Deploy
+
 - **Branch de Deploy:** `develop`
 - **Trigger:** Push e Pull Requests para `develop`
 - **Plataforma:** Azure Static Web Apps
@@ -170,4 +198,4 @@ Para dúvidas ou suporte, entre em contato com a equipe de desenvolvimento.
 
 ---
 
-**Desenvolvido com ❤️ pela equipe All Turismo**
+Desenvolvido com ❤️ pela equipe All Turismo
