@@ -20,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { OperatingHours } from './operating-hours.model';
 import { timeFormatValidator, operatingHoursValidator } from './operating-hours.validators';
 import { fillFormWithMockData, generateRandomMockData } from './register.mock';
+import { passwordMatchValidator } from './password-match.validator';
 
 @Component({
   selector: 'app-register',
@@ -357,8 +358,9 @@ export class RegisterComponent implements OnInit {
         name: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', [Validators.required]],
         phone: ['', [Validators.required, Validators.minLength(14)]],
-      }),
+      }, { validators: passwordMatchValidator('password', 'confirmPassword') }),
       address: this.fb.group({
         cep: ['', [Validators.required, Validators.minLength(8)]],
         state: ['', Validators.required],
