@@ -1,15 +1,15 @@
 # All Turismo Admin
 
-Aplicação web responsiva para gestão de dados do aplicativo All Turismo, desenvolvida com Angular 18 e Material Design.
+Aplicação web responsiva para gestão de dados do aplicativo All Turismo, construída com Angular 20.2 e Angular Material.
 
 ## 🚀 Tecnologias
 
-- **Angular 18** - Framework principal
-- **Angular Material** - Biblioteca de componentes UI
-- **SCSS** - Pré-processador CSS
-- **TypeScript** - Linguagem de programação
-- **ESLint** - Linting de código
-- **Prettier** - Formatação de código
+- **Angular 20.2** – Framework principal
+- **Angular Material 20** – Biblioteca de componentes UI
+- **SCSS** – Pré-processador CSS
+- **TypeScript 5.9** – Linguagem de programação
+- **ESLint (Angular ESLint 20)** – Linting de código com regras oficiais da equipe Angular
+- **Prettier 3** – Formatação de código
 
 ## 📁 Estrutura do Projeto
 
@@ -38,23 +38,26 @@ src/
 
 ## 🛠️ Pré-requisitos
 
-- Node.js 18+ 
-- npm 9+
+- Node.js 20+
+- npm 10+
 
 ## 📦 Instalação
 
 1. **Clone o repositório:**
+
    ```bash
    git clone <url-do-repositorio>
    cd all-turismo-admin
    ```
 
 2. **Instale as dependências:**
+
    ```bash
    npm install
    ```
 
 3. **Execute o projeto em modo de desenvolvimento:**
+
    ```bash
    npm start
    # ou
@@ -65,27 +68,34 @@ src/
 
 ## 🔧 Scripts Disponíveis
 
-- `npm start` - Inicia o servidor de desenvolvimento
-- `npm run build` - Constrói o projeto para produção
-- `npm run build:dev` - Constrói o projeto para desenvolvimento
-- `npm run test` - Executa os testes unitários
-- `npm run lint` - Executa o linting do código
-- `npm run lint:fix` - Corrige automaticamente problemas de linting
+- `npm start` – Inicia o servidor de desenvolvimento
+- `npm run build` – Constrói o projeto para produção
+- `npm run build:dev` – Constrói o projeto para desenvolvimento (configuração `development`)
+- `npm run build:hmg` – Build apontando para ambiente de homologação (`hmg`)
+- `npm run build:prod` – Build otimizado para produção
+- `npm run test` – Executa os testes unitários via Karma + Jasmine
+- `npm run lint` – Executa o linting com Angular ESLint 20
+- `npm run lint:fix` – Aplica correções automáticas do lint quando possível
+- `npm run format` – Aplica formatação Prettier em arquivos `ts`, `html`, `scss` e `json`
+- `npm run format:check` – Verifica se os arquivos estão formatados segundo o Prettier
 
 ## 🎨 Tema e Estilos
 
-O projeto utiliza o tema **Azure Blue** do Angular Material, que oferece:
-- Paleta de cores moderna e profissional
-- Componentes com design consistente
-- Suporte a temas claro/escuro (configurável)
-- Classes utilitárias CSS para espaçamento e layout
+O projeto utiliza um tema customizado baseado na paleta azul do Angular Material, garantindo:
+
+- Paleta de cores moderna e consistente com a identidade da All Turismo
+- Componentes responsivos com tokens SCSS reaproveitáveis
+- Suporte pronto para variantes claro/escuro (configurável)
+- Classes utilitárias e mixins SCSS para espaçamento e layout
 
 ## 📱 Responsividade
 
 A aplicação é totalmente responsiva e inclui:
-- Breakpoints para mobile, tablet e desktop
-- Classes utilitárias para ocultar/mostrar elementos
-- Layout adaptativo para diferentes tamanhos de tela
+
+- Layouts dedicados para telas de autenticação e painel administrativo
+- Breakpoints configurados para mobile, tablet e desktop
+- Componentes que se adaptam ao fluxo multi-etapas do cadastro de parceiros
+- Classes utilitárias e grid responsivo para organização dos formulários
 
 ## 🧪 Testes
 
@@ -96,27 +106,32 @@ A aplicação é totalmente responsiva e inclui:
 ## 📋 Convenções de Código
 
 ### Nomenclatura
+
 - **Componentes:** `kebab-case` (ex: `user-profile.component.ts`)
 - **Serviços:** `kebab-case` (ex: `auth.service.ts`)
 - **Interfaces:** `PascalCase` (ex: `UserProfile`)
 - **Constantes:** `UPPER_SNAKE_CASE` (ex: `API_ENDPOINTS`)
 
 ### Estrutura de Arquivos
+
 - Um arquivo por classe/interface
 - Nomes descritivos e significativos
 - Agrupamento lógico em pastas
 
 ### Imports
+
 - Imports organizados por tipo (Angular, Material, terceiros, locais)
 - Uso de aliases de path (@core, @shared, etc.)
 
 ## 🌐 Links de Teste
 
 ### Sistemas Publicados
+
 - **Painel Administrativo:** [https://brave-smoke-03ac6f10f.1.azurestaticapps.net/](https://brave-smoke-03ac6f10f.1.azurestaticapps.net/)
 - **Landing Page:** [https://icy-ground-0dd3e000f.1.azurestaticapps.net/](https://icy-ground-0dd3e000f.1.azurestaticapps.net/)
 
 ### Status dos Ambientes
+
 - 🧪 **Teste:** Ativo e funcionando
 - 🔄 **Deploy Automático:** Configurado via GitHub Actions
 - 📊 **Monitoramento:** Azure Static Web Apps
@@ -124,9 +139,11 @@ A aplicação é totalmente responsiva e inclui:
 ## 🚀 Deploy
 
 ### GitHub Actions + Azure Static Web Apps
+
 O projeto está configurado para deploy automático via GitHub Actions para Azure Static Web Apps.
 
 ### Build de Produção
+
 ```bash
 npm run build
 ```
@@ -134,6 +151,7 @@ npm run build
 O build será gerado na pasta `dist/all-turismo-admin/`.
 
 ### Configuração de Deploy
+
 - **Branch de Deploy:** `develop`
 - **Trigger:** Push e Pull Requests para `develop`
 - **Plataforma:** Azure Static Web Apps
@@ -170,4 +188,4 @@ Para dúvidas ou suporte, entre em contato com a equipe de desenvolvimento.
 
 ---
 
-**Desenvolvido com ❤️ pela equipe All Turismo**
+Desenvolvido com ❤️ pela equipe All Turismo.
