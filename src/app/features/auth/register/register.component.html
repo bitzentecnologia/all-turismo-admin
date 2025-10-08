@@ -280,7 +280,6 @@
         <div class="form-group">
           <label for="subcategory">Subcategoria</label>
           <select id="subcategory" formControlName="subcategoryId"
-            [disabled]="!establishmentForm.get('categoryId')?.value"
             [class.error]="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched">
             <option value="">Selecione uma subcategoria</option>
             <option *ngFor="let subcategory of subcategories" [value]="subcategory.id">
@@ -456,21 +455,20 @@
 
           <div class="operating-hours-container">
             <div class="operating-hours-table">
-              <div *ngFor="let dayForm of operatingHoursArray.controls; let i = index" class="operating-hours-row">
+              <div *ngFor="let dayForm of operatingHoursArray.controls; let i = index" class="operating-hours-row"
+                [formGroup]="$any(dayForm)">
                 <div class="day-label">
                   <span>{{ getDayLabel(dayForm.get('dayOfWeek')?.value) }}</span>
                 </div>
 
                 <div class="time-inputs">
-                  <input type="text" [value]="dayForm.get('startTime')?.value" placeholder="09:00" maxlength="5"
-                    (input)="formatTime($event); dayForm.get('startTime')?.setValue($event.target.value)"
-                    [disabled]="dayForm.get('isClosed')?.value" class="time-input">
+                  <input type="text" formControlName="startTime" placeholder="09:00" maxlength="5"
+                    (input)="formatTime($event)" class="time-input">
 
                   <span class="time-separator">até</span>
 
-                  <input type="text" [value]="dayForm.get('endTime')?.value" placeholder="18:00" maxlength="5"
-                    (input)="formatTime($event); dayForm.get('endTime')?.setValue($event.target.value)"
-                    [disabled]="dayForm.get('isClosed')?.value" class="time-input">
+                  <input type="text" formControlName="endTime" placeholder="18:00" maxlength="5"
+                    (input)="formatTime($event)" class="time-input">
                 </div>
 
                 <div class="closed-checkbox">

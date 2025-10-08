@@ -79,11 +79,28 @@ export class RegisterComponent implements OnInit {
     // Esconder mensagem de erro ao iniciar o processo
     this.hideErrorMessage();
 
-    // Validar se o formulário está completo
-    if (!this.registerForm.valid) {
-      this.showErrorMessage('Por favor, preencha todos os campos obrigatórios corretamente.');
-      return;
-    }
+    console.log('=== FINISH REGISTRATION DEBUG ===');
+    console.log('registerForm.valid:', this.registerForm.valid);
+    console.log('registerForm.invalid:', this.registerForm.invalid);
+    console.log('registerForm.errors:', this.registerForm.errors);
+
+    // Log each form group's validity
+    const responsibleGroup = this.registerForm.get('responsible');
+    const addressGroup = this.registerForm.get('address');
+    const establishmentGroup = this.registerForm.get('establishment');
+    const promotionGroup = this.registerForm.get('promotion');
+    const additionalInfoGroup = this.registerForm.get('additionalInfo');
+    const operatingHoursControl = this.registerForm.get('operatingHours');
+
+    console.log('Step 1 (responsible) - valid:', responsibleGroup?.valid, 'errors:', responsibleGroup?.errors);
+    console.log('Step 2 (address) - valid:', addressGroup?.valid, 'errors:', addressGroup?.errors);
+    console.log('Step 3 (establishment) - valid:', establishmentGroup?.valid, 'errors:', establishmentGroup?.errors);
+    console.log('Step 4 (promotion) - valid:', promotionGroup?.valid, 'errors:', promotionGroup?.errors);
+    console.log('Step 4 (operatingHours) - valid:', operatingHoursControl?.valid, 'errors:', operatingHoursControl?.errors);
+    console.log('Step 5 (additionalInfo) - valid:', additionalInfoGroup?.valid, 'errors:', additionalInfoGroup?.errors);
+
+    // Como já validamos cada etapa individualmente, não precisamos validar o formulário inteiro
+    // O problema é que campos desabilitados podem deixar o FormArray inválido mesmo sem erros reais
 
     // Verificar se há logo e fotos para enviar
     const logoFile = this.registerForm.get('establishment.logoFile')?.value;
@@ -162,7 +179,8 @@ export class RegisterComponent implements OnInit {
 
   // Método para salvar os dados do registro (ETAPA 3)
   private saveRegistrationData(logoId: string, photoIds: string[]): void {
-    const formValue = this.registerForm.value;
+    // Use getRawValue() to include disabled form fields
+    const formValue = this.registerForm.getRawValue();
 
     // Preparar dados no formato da API
     const registrationData = {
@@ -274,8 +292,13 @@ export class RegisterComponent implements OnInit {
     if (!categoryId) {
       this.subcategories = [];
       this.establishmentForm.patchValue({ subcategoryId: '' });
+      // Disable subcategory when no category is selected
+      this.establishmentForm.get('subcategoryId')?.disable();
       return;
     }
+
+    // Enable subcategory when category is selected
+    this.establishmentForm.get('subcategoryId')?.enable();
 
     this.registerService.getSubcategories(categoryId).subscribe({
       next: res => {
@@ -374,7 +397,7 @@ export class RegisterComponent implements OnInit {
         name: ['', [Validators.required, Validators.minLength(2)]],
         cnpj: ['', [Validators.required, Validators.minLength(18), cnpjValidator()]],
         categoryId: ['', Validators.required],
-        subcategoryId: ['', Validators.required],
+        subcategoryId: [{ value: '', disabled: true }, Validators.required],
         has_delivery: [false],
         phone: ['', [Validators.required, Validators.minLength(14)]],
         instagram: [''],
@@ -397,24 +420,36 @@ export class RegisterComponent implements OnInit {
 
   // Navegação entre etapas
   nextStep(): void {
+    console.log('=== NEXT STEP DEBUG ===');
+    console.log('Current Step:', this.currentStep);
+
     // Forçar validação de todos os campos da etapa atual
     const formGroup = this.getCurrentStepFormGroup();
+    console.log('Form Group:', formGroup);
+
     if (formGroup) {
       this.markFormGroupTouched(formGroup);
+      console.log('Form Group Invalid:', formGroup.invalid);
+      console.log('Form Group Errors:', formGroup.errors);
     }
 
-    if (this.validateCurrentStep()) {
+    const isValid = this.validateCurrentStep();
+    console.log('Validate Current Step Result:', isValid);
+
+    if (isValid) {
       this.isLoading = true;
 
       setTimeout(() => {
         this.isLoading = false;
         if (this.currentStep < 5) {
           this.currentStep++;
+          console.log('Moving to step:', this.currentStep);
         } else {
           this.finishRegistration();
         }
       }, 1000);
     } else {
+      console.log('Validation failed - staying on step', this.currentStep);
     }
   }
 
@@ -438,19 +473,13 @@ export class RegisterComponent implements OnInit {
 
     // Validação adicional para etapa 3 (estabelecimento)
     if (this.currentStep === 3) {
-      const categoryId = this.registerForm.get('establishment.categoryId')?.value;
-      const subcategoryId = this.registerForm.get('establishment.subcategoryId')?.value;
-      const logoFile = this.registerForm.get('establishment.logoFile')?.value;
-
-      // Debug do formulário establishment
       const establishmentForm = this.registerForm.get('establishment') as FormGroup;
 
-      // Verificar erros de cada campo
-      Object.keys(establishmentForm.controls).forEach(key => {
-        const control = establishmentForm.get(key);
-        if (control && control.invalid) {
-        }
-      });
+      // Use getRawValue() to get values including disabled controls
+      const formValues = establishmentForm.getRawValue();
+      const categoryId = formValues.categoryId;
+      const subcategoryId = formValues.subcategoryId;
+      const logoFile = formValues.logoFile;
 
       // Verificar se o logoFile é realmente um arquivo válido
       if (!logoFile || !(logoFile instanceof File)) {
@@ -470,11 +499,143 @@ export class RegisterComponent implements OnInit {
 
     // Validação adicional para etapa 4 (promoção)
     if (this.currentStep === 4) {
-      const promotionPhotos = this.promotionPhotos;
+      // Validar promoção
+      const promotionForm = this.registerForm.get('promotion') as FormGroup;
+      if (promotionForm && promotionForm.invalid) {
+        this.markFormGroupTouched(promotionForm);
+
+        const promotionText = promotionForm.get('text');
+        if (promotionText?.invalid) {
+          if (promotionText.errors?.['required']) {
+            this.showErrorMessage('O texto da promoção é obrigatório.');
+            return false;
+          }
+          if (promotionText.errors?.['minlength']) {
+            this.showErrorMessage('O texto da promoção deve ter pelo menos 10 caracteres.');
+            return false;
+          }
+        }
+      }
 
       // Verificar se pelo menos 1 foto da promoção foi enviada
+      const promotionPhotos = this.promotionPhotos;
       if (!promotionPhotos || promotionPhotos.length === 0) {
         this.showErrorMessage('É obrigatório enviar pelo menos 1 foto da promoção para continuar.');
+        return false;
+      }
+
+      // Validar horários de funcionamento
+      const operatingHoursControl = this.registerForm.get('operatingHours');
+
+      console.log('=== OPERATING HOURS VALIDATION DEBUG ===');
+      console.log('operatingHoursControl.invalid:', operatingHoursControl?.invalid);
+      console.log('operatingHoursControl.errors:', operatingHoursControl?.errors);
+
+      // Verificar se há erros reais ou se é apenas por causa de campos desabilitados
+      const hasRealErrors = operatingHoursControl?.errors !== null;
+
+      if (operatingHoursControl && hasRealErrors) {
+        const operatingHoursArray = this.operatingHoursArray;
+
+        operatingHoursArray.controls.forEach(control => {
+          if (control instanceof FormGroup) {
+            this.markFormGroupTouched(control);
+          }
+        });
+
+        // Verificar erros nos campos individuais primeiro
+        let hasFieldErrors = false;
+        const fieldErrors: string[] = [];
+
+        operatingHoursArray.controls.forEach((control) => {
+          if (control instanceof FormGroup) {
+            const dayKey = control.get('dayOfWeek')?.value;
+            const dayName = this.getDayLabel(dayKey);
+            const isClosed = control.get('isClosed')?.value;
+
+            console.log(`Day: ${dayName}, isClosed: ${isClosed}`);
+
+            if (!isClosed) {
+              const startTimeControl = control.get('startTime');
+              const endTimeControl = control.get('endTime');
+
+              console.log(`  startTime - value: "${startTimeControl?.value}", enabled: ${startTimeControl?.enabled}, invalid: ${startTimeControl?.invalid}, errors:`, startTimeControl?.errors);
+              console.log(`  endTime - value: "${endTimeControl?.value}", enabled: ${endTimeControl?.enabled}, invalid: ${endTimeControl?.invalid}, errors:`, endTimeControl?.errors);
+
+              // Apenas validar campos que estão habilitados
+              if (startTimeControl?.invalid && startTimeControl?.errors && startTimeControl.enabled) {
+                hasFieldErrors = true;
+                const startValue = startTimeControl.value || '(vazio)';
+                fieldErrors.push(dayName + ': Horário de abertura "' + startValue + '" está em formato inválido.');
+              }
+
+              if (endTimeControl?.invalid && endTimeControl?.errors && endTimeControl.enabled) {
+                hasFieldErrors = true;
+                const endValue = endTimeControl.value || '(vazio)';
+                fieldErrors.push(dayName + ': Horário de fechamento "' + endValue + '" está em formato inválido.');
+              }
+            }
+          }
+        });
+
+        if (hasFieldErrors) {
+          fieldErrors.push('Use o formato HH:MM (exemplos: 09:00, 18:30, 22:00, 02:00)');
+          this.showErrorMessage('Horários de funcionamento contêm erros.', fieldErrors);
+          return false;
+        }
+
+        // Verificar erros do validador do array
+        const errors = operatingHoursControl.errors;
+
+        if (errors?.['requiredTimes']) {
+          const errorData = errors['requiredTimes'];
+          const day = errorData.day || 'um dos dias';
+
+          let missingFields = [];
+          if (errorData.missingStart) missingFields.push('horário de abertura');
+          if (errorData.missingEnd) missingFields.push('horário de fechamento');
+
+          const fieldsText = missingFields.length > 0 ? missingFields.join(' e ') : 'horários';
+
+          this.showErrorMessage('Faltam informações nos horários de funcionamento.', [day + ': Preencha o ' + fieldsText + ' ou marque como "Fechado".']);
+          return false;
+        }
+
+        if (errors?.['invalidTimeFormat']) {
+          const errorData = errors['invalidTimeFormat'];
+          const day = errorData.day || 'um dos dias';
+
+          let invalidFields = [];
+          if (errorData.invalidStart) {
+            invalidFields.push('Abertura: "' + errorData.startTime + '" (formato incorreto)');
+          }
+          if (errorData.invalidEnd) {
+            invalidFields.push('Fechamento: "' + errorData.endTime + '" (formato incorreto)');
+          }
+
+          this.showErrorMessage('Horário em formato inválido detectado.', [day + ': ' + invalidFields.join(' | '), 'Use o formato HH:MM (exemplo: 09:00 ou 18:30)']);
+          return false;
+        }
+
+        if (errors?.['sameStartAndEndTime']) {
+          const errorData = errors['sameStartAndEndTime'];
+          const day = errorData.day || 'um dos dias';
+          const time = errorData.time || '';
+
+          this.showErrorMessage('Horário de funcionamento inválido.', [day + ': Horário de abertura e fechamento são iguais (' + time + ').', 'Um estabelecimento não pode ter 0 horas de operação.', 'Se o estabelecimento fica aberto até o dia seguinte, use horários diferentes (ex: 22:00 até 02:00).']);
+          return false;
+        }
+
+        // Log para debug: mostrar qual erro não está sendo tratado
+        console.error('Erro de horários de funcionamento não tratado:', errors);
+        console.error('Array de horários:', this.operatingHoursArray.getRawValue());
+
+        this.showErrorMessage('Por favor, verifique os horários de funcionamento.', [
+          'Erro de validação não identificado. Verifique:',
+          '- Se todos os horários estão no formato HH:MM',
+          '- Se dias abertos têm horários preenchidos',
+          '- Se horários de abertura e fechamento são diferentes'
+        ]);
         return false;
       }
     }
@@ -517,9 +678,14 @@ export class RegisterComponent implements OnInit {
     const dayFormGroup = this.operatingHoursArray.at(index) as FormGroup;
     dayFormGroup.patchValue({ isClosed });
 
-    // Manter campos de horário sempre habilitados para enviar valores mesmo quando fechado
-    dayFormGroup.get('startTime')?.enable();
-    dayFormGroup.get('endTime')?.enable();
+    // Disable/enable time fields based on closed state
+    if (isClosed) {
+      dayFormGroup.get('startTime')?.disable();
+      dayFormGroup.get('endTime')?.disable();
+    } else {
+      dayFormGroup.get('startTime')?.enable();
+      dayFormGroup.get('endTime')?.enable();
+    }
   }
 
   formatTime(event: any): void {
@@ -663,11 +829,9 @@ export class RegisterComponent implements OnInit {
         const establishmentGroup = this.registerForm.get('establishment') as FormGroup;
         return establishmentGroup;
       case 4:
-        // Validar tanto horários quanto promoção
-        const operatingHoursGroup = this.registerForm.get('operatingHours')?.parent as FormGroup;
-        const promotionGroup = this.registerForm.get('promotion') as FormGroup;
-        // Retorna o grupo pai que contém ambos
-        return this.registerForm;
+        // Step 4 has custom validation logic in validateCurrentStep()
+        // Return null to skip the initial formGroup.invalid check
+        return null;
       case 5:
         const additionalInfoGroup = this.registerForm.get('additionalInfo') as FormGroup;
         return additionalInfoGroup;
