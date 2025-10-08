@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <!-- Botões de Debug (apenas em desenvolvimento) 
+    <!-- Botões de Debug (apenas em desenvolvimento) -->
     <div class="debug-buttons" *ngIf="!environment.production">
       <button type="button" class="debug-btn" (click)="fillWithMockData()">
         📝 Preencher Mock
@@ -43,7 +43,7 @@
       <button type="button" class="debug-btn" (click)="fillWithRandomMockData()">
         🎲 Mock Aleatório
       </button>
-    </div>-->
+    </div>
 
     <!-- Barra de Progresso -->
     <div class="progress-bar">
@@ -127,6 +127,20 @@
             <span *ngIf="responsibleForm.get('password')?.errors?.['required']">Senha é obrigatória</span>
             <span *ngIf="responsibleForm.get('password')?.errors?.['minlength']">Senha deve ter pelo menos 6
               caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmação da senha</label>
+          <input type="password" id="confirmPassword" formControlName="confirmPassword"
+            placeholder="Repita a senha cadastrada"
+            [class.error]="((responsibleForm.get('confirmPassword')?.invalid || responsibleForm.hasError('passwordMismatch')) && responsibleForm.get('confirmPassword')?.touched)">
+          <div *ngIf="responsibleForm.get('confirmPassword')?.touched" class="error-message">
+            <span *ngIf="responsibleForm.get('confirmPassword')?.errors?.['required']">Confirmação da senha é
+              obrigatória</span>
+            <span
+              *ngIf="!responsibleForm.get('confirmPassword')?.errors?.['required'] && responsibleForm.hasError('passwordMismatch')">As
+              senhas não conferem</span>
           </div>
         </div>
 
@@ -266,7 +280,6 @@
         <div class="form-group">
           <label for="subcategory">Subcategoria</label>
           <select id="subcategory" formControlName="subcategoryId"
-            [disabled]="!establishmentForm.get('categoryId')?.value"
             [class.error]="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched">
             <option value="">Selecione uma subcategoria</option>
             <option *ngFor="let subcategory of subcategories" [value]="subcategory.id">
@@ -370,7 +383,7 @@
               <ul>
                 <li><strong>Desconto mínimo:</strong> Sua promoção deve oferecer pelo menos <strong>15% de
                     desconto</strong> para ser aprovada</li>
-                <li><strong>Validade:</strong> A promoção deve ter validade mínima de 30 dias a partir da aprovação</li>
+                <li><strong>Validade:</strong> A promoção deve ter validade enquanto durar o cadastro</li>
                 <li><strong>Disponibilidade:</strong> Você deve ter estoque suficiente para atender a demanda durante
                   todo o período da promoção</li>
                 <li><strong>Restrições:</strong> Não é permitido alterar ou cancelar a promoção após a aprovação</li>
@@ -442,21 +455,20 @@
 
           <div class="operating-hours-container">
             <div class="operating-hours-table">
-              <div *ngFor="let dayForm of operatingHoursArray.controls; let i = index" class="operating-hours-row">
+              <div *ngFor="let dayForm of operatingHoursArray.controls; let i = index" class="operating-hours-row"
+                [formGroup]="$any(dayForm)">
                 <div class="day-label">
                   <span>{{ getDayLabel(dayForm.get('dayOfWeek')?.value) }}</span>
                 </div>
 
                 <div class="time-inputs">
-                  <input type="text" [value]="dayForm.get('startTime')?.value" placeholder="09:00" maxlength="5"
-                    (input)="formatTime($event); dayForm.get('startTime')?.setValue($event.target.value)"
-                    [disabled]="dayForm.get('isClosed')?.value" class="time-input">
+                  <input type="text" formControlName="startTime" placeholder="09:00" maxlength="5"
+                    (input)="formatTime($event)" class="time-input">
 
                   <span class="time-separator">até</span>
 
-                  <input type="text" [value]="dayForm.get('endTime')?.value" placeholder="18:00" maxlength="5"
-                    (input)="formatTime($event); dayForm.get('endTime')?.setValue($event.target.value)"
-                    [disabled]="dayForm.get('isClosed')?.value" class="time-input">
+                  <input type="text" formControlName="endTime" placeholder="18:00" maxlength="5"
+                    (input)="formatTime($event)" class="time-input">
                 </div>
 
                 <div class="closed-checkbox">

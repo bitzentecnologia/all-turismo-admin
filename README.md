@@ -1,15 +1,15 @@
 # All Turismo Admin
 
-Aplicação web responsiva para gestão de dados do aplicativo All Turismo, desenvolvida com Angular 18 e Material Design.
+Aplicação web responsiva para gestão de dados do aplicativo All Turismo, construída com Angular 20.2 e Angular Material.
 
 ## 🚀 Tecnologias
 
-- **Angular 18** - Framework principal
-- **Angular Material** - Biblioteca de componentes UI
-- **SCSS** - Pré-processador CSS
-- **TypeScript** - Linguagem de programação
-- **ESLint** - Linting de código
-- **Prettier** - Formatação de código
+- **Angular 20.2** – Framework principal
+- **Angular Material 20** – Biblioteca de componentes UI
+- **SCSS** – Pré-processador CSS
+- **TypeScript 5.9** – Linguagem de programação
+- **ESLint (Angular ESLint 20)** – Linting de código com regras oficiais da equipe Angular
+- **Prettier 3** – Formatação de código
 
 ## 📁 Estrutura do Projeto
 
@@ -38,8 +38,8 @@ src/
 
 ## 🛠️ Pré-requisitos
 
-- Node.js 18+
-- npm 9+
+- Node.js 20+
+- npm 10+
 
 ## 📦 Instalação
 
@@ -80,32 +80,34 @@ src/
 
 ## 🔧 Scripts Disponíveis
 
-- `npm start` - Inicia o servidor com o ambiente de desenvolvimento/homologação
-- `npm run start:dev` - Inicia explicitamente o servidor usando o ambiente de desenvolvimento/homologação
-- `npm run start:local` - Inicia o servidor usando o ambiente local
-- `npm run build` - Constrói o projeto para produção
-- `npm run build:dev` - Constrói o projeto para desenvolvimento/homologação
-- `npm run build:local` - Constrói o projeto para o ambiente local
-- `npm run test` - Executa os testes unitários
-- `npm run lint` - Executa o linting do código
-- `npm run lint:fix` - Corrige automaticamente problemas de linting
+- `npm start` – Inicia o servidor de desenvolvimento
+- `npm run build` – Constrói o projeto para produção
+- `npm run build:dev` – Constrói o projeto para desenvolvimento (configuração `development`)
+- `npm run build:hmg` – Build apontando para ambiente de homologação (`hmg`)
+- `npm run build:prod` – Build otimizado para produção
+- `npm run test` – Executa os testes unitários via Karma + Jasmine
+- `npm run lint` – Executa o linting com Angular ESLint 20
+- `npm run lint:fix` – Aplica correções automáticas do lint quando possível
+- `npm run format` – Aplica formatação Prettier em arquivos `ts`, `html`, `scss` e `json`
+- `npm run format:check` – Verifica se os arquivos estão formatados segundo o Prettier
 
 ## 🎨 Tema e Estilos
 
-O projeto utiliza o tema **Azure Blue** do Angular Material, que oferece:
+O projeto utiliza um tema customizado baseado na paleta azul do Angular Material, garantindo:
 
-- Paleta de cores moderna e profissional
-- Componentes com design consistente
-- Suporte a temas claro/escuro (configurável)
-- Classes utilitárias CSS para espaçamento e layout
+- Paleta de cores moderna e consistente com a identidade da All Turismo
+- Componentes responsivos com tokens SCSS reaproveitáveis
+- Suporte pronto para variantes claro/escuro (configurável)
+- Classes utilitárias e mixins SCSS para espaçamento e layout
 
 ## 📱 Responsividade
 
 A aplicação é totalmente responsiva e inclui:
 
-- Breakpoints para mobile, tablet e desktop
-- Classes utilitárias para ocultar/mostrar elementos
-- Layout adaptativo para diferentes tamanhos de tela
+- Layouts dedicados para telas de autenticação e painel administrativo
+- Breakpoints configurados para mobile, tablet e desktop
+- Componentes que se adaptam ao fluxo multi-etapas do cadastro de parceiros
+- Classes utilitárias e grid responsivo para organização dos formulários
 
 ## 🧪 Testes
 
@@ -198,4 +200,4 @@ Para dúvidas ou suporte, entre em contato com a equipe de desenvolvimento.
 
 ---
 
-Desenvolvido com ❤️ pela equipe All Turismo
+Desenvolvido com ❤️ pela equipe All Turismo.

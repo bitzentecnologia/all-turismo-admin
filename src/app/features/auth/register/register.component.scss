@@ -179,7 +179,7 @@
 
   .day-label {
     flex: 0 0 140px;
-    
+
     span {
       font-weight: 600;
       color: #374151;
@@ -277,7 +277,7 @@
   .operating-hours-table {
     border-radius: 6px;
   }
-  
+
   .operating-hours-row {
     flex-direction: column;
     align-items: flex-start;
@@ -409,7 +409,7 @@
 
         li {
           margin-bottom: 0.25rem;
-          
+
           &:last-child {
             margin-bottom: 0;
           }
@@ -454,6 +454,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -533,7 +534,7 @@
     ul {
       margin: 0 0 1rem 0;
       padding-left: 1.25rem;
-      
+
       li {
         margin-bottom: 0.5rem;
         color: #92400e;
@@ -790,11 +791,11 @@
     }
 
     .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
   }
 
   .section-title {
@@ -1056,6 +1057,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1066,6 +1068,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 5rem;
   margin-top: 2.5rem;
 
   .btn-back {
@@ -1132,7 +1135,7 @@
         font-size: 0.7rem;
       }
     }
-    
+
     .progress-line {
       margin: 15px 0.3rem 0 0.3rem;
     }
@@ -1192,6 +1195,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }

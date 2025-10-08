@@ -4,6 +4,7 @@ export const REGISTER_MOCK_DATA = {
     name: "João Silva Santos",
     email: "joao.silva@restaurante.com",
     password: "senha123456",
+    confirmPassword: "senha123456",
     phone: "(11) 99999-8888"
   },
 
@@ -149,6 +150,7 @@ export function fillFormWithMockData(form: any): void {
   form.get('responsible.name')?.setValue(REGISTER_MOCK_DATA.responsible.name);
   form.get('responsible.email')?.setValue(REGISTER_MOCK_DATA.responsible.email);
   form.get('responsible.password')?.setValue(REGISTER_MOCK_DATA.responsible.password);
+  form.get('responsible.confirmPassword')?.setValue(REGISTER_MOCK_DATA.responsible.confirmPassword);
   form.get('responsible.phone')?.setValue(REGISTER_MOCK_DATA.responsible.phone);
 
   // ETAPA 2: Endereço
@@ -205,7 +207,8 @@ export function generateRandomMockData(): typeof REGISTER_MOCK_DATA {
       ...REGISTER_MOCK_DATA.responsible,
       name: names[randomIndex],
       email: emails[randomIndex],
-      phone: `(11) 9${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}`
+      phone: `(11) 9${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}`,
+      confirmPassword: REGISTER_MOCK_DATA.responsible.password
     },
     address: {
       ...REGISTER_MOCK_DATA.address,
