@@ -13,7 +13,7 @@ Aplicação web responsiva para gestão de dados do aplicativo All Turismo, cons
 
 ## 📁 Estrutura do Projeto
 
-```
+```text
 src/
 ├── app/
 │   ├── core/                 # Serviços, guards, interceptors e modelos
@@ -63,6 +63,18 @@ src/
    # ou
    ng serve
    ```
+
+   > Para usar o ambiente de desenvolvimento/homologação (API hospedada), execute:
+   >
+   > ```bash
+   > npm run start:dev
+   > ```
+
+   > Para usar o ambiente local (API `localhost`), execute:
+   >
+   > ```bash
+   > npm run start:local
+   > ```
 
 4. **Abra o navegador em:** `http://localhost:4200`
 

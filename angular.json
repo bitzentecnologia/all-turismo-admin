@@ -73,7 +73,7 @@
                 }
               ]
             },
-            "hmg": {
+            "development": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -81,9 +81,11 @@
                 }
               ],
               "optimization": false,
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "extractLicenses": false,
+              "sourceMap": true
             },
-            "development": {
+            "local": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -99,6 +101,9 @@
             },
             "development": {
               "buildTarget": "all-turismo-admin:build:development"
+            },
+            "local": {
+              "buildTarget": "all-turismo-admin:build:local"
             }
           },
           "defaultConfiguration": "development"
