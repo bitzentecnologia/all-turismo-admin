@@ -1,12 +1,40 @@
 <table class="table">
   <thead>
     <tr>
-      <th *ngFor="let col of columns">{{ col.label }}</th>
+      <th *ngFor="let col of columns" [class.sortable]="col.sortable">
+        <button
+          *ngIf="col.sortable"
+          type="button"
+          class="sort-button"
+          (click)="toggleSort(col)"
+        >
+          <span>{{ col.label }}</span>
+          <ng-icon
+            *ngIf="sortState?.key !== col.key"
+            name="heroArrowsUpDown"
+            size="16"
+            class="sort-icon"
+          />
+          <ng-icon
+            *ngIf="sortState?.key === col.key && sortState?.direction === 'asc'"
+            name="heroChevronUp"
+            size="16"
+            class="sort-icon"
+          />
+          <ng-icon
+            *ngIf="sortState?.key === col.key && sortState?.direction === 'desc'"
+            name="heroChevronDown"
+            size="16"
+            class="sort-icon"
+          />
+        </button>
+        <span *ngIf="!col.sortable">{{ col.label }}</span>
+      </th>
       <th *ngIf="showEditAction || showVisualizeAction || showDeleteAction">Ações</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let item of data">
+    <tr *ngFor="let item of displayedData">
       <td *ngFor="let col of columns">
         <ng-container [ngSwitch]="col.type">
           <span *ngSwitchCase="'text'">{{ item[col.key] }}</span>

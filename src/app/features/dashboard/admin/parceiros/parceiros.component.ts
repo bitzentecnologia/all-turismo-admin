@@ -36,17 +36,19 @@ export class ParceirosComponent implements OnInit {
   };
 
   columns: TableColumn<Partner>[] = [
-    { key: 'name', label: 'Nome', type: 'text' },
+    { key: 'name', label: 'Nome', type: 'text', sortable: true },
     {
       key: 'created_at',
       label: 'Data de Criação',
-      type: 'date'
+      type: 'date',
+      sortable: true,
     },
     { key: 'contact_phone', label: 'Telefone de Contato', type: 'text' },
     {
       key: 'status',
       label: 'Status',
       type: 'badge',
+      sortable: true,
       badgeClass: status => {
         if (status === 'ACTIVE') return 'badge-success';
         if (status === 'PENDING') return 'badge-warning';
