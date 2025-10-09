@@ -338,7 +338,7 @@ export class RegisterComponent implements OnInit {
           this.rulesItems.push(
             this.fb.group({
               name: [sub.text],
-              checked: [true], // Pré-marcar todas as regras
+              checked: [false], // Usuário escolhe quais regras marcar
             })
           );
         });
@@ -355,7 +355,7 @@ export class RegisterComponent implements OnInit {
           this.deliveryRulesItems.push(
             this.fb.group({
               name: [sub.text],
-              checked: [true], // Pré-marcar todas as regras de delivery
+              checked: [false], // Usuário escolhe quais regras de delivery marcar
             })
           );
         });
@@ -647,7 +647,7 @@ export class RegisterComponent implements OnInit {
     this.rulesItems.push(
       this.fb.group({
         name: [''],
-        checked: [true], // Pré-marcar nova regra
+        checked: [false], // Usuário decide quando habilitar
       })
     );
   }
@@ -660,7 +660,7 @@ export class RegisterComponent implements OnInit {
     this.deliveryRulesItems.push(
       this.fb.group({
         name: [''],
-        checked: [true], // Pré-marcar nova regra de delivery
+        checked: [false], // Usuário decide quando habilitar
       })
     );
   }
