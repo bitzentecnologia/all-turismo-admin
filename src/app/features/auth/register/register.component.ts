@@ -132,9 +132,8 @@ export class RegisterComponent implements OnInit {
       this.saveRegistrationData(logoId, photoIds);
 
     } catch (error: any) {
-      this.showErrorMessage('Erro ao enviar os arquivos. Tente novamente.');
-    } finally {
       this.isLoading = false;
+      this.showErrorMessage('Erro ao enviar os arquivos. Tente novamente.');
     }
   }
 
@@ -229,9 +228,12 @@ export class RegisterComponent implements OnInit {
 
     // Enviar dados para a API
     this.registerService.register(registrationData).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        this.router.navigate(['/registro-sucesso']);
+      next: async () => {
+        try {
+          await this.router.navigate(['/registro-sucesso']);
+        } finally {
+          this.isLoading = false;
+        }
       },
       error: (error) => {
         this.isLoading = false;
