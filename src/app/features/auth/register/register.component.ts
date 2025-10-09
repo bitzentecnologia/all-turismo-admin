@@ -132,9 +132,8 @@ export class RegisterComponent implements OnInit {
       this.saveRegistrationData(logoId, photoIds);
 
     } catch (error: any) {
-      this.showErrorMessage('Erro ao enviar os arquivos. Tente novamente.');
-    } finally {
       this.isLoading = false;
+      this.showErrorMessage('Erro ao enviar os arquivos. Tente novamente.');
     }
   }
 
@@ -229,9 +228,12 @@ export class RegisterComponent implements OnInit {
 
     // Enviar dados para a API
     this.registerService.register(registrationData).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        this.router.navigate(['/registro-sucesso']);
+      next: async () => {
+        try {
+          await this.router.navigate(['/registro-sucesso']);
+        } finally {
+          this.isLoading = false;
+        }
       },
       error: (error) => {
         this.isLoading = false;
@@ -338,7 +340,7 @@ export class RegisterComponent implements OnInit {
           this.rulesItems.push(
             this.fb.group({
               name: [sub.text],
-              checked: [true], // Pré-marcar todas as regras
+              checked: [false], // Usuário escolhe quais regras marcar
             })
           );
         });
@@ -355,7 +357,7 @@ export class RegisterComponent implements OnInit {
           this.deliveryRulesItems.push(
             this.fb.group({
               name: [sub.text],
-              checked: [true], // Pré-marcar todas as regras de delivery
+              checked: [false], // Usuário escolhe quais regras de delivery marcar
             })
           );
         });
@@ -647,7 +649,7 @@ export class RegisterComponent implements OnInit {
     this.rulesItems.push(
       this.fb.group({
         name: [''],
-        checked: [true], // Pré-marcar nova regra
+        checked: [false], // Usuário decide quando habilitar
       })
     );
   }
@@ -660,7 +662,7 @@ export class RegisterComponent implements OnInit {
     this.deliveryRulesItems.push(
       this.fb.group({
         name: [''],
-        checked: [true], // Pré-marcar nova regra de delivery
+        checked: [false], // Usuário decide quando habilitar
       })
     );
   }
