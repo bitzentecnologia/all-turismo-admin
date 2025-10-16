@@ -17,24 +17,38 @@
   <!-- Empty state -->
   <section class="card empty-card">
     <div class="empty-illustration">
-      <div class="coupon-shape">
-        <div class="coupon-icon">%</div>
-        <div class="bubble bubble-pink"></div>
-        <div class="bubble bubble-orange"></div>
-        <div class="bubble bubble-blue"></div>
+      <span class="bubble bubble-pink"></span>
+      <span class="bubble bubble-orange"></span>
+      <span class="bubble bubble-lilac"></span>
+
+      <div class="icon-circle">
+        <div class="icon-wrapper">
+          <svg viewBox="0 0 48 48">
+            <path
+              d="M12 18a2 2 0 0 1 2-2h24l-4 16H16a2 2 0 0 1-2-2v-2a3 3 0 1 0 0-6v-4Z"
+              fill="none"
+              stroke-width="2.5"
+              stroke-linejoin="round"
+            />
+            <path d="M22 20v8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M30 20v8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M26 24h.1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
       </div>
-      <div class="badge">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z" />
-          <path d="M12 16v-4" />
-          <path d="M12 8h.01" />
+
+      <div class="info-badge">
+        <svg viewBox="0 0 16 16">
+          <circle cx="8" cy="8" r="6.5" stroke-width="1.4" fill="none" stroke="white" />
+          <line x1="8" y1="5" x2="8" y2="9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" />
+          <circle cx="8" cy="11.8" r="0.7" fill="white" />
         </svg>
       </div>
     </div>
 
     <p class="empty-text">Crie seu primeiro cupom para ficar visível no aplicativo.</p>
     <button class="primary-button">
-      <span class="icon">+</span>
+      <span class="button-icon">+</span>
       Novo cupom
     </button>
   </section>
