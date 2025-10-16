@@ -1,0 +1,142 @@
+<div class="create-coupon-page">
+  <header class="page-header">
+    <h1>Criar novo cupom</h1>
+  </header>
+
+  <app-status-alert
+    class="requirement-alert"
+    icon="info"
+    title="Cupom obrigatório"
+    message="Para ficar visível no aplicativo Allturismo, é necessário que você ofereça ao menos um cupom de desconto no app. Você poderá solicitar alteração posteriormente."
+  ></app-status-alert>
+
+  <form #couponForm="ngForm" (ngSubmit)="onSubmit()" class="coupon-form">
+    <!-- Discount Percentage -->
+    <section class="form-section">
+      <label for="discount" class="form-label">
+        Informe a porcentagem de desconto
+        <span class="example-text">Ex: 20%</span>
+      </label>
+      <input
+        type="number"
+        id="discount"
+        name="discount"
+        class="form-input"
+        [(ngModel)]="discountPercentage"
+        placeholder="Ex: 20%"
+        required
+        min="1"
+        max="100"
+      />
+      <p class="help-text">{{ minimumDiscountText }}</p>
+    </section>
+
+    <!-- Description -->
+    <section class="form-section">
+      <label for="description" class="form-label">Descrição</label>
+      <textarea
+        id="description"
+        name="description"
+        class="form-textarea"
+        [(ngModel)]="description"
+        placeholder="Descreva como se aplica o desconto. Ex: No rodízio de pizza"
+        [maxlength]="maxDescriptionLength"
+        required
+        rows="3"
+      ></textarea>
+      <div class="char-counter">{{ descriptionCharCount }}/{{ maxDescriptionLength }}</div>
+    </section>
+
+    <!-- Coupon Preview -->
+    <section class="coupon-preview">
+      <h3 class="preview-title">Resultado do cupom:</h3>
+      <p class="preview-text">{{ couponPreview }}</p>
+    </section>
+
+    <!-- Rules Section -->
+    <section class="form-section">
+      <h3 class="section-title">Regras para utilização</h3>
+      <p class="section-subtitle">Selecione quais são as regras para a utilização deste cupom:</p>
+
+      <div class="rules-list">
+        <label *ngFor="let rule of rules" class="checkbox-label">
+          <input
+            type="checkbox"
+            [(ngModel)]="rule.checked"
+            [name]="'rule-' + rule.id"
+            class="checkbox-input"
+          />
+          <span class="checkbox-text">{{ rule.text }}</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Custom Rules -->
+    <section class="form-section">
+      <p class="section-subtitle">Caso necessário, adicione regras específicas:</p>
+      <label class="form-label">Regra</label>
+
+      <div *ngFor="let customRule of customRules; let i = index" class="custom-rule-item">
+        <input
+          type="text"
+          class="form-input"
+          [(ngModel)]="customRule.text"
+          [name]="'custom-rule-' + customRule.id"
+          placeholder="Digite a regra específica"
+        />
+        <button type="button" class="remove-button" (click)="removeCustomRule(i)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <button type="button" class="add-rule-button" (click)="addCustomRule()">
+        <mat-icon>add</mat-icon>
+        Adicionar outra regra
+      </button>
+    </section>
+
+    <!-- Product Photos -->
+    <section class="form-section">
+      <h3 class="section-title">Fotos do produto</h3>
+      <p class="section-subtitle">
+        Envie até 3 fotos do produto que receberá o desconto. Caso a promoção seja para todos os itens
+        do estabelecimento, você pode enviar foto de alguns de seus produtos.
+      </p>
+
+      <div class="image-upload-container">
+        <div *ngIf="imagePreviewUrls.length < 3" class="upload-box">
+          <input
+            type="file"
+            #fileInput
+            accept="image/png,image/jpeg,image/jpg"
+            multiple
+            (change)="onImageSelect($event)"
+            class="file-input"
+            id="imageUpload"
+          />
+          <label for="imageUpload" class="upload-label">
+            <mat-icon>file_upload</mat-icon>
+            <span>Selecionar imagem</span>
+          </label>
+        </div>
+
+        <div class="image-preview-grid">
+          <div *ngFor="let url of imagePreviewUrls; let i = index" class="image-preview-item">
+            <img [src]="url" alt="Preview" class="preview-image" />
+            <button type="button" class="remove-image-button" (click)="removeImage(i)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p class="help-text">Tamanho sugerido: x px x x px / Formato sugerido: PNG, JPG ou JPEG</p>
+    </section>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button type="button" class="cancel-button" (click)="onCancel()">Cancelar</button>
+      <button type="submit" class="submit-button" [disabled]="!couponForm.valid">Criar cupom</button>
+    </div>
+  </form>
+</div>

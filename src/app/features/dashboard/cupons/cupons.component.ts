@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { environment } from '../../../../environments/environment';
 import { StatusAlertComponent } from '@shared/components/status-alert/status-alert.component';
@@ -7,7 +8,7 @@ import { StatusAlertComponent } from '@shared/components/status-alert/status-ale
 @Component({
   selector: 'app-cupons',
   standalone: true,
-  imports: [CommonModule, StatusAlertComponent],
+  imports: [CommonModule, RouterLink, StatusAlertComponent],
   templateUrl: './cupons.component.html',
   styleUrls: ['./cupons.component.scss']
 })
