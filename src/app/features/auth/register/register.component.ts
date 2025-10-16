@@ -14,7 +14,7 @@ import { DropDownItem } from '../../../shared/models/dropdown.model';
 import { RegisterFormData } from './register.model';
 import { CepService } from '../../../shared/services/cep.service';
 import { RegisterService } from './register.service';
-import { UploadService } from '../../../core/services/upload.service';
+import { UploadService, UploadError } from '../../../core/services/upload.service';
 import { cnpjValidator } from '@shared/utils/cnpj-validator';
 import { MatIconModule } from '@angular/material/icon';
 import { OperatingHours } from './operating-hours.model';
@@ -41,6 +41,9 @@ export class RegisterComponent implements OnInit {
 
   categories: DropDownItem[] = [];
   subcategories: DropDownItem[] = [];
+
+  logoUploadError: string = '';
+  promotionPhotosUploadErrors: string[] = [];
 
   // Dias da semana para os horários (iniciando no domingo)
   daysOfWeek = [
@@ -149,8 +152,9 @@ export class RegisterComponent implements OnInit {
         next: (response: { id: string }) => {
           resolve(response.id);
         },
-        error: (error: any) => {
-          reject(error);
+        error: (error: UploadError) => {
+          const errorMsg = this.getUploadErrorMessage(error, fileType);
+          reject({ uploadError: error, displayMessage: errorMsg });
         }
       });
     });
@@ -159,20 +163,38 @@ export class RegisterComponent implements OnInit {
   // Método para fazer upload das fotos da promoção
   private async uploadPromotionPhotos(photos: any[]): Promise<string[]> {
     try {
-      // Criar array de Promises para upload paralelo
       const uploadPromises = photos.map((photo, index) => {
         const photoNumber = index + 1;
         return this.uploadFileAndGetId(photo.file, `Foto ${photoNumber}`);
       });
 
-      // Aguardar todos os uploads terminarem
       const photoIds = await Promise.all(uploadPromises);
 
       return photoIds;
 
     } catch (error: any) {
-      this.showErrorMessage('Erro ao enviar as fotos. Tente novamente.');
+      const errorMsg = error?.displayMessage || 'Erro ao enviar as fotos. Tente novamente.';
+      this.showErrorMessage(errorMsg);
       throw error;
+    }
+  }
+
+  private getUploadErrorMessage(error: UploadError, fileType: string): string {
+    const prefix = `Erro ao enviar ${fileType}: `;
+    
+    switch (error.type) {
+      case 'size':
+        return prefix + error.message;
+      case 'format':
+        return prefix + error.message;
+      case 'timeout':
+        return prefix + error.message;
+      case 'network':
+        return prefix + error.message;
+      case 'server':
+        return prefix + error.message;
+      default:
+        return prefix + 'Erro desconhecido. Tente novamente.';
     }
   }
 
@@ -720,6 +742,8 @@ export class RegisterComponent implements OnInit {
   }
 
   onPromotionPhotoSelected(event: any): void {
+    this.promotionPhotosUploadErrors = [];
+    
     const files = event.target.files;
     const currentPhotos = this.promotionPhotos.length;
     const remainingSlots = 3 - currentPhotos;
@@ -731,24 +755,37 @@ export class RegisterComponent implements OnInit {
 
     const filesToAdd = Array.from(files).slice(0, remainingSlots);
 
-    filesToAdd.forEach((file: any) => {
+    filesToAdd.forEach((file: any, index: number) => {
       if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.promotionPhotos.push(
-            this.fb.group({
-              file: [file],
-              preview: [e.target.result]
-            })
-          );
-        };
-        reader.readAsDataURL(file);
+        this.uploadService.uploadFile(file).subscribe({
+          next: () => {
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+              this.promotionPhotos.push(
+                this.fb.group({
+                  file: [file],
+                  preview: [e.target.result]
+                })
+              );
+              this.cdr.detectChanges();
+            };
+            reader.readAsDataURL(file);
+          },
+          error: (error: UploadError) => {
+            const errorMsg = this.getUploadErrorMessage(error, `Foto ${currentPhotos + index + 1}`);
+            this.promotionPhotosUploadErrors.push(errorMsg);
+            this.cdr.detectChanges();
+          }
+        });
       }
     });
+
+    event.target.value = '';
   }
 
   removePromotionPhoto(index: number): void {
     this.promotionPhotos.removeAt(index);
+    this.promotionPhotosUploadErrors = [];
   }
 
   // Scroll para o topo da página
@@ -924,27 +961,43 @@ export class RegisterComponent implements OnInit {
 
   // Upload de logo
   onLogoSelected(event: any): void {
+    this.logoUploadError = '';
+    
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.registerForm.get('establishment.logoPreview')?.setValue(e.target.result);
-        this.registerForm.get('establishment.logoFile')?.setValue(file);
+      this.uploadService.uploadFile(file).subscribe({
+        next: () => {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            this.registerForm.get('establishment.logoPreview')?.setValue(e.target.result);
+            this.registerForm.get('establishment.logoFile')?.setValue(file);
 
-        const logoFileControl = this.registerForm.get('establishment.logoFile');
+            const logoFileControl = this.registerForm.get('establishment.logoFile');
 
-        logoFileControl?.markAsTouched();
-        logoFileControl?.updateValueAndValidity();
+            logoFileControl?.markAsTouched();
+            logoFileControl?.updateValueAndValidity();
 
-        this.cdr.detectChanges();
-      };
-      reader.readAsDataURL(file);
+            this.cdr.detectChanges();
+          };
+          reader.readAsDataURL(file);
+        },
+        error: (error: UploadError) => {
+          this.logoUploadError = this.getUploadErrorMessage(error, 'Logo');
+          this.registerForm.get('establishment.logoPreview')?.setValue('');
+          this.registerForm.get('establishment.logoFile')?.setValue(null);
+          
+          const logoFileControl = this.registerForm.get('establishment.logoFile');
+          logoFileControl?.markAsTouched();
+          logoFileControl?.updateValueAndValidity();
+          
+          event.target.value = '';
+          this.cdr.detectChanges();
+        }
+      });
     } else {
-      // Limpar o campo se nenhum arquivo foi selecionado
       this.registerForm.get('establishment.logoPreview')?.setValue('');
       this.registerForm.get('establishment.logoFile')?.setValue(null);
 
-      // Forçar validação e marcação como touched
       const logoFileControl = this.registerForm.get('establishment.logoFile');
       logoFileControl?.markAsTouched();
       logoFileControl?.updateValueAndValidity();
@@ -953,10 +1006,10 @@ export class RegisterComponent implements OnInit {
 
   // Remover logo
   removeLogo(): void {
+    this.logoUploadError = '';
     this.registerForm.get('establishment.logoPreview')?.setValue('');
     this.registerForm.get('establishment.logoFile')?.setValue(null);
 
-    // Forçar validação e marcação como touched
     const logoFileControl = this.registerForm.get('establishment.logoFile');
     logoFileControl?.markAsTouched();
     logoFileControl?.updateValueAndValidity();

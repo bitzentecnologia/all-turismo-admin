@@ -343,7 +343,7 @@
           <p class="section-subtitle">Envie a logo do seu estabelecimento.</p>
 
           <div class="logo-upload-area"
-            [class.error]="establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched">
+            [class.error]="(establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched) || logoUploadError">
             <div class="upload-placeholder">
               <input type="file" id="logoFile" accept="image/*" (change)="onLogoSelected($event)" style="display: none;"
                 #fileInput>
@@ -360,7 +360,12 @@
               </button>
             </div>
 
-            <div *ngIf="establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched"
+            <div *ngIf="logoUploadError" class="upload-error-message">
+              <mat-icon class="error-icon">error</mat-icon>
+              <span>{{ logoUploadError }}</span>
+            </div>
+
+            <div *ngIf="!logoUploadError && establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched"
               class="error-message">
               <span *ngIf="establishmentForm.get('logoFile')?.errors?.['required']">Logo é obrigatória</span>
             </div>
@@ -431,6 +436,14 @@
                     <div class="upload-icon">📷</div>
                     <span class="upload-text">Adicionar fotos</span>
                     <span class="upload-hint">{{ promotionPhotos.length }}/3 fotos</span>
+                  </div>
+                </div>
+
+                <!-- Upload errors -->
+                <div *ngIf="promotionPhotosUploadErrors.length > 0" class="upload-errors-container">
+                  <div *ngFor="let error of promotionPhotosUploadErrors" class="upload-error-message">
+                    <mat-icon class="error-icon">error</mat-icon>
+                    <span>{{ error }}</span>
                   </div>
                 </div>
 
