@@ -3,175 +3,264 @@
     <!-- Header com Logo -->
     <div class="registrar-header">
       <div class="logo">
-        <img src="assets/images/logo/logo5.png" alt="ALLTURISMO" class="logo-image">
-        <span class="logo-text">ALLTURISMO</span>
+        <img src="assets/images/logo/logo5.png" alt="Logo ALLTURISMO" class="logo-image">
+        <span class="logo-text" aria-hidden="true">ALLTURISMO</span>
       </div>
       <div class="header-content">
-        <h3 class="subtitle">SEJA UM PARCEIRO</h3>
-        <h2 class="title">{{ stepTitle }}</h2>
+        <h3 class="subtitle" aria-label="Seja um parceiro">SEJA UM PARCEIRO</h3>
+        <h2 class="title" id="step-title" aria-live="polite">{{ stepTitle }}</h2>
       </div>
     </div>
 
     <!-- Mensagem de Erro -->
-    <div *ngIf="showError" class="error-alert">
+    <div *ngIf="showError" class="error-alert" role="alert" aria-live="assertive" aria-atomic="true" #errorAlert tabindex="-1">
       <div class="error-content">
-        <div class="error-icon">⚠️</div>
+        <div class="error-icon" aria-hidden="true">⚠️</div>
         <div class="error-text">
-          <h4>Erro no cadastro</h4>
+          <h4 id="error-title">Erro no cadastro</h4>
           <!-- Exibir lista de erros se houver -->
           <div *ngIf="errorMessages.length > 0; else singleMessage">
-            <ul class="error-list">
+            <ul class="error-list" aria-labelledby="error-title">
               <li *ngFor="let msg of errorMessages">{{ msg }}</li>
             </ul>
           </div>
           <!-- Exibir mensagem única se não houver lista -->
           <ng-template #singleMessage>
-            <p>{{ errorMessage }}</p>
+            <p aria-describedby="error-title">{{ errorMessage }}</p>
           </ng-template>
         </div>
-        <button type="button" class="error-close-btn" (click)="hideErrorMessage()">
+        <button 
+          type="button" 
+          class="error-close-btn" 
+          (click)="hideErrorMessage()"
+          (keydown.escape)="hideErrorMessage()"
+          aria-label="Fechar mensagem de erro">
           ×
         </button>
       </div>
     </div>
 
     <!-- Botões de Debug (apenas em desenvolvimento) -->
-    <div class="debug-buttons" *ngIf="!environment.production">
-      <button type="button" class="debug-btn" (click)="fillWithMockData()">
-        📝 Preencher Mock
+    <div class="debug-buttons" *ngIf="!environment.production" role="group" aria-label="Botões de debug">
+      <button type="button" class="debug-btn" (click)="fillWithMockData()" aria-label="Preencher formulário com dados de teste">
+        <span aria-hidden="true">📝</span> Preencher Mock
       </button>
-      <button type="button" class="debug-btn" (click)="fillWithRandomMockData()">
-        🎲 Mock Aleatório
+      <button type="button" class="debug-btn" (click)="fillWithRandomMockData()" aria-label="Preencher formulário com dados aleatórios">
+        <span aria-hidden="true">🎲</span> Mock Aleatório
       </button>
     </div>
 
     <!-- Barra de Progresso -->
-    <div class="progress-bar">
-      <div class="progress-step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
-        <div class="step-number">
-          <span *ngIf="currentStep > 1" class="check-icon">✓</span>
-          <span *ngIf="currentStep === 1">1</span>
-        </div>
-        <span class="step-text">Responsável</span>
-      </div>
-      <div class="progress-line" [class.completed]="currentStep > 1"></div>
-      <div class="progress-step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
-        <div class="step-number">
-          <span *ngIf="currentStep > 2" class="check-icon">✓</span>
-          <span *ngIf="currentStep <= 2">2</span>
-        </div>
-        <span class="step-text">Endereço</span>
-      </div>
-      <div class="progress-line" [class.completed]="currentStep > 2"></div>
-      <div class="progress-step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
-        <div class="step-number">
-          <span *ngIf="currentStep > 3" class="check-icon">✓</span>
-          <span *ngIf="currentStep <= 3">3</span>
-        </div>
-        <span class="step-text">Estabelecimento</span>
-      </div>
-      <div class="progress-line" [class.completed]="currentStep > 3"></div>
-      <div class="progress-step" [class.active]="currentStep >= 4" [class.completed]="currentStep > 4">
-        <div class="step-number">
-          <span *ngIf="currentStep > 4" class="check-icon">✓</span>
-          <span *ngIf="currentStep <= 4">4</span>
-        </div>
-        <span class="step-text">Promoção obrigatória</span>
-      </div>
-      <div class="progress-line" [class.completed]="currentStep > 4"></div>
-      <div class="progress-step" [class.active]="currentStep >= 5" [class.completed]="currentStep > 5">
-        <div class="step-number">
-          <span *ngIf="currentStep > 5" class="check-icon">✓</span>
-          <span *ngIf="currentStep <= 5">5</span>
-        </div>
-        <span class="step-text">Regras e informações</span>
-      </div>
-      <div class="progress-line" [class.completed]="currentStep > 5"></div>
-
-    </div>
+    <nav class="progress-bar" role="navigation" aria-label="Progresso do cadastro">
+      <ol class="progress-list">
+        <li class="progress-step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1" 
+            [attr.aria-current]="currentStep === 1 ? 'step' : null">
+          <div class="step-number" [attr.aria-label]="currentStep > 1 ? 'Etapa 1 concluída: Responsável' : 'Etapa 1: Responsável'">
+            <span *ngIf="currentStep > 1" class="check-icon" aria-hidden="true">✓</span>
+            <span *ngIf="currentStep === 1" aria-hidden="true">1</span>
+          </div>
+          <span class="step-text" aria-hidden="true">Responsável</span>
+        </li>
+        <div class="progress-line" [class.completed]="currentStep > 1" aria-hidden="true"></div>
+        <li class="progress-step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2"
+            [attr.aria-current]="currentStep === 2 ? 'step' : null">
+          <div class="step-number" [attr.aria-label]="currentStep > 2 ? 'Etapa 2 concluída: Endereço' : 'Etapa 2: Endereço'">
+            <span *ngIf="currentStep > 2" class="check-icon" aria-hidden="true">✓</span>
+            <span *ngIf="currentStep <= 2" aria-hidden="true">2</span>
+          </div>
+          <span class="step-text" aria-hidden="true">Endereço</span>
+        </li>
+        <div class="progress-line" [class.completed]="currentStep > 2" aria-hidden="true"></div>
+        <li class="progress-step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3"
+            [attr.aria-current]="currentStep === 3 ? 'step' : null">
+          <div class="step-number" [attr.aria-label]="currentStep > 3 ? 'Etapa 3 concluída: Estabelecimento' : 'Etapa 3: Estabelecimento'">
+            <span *ngIf="currentStep > 3" class="check-icon" aria-hidden="true">✓</span>
+            <span *ngIf="currentStep <= 3" aria-hidden="true">3</span>
+          </div>
+          <span class="step-text" aria-hidden="true">Estabelecimento</span>
+        </li>
+        <div class="progress-line" [class.completed]="currentStep > 3" aria-hidden="true"></div>
+        <li class="progress-step" [class.active]="currentStep >= 4" [class.completed]="currentStep > 4"
+            [attr.aria-current]="currentStep === 4 ? 'step' : null">
+          <div class="step-number" [attr.aria-label]="currentStep > 4 ? 'Etapa 4 concluída: Promoção obrigatória' : 'Etapa 4: Promoção obrigatória'">
+            <span *ngIf="currentStep > 4" class="check-icon" aria-hidden="true">✓</span>
+            <span *ngIf="currentStep <= 4" aria-hidden="true">4</span>
+          </div>
+          <span class="step-text" aria-hidden="true">Promoção obrigatória</span>
+        </li>
+        <div class="progress-line" [class.completed]="currentStep > 4" aria-hidden="true"></div>
+        <li class="progress-step" [class.active]="currentStep >= 5" [class.completed]="currentStep > 5"
+            [attr.aria-current]="currentStep === 5 ? 'step' : null">
+          <div class="step-number" [attr.aria-label]="currentStep > 5 ? 'Etapa 5 concluída: Regras e informações' : 'Etapa 5: Regras e informações'">
+            <span *ngIf="currentStep > 5" class="check-icon" aria-hidden="true">✓</span>
+            <span *ngIf="currentStep <= 5" aria-hidden="true">5</span>
+          </div>
+          <span class="step-text" aria-hidden="true">Regras e informações</span>
+        </li>
+        <div class="progress-line" [class.completed]="currentStep > 5" aria-hidden="true"></div>
+      </ol>
+    </nav>
 
     <!-- Formulário -->
-    <form [formGroup]="registerForm" (ngSubmit)="nextStep()" class="registrar-form">
+    <form 
+      [formGroup]="registerForm" 
+      (ngSubmit)="nextStep()" 
+      class="registrar-form"
+      role="form"
+      aria-labelledby="step-title">
 
       <!-- Etapa 1: Dados do Responsável -->
-      <div *ngIf="isStep1" class="form-step" [formGroupName]="'responsible'">
+      <div *ngIf="isStep1" class="form-step" [formGroupName]="'responsible'" role="group" aria-labelledby="step-title">
         <div class="form-group">
-          <label for="name">Nome</label>
-          <input type="text" id="name" formControlName="name" placeholder="Digite seu nome completo"
-            [class.error]="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched">
-          <div *ngIf="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched"
-            class="error-message">
+          <label for="name">Nome <span class="required" aria-label="campo obrigatório">*</span></label>
+          <input 
+            type="text" 
+            id="name" 
+            formControlName="name" 
+            placeholder="Digite seu nome completo"
+            [class.error]="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched"
+            [attr.aria-invalid]="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched"
+            [attr.aria-describedby]="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched ? 'name-error' : null"
+            aria-required="true"
+            autocomplete="name">
+          <div 
+            *ngIf="responsibleForm.get('name')?.invalid && responsibleForm.get('name')?.touched"
+            class="error-message"
+            id="name-error"
+            role="alert"
+            aria-live="polite">
             <span *ngIf="responsibleForm.get('name')?.errors?.['required']">Nome é obrigatório</span>
-            <span *ngIf="responsibleForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2
-              caracteres</span>
+            <span *ngIf="responsibleForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2 caracteres</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" formControlName="email" placeholder="Digite seu e-mail"
-            [class.error]="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched">
-          <div *ngIf="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched"
-            class="error-message">
+          <label for="email">E-mail <span class="required" aria-label="campo obrigatório">*</span></label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            placeholder="Digite seu e-mail"
+            [class.error]="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched"
+            [attr.aria-invalid]="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched"
+            [attr.aria-describedby]="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched ? 'email-error' : null"
+            aria-required="true"
+            autocomplete="email">
+          <div 
+            *ngIf="responsibleForm.get('email')?.invalid && responsibleForm.get('email')?.touched"
+            class="error-message"
+            id="email-error"
+            role="alert"
+            aria-live="polite">
             <span *ngIf="responsibleForm.get('email')?.errors?.['required']">E-mail é obrigatório</span>
             <span *ngIf="responsibleForm.get('email')?.errors?.['email']">E-mail inválido</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="password">Senha</label>
-          <input type="password" id="password" formControlName="password" placeholder="Senha para acessar a plataforma"
-            [class.error]="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched">
-          <div *ngIf="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched"
-            class="error-message">
+          <label for="password">Senha <span class="required" aria-label="campo obrigatório">*</span></label>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password" 
+            placeholder="Senha para acessar a plataforma"
+            [class.error]="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched"
+            [attr.aria-invalid]="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched"
+            [attr.aria-describedby]="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched ? 'password-error' : 'password-hint'"
+            aria-required="true"
+            autocomplete="new-password">
+          <span id="password-hint" class="sr-only">Mínimo de 6 caracteres</span>
+          <div 
+            *ngIf="responsibleForm.get('password')?.invalid && responsibleForm.get('password')?.touched"
+            class="error-message"
+            id="password-error"
+            role="alert"
+            aria-live="polite">
             <span *ngIf="responsibleForm.get('password')?.errors?.['required']">Senha é obrigatória</span>
-            <span *ngIf="responsibleForm.get('password')?.errors?.['minlength']">Senha deve ter pelo menos 6
-              caracteres</span>
+            <span *ngIf="responsibleForm.get('password')?.errors?.['minlength']">Senha deve ter pelo menos 6 caracteres</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="confirmPassword">Confirmação da senha</label>
-          <input type="password" id="confirmPassword" formControlName="confirmPassword"
+          <label for="confirmPassword">Confirmação da senha <span class="required" aria-label="campo obrigatório">*</span></label>
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            formControlName="confirmPassword"
             placeholder="Repita a senha cadastrada"
-            [class.error]="((responsibleForm.get('confirmPassword')?.invalid || responsibleForm.hasError('passwordMismatch')) && responsibleForm.get('confirmPassword')?.touched)">
-          <div *ngIf="responsibleForm.get('confirmPassword')?.touched" class="error-message">
-            <span *ngIf="responsibleForm.get('confirmPassword')?.errors?.['required']">Confirmação da senha é
-              obrigatória</span>
-            <span
-              *ngIf="!responsibleForm.get('confirmPassword')?.errors?.['required'] && responsibleForm.hasError('passwordMismatch')">As
-              senhas não conferem</span>
+            [class.error]="((responsibleForm.get('confirmPassword')?.invalid || responsibleForm.hasError('passwordMismatch')) && responsibleForm.get('confirmPassword')?.touched)"
+            [attr.aria-invalid]="((responsibleForm.get('confirmPassword')?.invalid || responsibleForm.hasError('passwordMismatch')) && responsibleForm.get('confirmPassword')?.touched)"
+            [attr.aria-describedby]="responsibleForm.get('confirmPassword')?.touched && (responsibleForm.get('confirmPassword')?.invalid || responsibleForm.hasError('passwordMismatch')) ? 'confirmPassword-error' : null"
+            aria-required="true"
+            autocomplete="new-password">
+          <div 
+            *ngIf="responsibleForm.get('confirmPassword')?.touched" 
+            class="error-message"
+            id="confirmPassword-error"
+            role="alert"
+            aria-live="polite">
+            <span *ngIf="responsibleForm.get('confirmPassword')?.errors?.['required']">Confirmação da senha é obrigatória</span>
+            <span *ngIf="!responsibleForm.get('confirmPassword')?.errors?.['required'] && responsibleForm.hasError('passwordMismatch')">As senhas não conferem</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="phone">WhatsApp</label>
-          <input type="tel" id="phone" formControlName="phone" (input)="formatPhone($event)"
-            (keypress)="validateNumbersOnly($event)" placeholder="(XX) XXXXX-XXXX" maxlength="15"
-            [class.error]="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched">
-          <div *ngIf="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched"
-            class="error-message">
+          <label for="phone">WhatsApp <span class="required" aria-label="campo obrigatório">*</span></label>
+          <input 
+            type="tel" 
+            id="phone" 
+            formControlName="phone" 
+            (input)="formatPhone($event)"
+            (keypress)="validateNumbersOnly($event)" 
+            placeholder="(XX) XXXXX-XXXX" 
+            maxlength="15"
+            [class.error]="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched"
+            [attr.aria-invalid]="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched"
+            [attr.aria-describedby]="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched ? 'phone-error' : null"
+            aria-required="true"
+            autocomplete="tel">
+          <div 
+            *ngIf="responsibleForm.get('phone')?.invalid && responsibleForm.get('phone')?.touched"
+            class="error-message"
+            id="phone-error"
+            role="alert"
+            aria-live="polite">
             <span *ngIf="responsibleForm.get('phone')?.errors?.['required']">WhatsApp é obrigatório</span>
-            <span *ngIf="responsibleForm.get('phone')?.errors?.['minlength']">WhatsApp deve ter pelo menos 14
-              caracteres</span>
+            <span *ngIf="responsibleForm.get('phone')?.errors?.['minlength']">WhatsApp deve ter pelo menos 14 caracteres</span>
           </div>
         </div>
       </div>
 
       <!-- Etapa 2: Endereço -->
-      <div *ngIf="isStep2" class="form-step" [formGroupName]="'address'">
+      <div *ngIf="isStep2" class="form-step" [formGroupName]="'address'" role="group" aria-labelledby="step-title">
         <div class="form-group">
-          <label for="cep">CEP</label>
+          <label for="cep">CEP <span class="required" aria-label="campo obrigatório">*</span></label>
           <div class="cep-input-container">
-            <input type="text" id="cep" formControlName="cep" (input)="formatCep($event)"
-              (keypress)="validateNumbersOnly($event)" placeholder="00000-000" maxlength="9"
+            <input 
+              type="text" 
+              id="cep" 
+              formControlName="cep" 
+              (input)="formatCep($event)"
+              (keypress)="validateNumbersOnly($event)" 
+              placeholder="00000-000" 
+              maxlength="9"
               [class.error]="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched"
-              [disabled]="isConsultingCep">
-            <div *ngIf="isConsultingCep" class="cep-loading">
-              <span>Consultando...</span>
+              [disabled]="isConsultingCep"
+              [attr.aria-invalid]="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched"
+              [attr.aria-describedby]="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched ? 'cep-error' : (isConsultingCep ? 'cep-loading' : null)"
+              [attr.aria-busy]="isConsultingCep"
+              aria-required="true"
+              autocomplete="postal-code">
+            <div *ngIf="isConsultingCep" class="cep-loading" id="cep-loading" role="status" aria-live="polite">
+              <span>Consultando CEP...</span>
             </div>
           </div>
-          <div *ngIf="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched" class="error-message">
+          <div 
+            *ngIf="addressForm.get('cep')?.invalid && addressForm.get('cep')?.touched" 
+            class="error-message"
+            id="cep-error"
+            role="alert"
+            aria-live="polite">
             <span *ngIf="addressForm.get('cep')?.errors?.['required']">CEP é obrigatório</span>
             <span *ngIf="addressForm.get('cep')?.errors?.['minlength']">CEP deve ter pelo menos 8 caracteres</span>
           </div>
@@ -179,108 +268,219 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="state">Estado</label>
-            <input type="text" id="state" formControlName="state" placeholder="Digite o estado"
-              [class.error]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched">
-            <div *ngIf="addressForm.get('state')?.invalid && addressForm.get('state')?.touched" class="error-message">
+            <label for="state">Estado <span class="required" aria-label="campo obrigatório">*</span></label>
+            <input 
+              type="text" 
+              id="state" 
+              formControlName="state" 
+              placeholder="Digite o estado"
+              [class.error]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched"
+              [attr.aria-invalid]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched"
+              [attr.aria-describedby]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched ? 'state-error' : null"
+              aria-required="true"
+              autocomplete="address-level1">
+            <div 
+              *ngIf="addressForm.get('state')?.invalid && addressForm.get('state')?.touched" 
+              class="error-message"
+              id="state-error"
+              role="alert"
+              aria-live="polite">
               <span *ngIf="addressForm.get('state')?.errors?.['required']">Estado é obrigatório</span>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="city">Cidade</label>
-            <input type="text" id="city" formControlName="city" placeholder="Digite a cidade"
-              [class.error]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched">
-            <div *ngIf="addressForm.get('city')?.invalid && addressForm.get('city')?.touched" class="error-message">
+            <label for="city">Cidade <span class="required" aria-label="campo obrigatório">*</span></label>
+            <input 
+              type="text" 
+              id="city" 
+              formControlName="city" 
+              placeholder="Digite a cidade"
+              [class.error]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched"
+              [attr.aria-invalid]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched"
+              [attr.aria-describedby]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched ? 'city-error' : null"
+              aria-required="true"
+              autocomplete="address-level2">
+            <div 
+              *ngIf="addressForm.get('city')?.invalid && addressForm.get('city')?.touched" 
+              class="error-message"
+              id="city-error"
+              role="alert"
+              aria-live="polite">
               <span *ngIf="addressForm.get('city')?.errors?.['required']">Cidade é obrigatória</span>
             </div>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="neighborhood">Bairro</label>
-          <input type="text" id="neighborhood" formControlName="neighborhood" placeholder="Digite o bairro"
-            [class.error]="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched">
-          <div *ngIf="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched"
-            class="error-message">
+          <label for="neighborhood">Bairro <span class="required" aria-label="campo obrigatório">*</span></label>
+          <input 
+            type="text" 
+            id="neighborhood" 
+            formControlName="neighborhood" 
+            placeholder="Digite o bairro"
+            [class.error]="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched"
+            [attr.aria-invalid]="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched"
+            [attr.aria-describedby]="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched ? 'neighborhood-error' : null"
+            aria-required="true">
+          <div 
+            *ngIf="addressForm.get('neighborhood')?.invalid && addressForm.get('neighborhood')?.touched"
+            class="error-message"
+            id="neighborhood-error"
+            role="alert"
+            aria-live="polite">
             <span *ngIf="addressForm.get('neighborhood')?.errors?.['required']">Bairro é obrigatório</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="street">Rua/Avenida</label>
-          <input type="text" id="street" formControlName="street" placeholder="Digite a rua ou avenida"
-            [class.error]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched">
-          <div *ngIf="addressForm.get('street')?.invalid && addressForm.get('street')?.touched" class="error-message">
+          <label for="street">Rua/Avenida <span class="required" aria-label="campo obrigatório">*</span></label>
+          <input 
+            type="text" 
+            id="street" 
+            formControlName="street" 
+            placeholder="Digite a rua ou avenida"
+            [class.error]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched"
+            [attr.aria-invalid]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched"
+            [attr.aria-describedby]="addressForm.get('street')?.invalid && addressForm.get('street')?.touched ? 'street-error' : null"
+            aria-required="true"
+            autocomplete="address-line1">
+          <div 
+            *ngIf="addressForm.get('street')?.invalid && addressForm.get('street')?.touched" 
+            class="error-message"
+            id="street-error"
+            role="alert"
+            aria-live="polite">
             <span *ngIf="addressForm.get('street')?.errors?.['required']">Rua/Avenida é obrigatória</span>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="number">Número</label>
-            <input type="text" id="number" formControlName="number" placeholder="Digite o número"
-              [class.error]="addressForm.get('number')?.invalid && addressForm.get('number')?.touched">
-            <div *ngIf="addressForm.get('number')?.invalid && addressForm.get('number')?.touched" class="error-message">
+            <label for="number">Número <span class="required" aria-label="campo obrigatório">*</span></label>
+            <input 
+              type="text" 
+              id="number" 
+              formControlName="number" 
+              placeholder="Digite o número"
+              [class.error]="addressForm.get('number')?.invalid && addressForm.get('number')?.touched"
+              [attr.aria-invalid]="addressForm.get('number')?.invalid && addressForm.get('number')?.touched"
+              [attr.aria-describedby]="addressForm.get('number')?.invalid && addressForm.get('number')?.touched ? 'number-error' : null"
+              aria-required="true">
+            <div 
+              *ngIf="addressForm.get('number')?.invalid && addressForm.get('number')?.touched" 
+              class="error-message"
+              id="number-error"
+              role="alert"
+              aria-live="polite">
               <span *ngIf="addressForm.get('number')?.errors?.['required']">Número é obrigatório</span>
             </div>
           </div>
 
           <div class="form-group">
             <label for="complement">Complemento (opcional)</label>
-            <input type="text" id="complement" formControlName="complement" placeholder="Digite o complemento">
+            <input 
+              type="text" 
+              id="complement" 
+              formControlName="complement" 
+              placeholder="Digite o complemento"
+              aria-label="Complemento do endereço (campo opcional)"
+              autocomplete="address-line2">
           </div>
         </div>
       </div>
 
       <!-- Etapa 3: Estabelecimento -->
-      <div *ngIf="isStep3" class="form-step" [formGroupName]="'establishment'">
+      <div *ngIf="isStep3" class="form-step" [formGroupName]="'establishment'" role="group" aria-labelledby="step-title">
         <div class="form-group">
-          <label for="establishmentName">Nome do estabelecimento (como aparecerá no app)</label>
-          <input type="text" id="establishmentName" formControlName="name" placeholder="Ex.: Pizzaria Bela Massas"
-            [class.error]="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched">
-          <div *ngIf="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched"
-            class="error-message">
-            <span *ngIf="establishmentForm.get('name')?.errors?.['required']">Nome do estabelecimento é
-              obrigatório</span>
-            <span *ngIf="establishmentForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2
-              caracteres</span>
+          <label for="establishmentName">Nome do estabelecimento (como aparecerá no app) <span class="required" aria-label="campo obrigatório">*</span></label>
+          <input 
+            type="text" 
+            id="establishmentName" 
+            formControlName="name" 
+            placeholder="Ex.: Pizzaria Bela Massas"
+            [class.error]="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched"
+            [attr.aria-invalid]="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched"
+            [attr.aria-describedby]="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched ? 'establishmentName-error' : null"
+            aria-required="true"
+            autocomplete="organization">
+          <div 
+            *ngIf="establishmentForm.get('name')?.invalid && establishmentForm.get('name')?.touched"
+            class="error-message"
+            id="establishmentName-error"
+            role="alert"
+            aria-live="polite">
+            <span *ngIf="establishmentForm.get('name')?.errors?.['required']">Nome do estabelecimento é obrigatório</span>
+            <span *ngIf="establishmentForm.get('name')?.errors?.['minlength']">Nome deve ter pelo menos 2 caracteres</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="cnpj">CNPJ</label>
-          <input type="text" id="cnpj" formControlName="cnpj" (input)="formatCnpj($event)"
-            (keypress)="validateNumbersOnly($event)" placeholder="00.000.000/0001-00" maxlength="18"
-            [class.error]="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched">
-          <div *ngIf="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched"
-            class="error-message">
+          <label for="cnpj">CNPJ <span class="required" aria-label="campo obrigatório">*</span></label>
+          <input 
+            type="text" 
+            id="cnpj" 
+            formControlName="cnpj" 
+            (input)="formatCnpj($event)"
+            (keypress)="validateNumbersOnly($event)" 
+            placeholder="00.000.000/0001-00" 
+            maxlength="18"
+            [class.error]="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched"
+            [attr.aria-invalid]="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched"
+            [attr.aria-describedby]="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched ? 'cnpj-error' : null"
+            aria-required="true">
+          <div 
+            *ngIf="establishmentForm.get('cnpj')?.invalid && establishmentForm.get('cnpj')?.touched"
+            class="error-message"
+            id="cnpj-error"
+            role="alert"
+            aria-live="polite">
             <span *ngIf="establishmentForm.get('cnpj')?.errors?.['required']">CNPJ é obrigatório</span>
-            <span *ngIf="establishmentForm.get('cnpj')?.errors?.['minlength']">CNPJ deve ter pelo menos 18
-              caracteres</span>
+            <span *ngIf="establishmentForm.get('cnpj')?.errors?.['minlength']">CNPJ deve ter pelo menos 18 caracteres</span>
             <span *ngIf="establishmentForm.get('cnpj')?.errors?.['invalidCnpj']">CNPJ inválido</span>
           </div>
         </div>
 
-        <div class="category-grid">
+        <fieldset class="category-grid" role="radiogroup" aria-labelledby="category-label" aria-required="true">
+          <legend id="category-label" class="sr-only">Selecione a categoria do estabelecimento</legend>
           <div *ngFor="let category of categories" class="category-option"
             [class.selected]="establishmentForm.get('categoryId')?.value === category.id"
-            (click)="establishmentForm.patchValue({categoryId: category.id}); onCategoryChange(category.id)">
-            <input type="radio" [id]="'category-' + category.id" name="categoryId" [value]="category.id"
-              formControlName="categoryId">
-            <label [for]="'category-' + category.id">{{ category.name }}</label>
+            (click)="establishmentForm.patchValue({categoryId: category.id}); onCategoryChange(category.id)"
+            (keydown.enter)="establishmentForm.patchValue({categoryId: category.id}); onCategoryChange(category.id); $event.preventDefault()"
+            (keydown.space)="establishmentForm.patchValue({categoryId: category.id}); onCategoryChange(category.id); $event.preventDefault()"
+            tabindex="0"
+            role="radio"
+            [attr.aria-checked]="establishmentForm.get('categoryId')?.value === category.id">
+            <input 
+              type="radio" 
+              [id]="'category-' + category.id" 
+              name="categoryId" 
+              [value]="category.id"
+              formControlName="categoryId"
+              tabindex="-1"
+              [attr.aria-label]="category.name">
+            <label [for]="'category-' + category.id" aria-hidden="true">{{ category.name }}</label>
           </div>
-        </div>
+        </fieldset>
 
-        <div *ngIf="establishmentForm.get('categoryId')?.invalid && establishmentForm.get('categoryId')?.touched"
-          class="error-message">
+        <div 
+          *ngIf="establishmentForm.get('categoryId')?.invalid && establishmentForm.get('categoryId')?.touched"
+          class="error-message"
+          id="category-error"
+          role="alert"
+          aria-live="polite">
           <span *ngIf="establishmentForm.get('categoryId')?.errors?.['required']">Categoria é obrigatória</span>
         </div>
 
         <div class="form-group">
-          <label for="subcategory">Subcategoria</label>
-          <select id="subcategory" formControlName="subcategoryId"
-            [class.error]="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched">
+          <label for="subcategory">Subcategoria <span class="required" aria-label="campo obrigatório">*</span></label>
+          <select 
+            id="subcategory" 
+            formControlName="subcategoryId"
+            [class.error]="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched"
+            [attr.aria-invalid]="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched"
+            [attr.aria-describedby]="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched ? 'subcategory-error' : null"
+            aria-required="true">
             <option value="">Selecione uma subcategoria</option>
             <option *ngFor="let subcategory of subcategories" [value]="subcategory.id">
               {{ subcategory.name }}
@@ -288,85 +488,155 @@
           </select>
           <div
             *ngIf="establishmentForm.get('subcategoryId')?.invalid && establishmentForm.get('subcategoryId')?.touched"
-            class="error-message">
+            class="error-message"
+            id="subcategory-error"
+            role="alert"
+            aria-live="polite">
             <span *ngIf="establishmentForm.get('subcategoryId')?.errors?.['required']">Subcategoria é obrigatória</span>
           </div>
         </div>
 
         <div *ngIf="canShowDeliveryOption()" class="form-group mb-8">
-          <p class="section-title mb-2">Serviço de delivery</p>
-          <label class="flex items-center space-x-3">
-            <input type="checkbox" id="hasDelivery" formControlName="has_delivery"
-              class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
-            <span class="text-gray-700 font-medium">Oferece serviço de delivery</span>
-          </label>
+          <fieldset>
+            <legend class="section-title mb-2">Serviço de delivery</legend>
+            <label class="flex items-center space-x-3">
+              <input 
+                type="checkbox" 
+                id="hasDelivery" 
+                formControlName="has_delivery"
+                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                aria-describedby="delivery-hint" />
+              <span class="text-gray-700 font-medium">Oferece serviço de delivery</span>
+            </label>
+            <span id="delivery-hint" class="sr-only">Marque se o estabelecimento oferece serviço de entrega</span>
+          </fieldset>
         </div>
 
         <div class="form-group">
-          <label class="section-title">Meios de contato</label>
-          <p class="section-subtitle">Ficarão visíveis em seu perfil no app.</p>
+          <fieldset>
+            <legend class="section-title">Meios de contato</legend>
+            <p class="section-subtitle" id="contact-hint">Ficarão visíveis em seu perfil no app.</p>
 
-          <div class="form-group">
-            <label for="establishmentPhone">Telefone/WhatsApp</label>
-            <input type="tel" id="establishmentPhone" formControlName="phone" (input)="formatEstablishmentPhone($event)"
-              (keypress)="validateNumbersOnly($event)" placeholder="(XX) XXXXX-XXXX" maxlength="15"
-              [class.error]="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched">
-            <div *ngIf="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched"
-              class="error-message">
-              <span *ngIf="establishmentForm.get('phone')?.errors?.['required']">Telefone/WhatsApp é obrigatório</span>
-              <span *ngIf="establishmentForm.get('phone')?.errors?.['minlength']">Telefone deve ter pelo menos 14
-                caracteres</span>
+            <div class="form-group">
+              <label for="establishmentPhone">Telefone/WhatsApp <span class="required" aria-label="campo obrigatório">*</span></label>
+              <input 
+                type="tel" 
+                id="establishmentPhone" 
+                formControlName="phone" 
+                (input)="formatEstablishmentPhone($event)"
+                (keypress)="validateNumbersOnly($event)" 
+                placeholder="(XX) XXXXX-XXXX" 
+                maxlength="15"
+                [class.error]="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched"
+                [attr.aria-invalid]="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched"
+                [attr.aria-describedby]="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched ? 'establishmentPhone-error' : 'contact-hint'"
+                aria-required="true"
+                autocomplete="tel">
+              <div 
+                *ngIf="establishmentForm.get('phone')?.invalid && establishmentForm.get('phone')?.touched"
+                class="error-message"
+                id="establishmentPhone-error"
+                role="alert"
+                aria-live="polite">
+                <span *ngIf="establishmentForm.get('phone')?.errors?.['required']">Telefone/WhatsApp é obrigatório</span>
+                <span *ngIf="establishmentForm.get('phone')?.errors?.['minlength']">Telefone deve ter pelo menos 14 caracteres</span>
+              </div>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label for="instagram">Instagram</label>
-            <input type="url" id="instagram" formControlName="instagram" placeholder="Insira o link do seu perfil">
+            <div class="form-group">
+              <label for="instagram">Instagram (opcional)</label>
+              <input 
+                type="url" 
+                id="instagram" 
+                formControlName="instagram" 
+                placeholder="Insira o link do seu perfil"
+                aria-label="Link do perfil do Instagram (campo opcional)"
+                autocomplete="url">
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Descreva a atividade do estabelecimento <span class="required" aria-label="campo obrigatório">*</span></label>
+          <textarea 
+            id="description" 
+            formControlName="description" 
+            placeholder="Ex.: Bar especializado em petiscos."
+            maxlength="100" 
+            rows="4"
+            [class.error]="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched"
+            [attr.aria-invalid]="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched"
+            [attr.aria-describedby]="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched ? 'description-error' : 'description-counter'"
+            aria-required="true"></textarea>
+          <div class="char-counter" id="description-counter" aria-live="polite" aria-atomic="true">
+            {{ establishmentForm.get('description')?.value?.length || 0 }}/100 caracteres
+          </div>
+          <div 
+            *ngIf="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched"
+            class="error-message"
+            id="description-error"
+            role="alert"
+            aria-live="polite">
+            <span *ngIf="establishmentForm.get('description')?.errors?.['maxlength']">Descrição deve ter no máximo 100 caracteres</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="description">Descreva a atividade do estabelecimento <span class="required">*</span></label>
-          <textarea id="description" formControlName="description" placeholder="Ex.: Bar especializado em petiscos."
-            maxlength="100" rows="4"
-            [class.error]="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched"></textarea>
-          <div class="char-counter">{{ establishmentForm.get('description')?.value?.length || 0 }}/100</div>
-          <div *ngIf="establishmentForm.get('description')?.invalid && establishmentForm.get('description')?.touched"
-            class="error-message">
-            <span *ngIf="establishmentForm.get('description')?.errors?.['maxlength']">Descrição deve ter no máximo 100
-              caracteres</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="section-title">Logo</label>
-          <p class="section-subtitle">Envie a logo do seu estabelecimento.</p>
+          <label class="section-title" id="logo-label">Logo <span class="required" aria-label="campo obrigatório">*</span></label>
+          <p class="section-subtitle" id="logo-hint">Envie a logo do seu estabelecimento.</p>
 
           <div class="logo-upload-area"
-            [class.error]="(establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched) || logoUploadError">
+            [class.error]="(establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched) || logoUploadError"
+            role="group"
+            aria-labelledby="logo-label"
+            [attr.aria-describedby]="logoUploadError ? 'logo-upload-error' : (establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched ? 'logo-error' : 'logo-hint')">
             <div class="upload-placeholder">
-              <input type="file" id="logoFile" accept="image/*" (change)="onLogoSelected($event)" style="display: none;"
+              <input 
+                type="file" 
+                id="logoFile" 
+                accept="image/*" 
+                (change)="onLogoSelected($event)" 
+                style="display: none;"
+                aria-label="Selecionar arquivo de logo do estabelecimento"
+                aria-required="true"
                 #fileInput>
-              <div class="upload-icon">↑</div>
-              <button type="button" class="upload-btn" (click)="fileInput.click()">
+              <div class="upload-icon" aria-hidden="true">↑</div>
+              <button 
+                type="button" 
+                class="upload-btn" 
+                (click)="fileInput.click()"
+                (keydown.enter)="fileInput.click(); $event.preventDefault()"
+                (keydown.space)="fileInput.click(); $event.preventDefault()"
+                aria-label="Selecionar imagem da logo"
+                [attr.aria-describedby]="'logo-hint'">
                 Selecionar imagem
               </button>
             </div>
 
-            <div *ngIf="establishmentForm.get('logoPreview')?.value" class="logo-preview">
-              <img [src]="establishmentForm.get('logoPreview')?.value" alt="Logo preview" class="preview-image">
-              <button type="button" class="remove-btn" (click)="removeLogo()">
+            <div *ngIf="establishmentForm.get('logoPreview')?.value" class="logo-preview" role="img" aria-label="Preview da logo selecionada">
+              <img [src]="establishmentForm.get('logoPreview')?.value" alt="Preview da logo do estabelecimento" class="preview-image">
+              <button 
+                type="button" 
+                class="remove-btn" 
+                (click)="removeLogo()"
+                (keydown.enter)="removeLogo(); $event.preventDefault()"
+                (keydown.space)="removeLogo(); $event.preventDefault()"
+                aria-label="Remover logo selecionada">
                 Remover
               </button>
             </div>
 
-            <div *ngIf="logoUploadError" class="upload-error-message">
-              <mat-icon class="error-icon">error</mat-icon>
+            <div *ngIf="logoUploadError" class="upload-error-message" id="logo-upload-error" role="alert" aria-live="assertive">
+              <mat-icon class="error-icon" aria-hidden="true">error</mat-icon>
               <span>{{ logoUploadError }}</span>
             </div>
 
-            <div *ngIf="!logoUploadError && establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched"
-              class="error-message">
+            <div 
+              *ngIf="!logoUploadError && establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched"
+              class="error-message"
+              id="logo-error"
+              role="alert"
+              aria-live="polite">
               <span *ngIf="establishmentForm.get('logoFile')?.errors?.['required']">Logo é obrigatória</span>
             </div>
           </div>
@@ -374,17 +644,17 @@
       </div>
 
       <!-- Etapa 4: Promoção obrigatória -->
-      <div *ngIf="isStep4" class="form-step">
+      <div *ngIf="isStep4" class="form-step" role="group" aria-labelledby="step-title">
         <!-- Seção de Promoção Obrigatória -->
         <div class="form-group" [formGroup]="promotionForm">
-          <label class="section-title">Promoção obrigatória</label>
-          <p class="section-subtitle">Crie uma promoção que aparecerá no aplicativo para atrair clientes.</p>
+          <label class="section-title" id="promotion-label">Promoção obrigatória</label>
+          <p class="section-subtitle" id="promotion-hint">Crie uma promoção que aparecerá no aplicativo para atrair clientes.</p>
 
           <!-- Alerta informativo sobre regras da promoção -->
-          <div class="promotion-alert">
-            <div class="alert-icon">⚠️</div>
+          <div class="promotion-alert" role="region" aria-labelledby="promotion-rules-title">
+            <div class="alert-icon" aria-hidden="true">⚠️</div>
             <div class="alert-content">
-              <h4>Regras importantes para sua promoção:</h4>
+              <h4 id="promotion-rules-title">Regras importantes para sua promoção:</h4>
               <ul>
                 <li><strong>Desconto mínimo:</strong> Sua promoção deve oferecer pelo menos <strong>15% de
                     desconto</strong> para ser aprovada</li>
@@ -406,52 +676,83 @@
           <div class="promotion-container">
             <!-- Campo de texto da promoção -->
             <div class="form-group">
-              <label for="promotionText">Texto da promoção</label>
-              <textarea id="promotionText" formControlName="text"
-                placeholder="Descreva sua promoção especial que aparecerá no app..." maxlength="200" rows="4"
+              <label for="promotionText">Texto da promoção <span class="required" aria-label="campo obrigatório">*</span></label>
+              <textarea 
+                id="promotionText" 
+                formControlName="text"
+                placeholder="Descreva sua promoção especial que aparecerá no app..." 
+                maxlength="200" 
+                rows="4"
                 [class.error]="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched"
-                class="promotion-textarea"></textarea>
-              <div class="char-counter">{{ promotionForm.get('text')?.value?.length || 0 }}/200</div>
-              <div *ngIf="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched"
-                class="error-message">
+                class="promotion-textarea"
+                [attr.aria-invalid]="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched"
+                [attr.aria-describedby]="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched ? 'promotionText-error' : 'promotionText-counter'"
+                aria-required="true"></textarea>
+              <div class="char-counter" id="promotionText-counter" aria-live="polite" aria-atomic="true">
+                {{ promotionForm.get('text')?.value?.length || 0 }}/200 caracteres
+              </div>
+              <div 
+                *ngIf="promotionForm.get('text')?.invalid && promotionForm.get('text')?.touched"
+                class="error-message"
+                id="promotionText-error"
+                role="alert"
+                aria-live="polite">
                 <span *ngIf="promotionForm.get('text')?.errors?.['required']">Texto da promoção é obrigatório</span>
-                <span *ngIf="promotionForm.get('text')?.errors?.['minlength']">Texto deve ter pelo menos 10
-                  caracteres</span>
-                <span *ngIf="promotionForm.get('text')?.errors?.['maxlength']">Texto deve ter no máximo 200
-                  caracteres</span>
+                <span *ngIf="promotionForm.get('text')?.errors?.['minlength']">Texto deve ter pelo menos 10 caracteres</span>
+                <span *ngIf="promotionForm.get('text')?.errors?.['maxlength']">Texto deve ter no máximo 200 caracteres</span>
               </div>
             </div>
 
             <!-- Upload de fotos -->
             <div class="form-group">
-              <label>Fotos da promoção (máximo 3) <span class="required">*</span></label>
-              <p class="section-subtitle">Adicione pelo menos 1 foto para ilustrar sua promoção.</p>
+              <label id="promotion-photos-label">Fotos da promoção (máximo 3) <span class="required" aria-label="campo obrigatório">*</span></label>
+              <p class="section-subtitle" id="promotion-photos-hint">Adicione pelo menos 1 foto para ilustrar sua promoção.</p>
 
-              <div class="photos-upload-container">
+              <div class="photos-upload-container" role="group" aria-labelledby="promotion-photos-label" aria-describedby="promotion-photos-hint">
                 <!-- Área de upload -->
                 <div class="photos-upload-area" *ngIf="promotionPhotos.length < 3">
-                  <input type="file" id="promotionPhotos" accept="image/*" multiple
-                    (change)="onPromotionPhotoSelected($event)" style="display: none;" #photoInput>
-                  <div class="upload-placeholder" (click)="photoInput.click()">
-                    <div class="upload-icon">📷</div>
+                  <input 
+                    type="file" 
+                    id="promotionPhotos" 
+                    accept="image/*" 
+                    multiple
+                    (change)="onPromotionPhotoSelected($event)" 
+                    style="display: none;"
+                    aria-label="Selecionar fotos da promoção"
+                    #photoInput>
+                  <div 
+                    class="upload-placeholder" 
+                    (click)="photoInput.click()"
+                    (keydown.enter)="photoInput.click(); $event.preventDefault()"
+                    (keydown.space)="photoInput.click(); $event.preventDefault()"
+                    tabindex="0"
+                    role="button"
+                    [attr.aria-label]="'Adicionar fotos da promoção. ' + promotionPhotos.length + ' de 3 fotos adicionadas'">
+                    <div class="upload-icon" aria-hidden="true">📷</div>
                     <span class="upload-text">Adicionar fotos</span>
-                    <span class="upload-hint">{{ promotionPhotos.length }}/3 fotos</span>
+                    <span class="upload-hint" aria-hidden="true">{{ promotionPhotos.length }}/3 fotos</span>
                   </div>
                 </div>
 
                 <!-- Upload errors -->
-                <div *ngIf="promotionPhotosUploadErrors.length > 0" class="upload-errors-container">
+                <div *ngIf="promotionPhotosUploadErrors.length > 0" class="upload-errors-container" role="alert" aria-live="assertive">
                   <div *ngFor="let error of promotionPhotosUploadErrors" class="upload-error-message">
-                    <mat-icon class="error-icon">error</mat-icon>
+                    <mat-icon class="error-icon" aria-hidden="true">error</mat-icon>
                     <span>{{ error }}</span>
                   </div>
                 </div>
 
                 <!-- Preview das fotos -->
-                <div class="photos-preview" *ngIf="promotionPhotos.length > 0">
-                  <div *ngFor="let photo of promotionPhotos.controls; let i = index" class="photo-item">
-                    <img [src]="photo.get('preview')?.value" alt="Preview da promoção" class="photo-preview">
-                    <button type="button" class="remove-photo-btn" (click)="removePromotionPhoto(i)">
+                <div class="photos-preview" *ngIf="promotionPhotos.length > 0" role="list" aria-label="Fotos da promoção selecionadas">
+                  <div *ngFor="let photo of promotionPhotos.controls; let i = index" class="photo-item" role="listitem">
+                    <img [src]="photo.get('preview')?.value" [attr.alt]="'Preview da foto ' + (i + 1) + ' da promoção'" class="photo-preview">
+                    <button 
+                      type="button" 
+                      class="remove-photo-btn" 
+                      (click)="removePromotionPhoto(i)"
+                      (keydown.enter)="removePromotionPhoto(i); $event.preventDefault()"
+                      (keydown.space)="removePromotionPhoto(i); $event.preventDefault()"
+                      [attr.aria-label]="'Remover foto ' + (i + 1)">
                       ×
                     </button>
                   </div>
@@ -463,124 +764,219 @@
 
         <!-- Seção de Horários de Funcionamento -->
         <div class="form-group">
-          <label class="section-title">Horários de funcionamento</label>
-          <p class="section-subtitle">Defina os horários de funcionamento do seu estabelecimento.</p>
+          <fieldset>
+            <legend class="section-title">Horários de funcionamento</legend>
+            <p class="section-subtitle" id="operating-hours-hint">Defina os horários de funcionamento do seu estabelecimento.</p>
 
-          <div class="operating-hours-container">
-            <div class="operating-hours-table">
-              <div *ngFor="let dayForm of operatingHoursArray.controls; let i = index" class="operating-hours-row"
-                [formGroup]="$any(dayForm)">
-                <div class="day-label">
-                  <span>{{ getDayLabel(dayForm.get('dayOfWeek')?.value) }}</span>
-                </div>
+            <div class="operating-hours-container" role="table" aria-label="Horários de funcionamento por dia da semana" aria-describedby="operating-hours-hint">
+              <div class="operating-hours-table">
+                <div *ngFor="let dayForm of operatingHoursArray.controls; let i = index" class="operating-hours-row"
+                  [formGroup]="$any(dayForm)" role="row">
+                  <div class="day-label" role="rowheader">
+                    <span>{{ getDayLabel(dayForm.get('dayOfWeek')?.value) }}</span>
+                  </div>
 
-                <div class="time-inputs">
-                  <input type="text" formControlName="startTime" placeholder="09:00" maxlength="5"
-                    (input)="formatTime($event)" class="time-input">
+                  <div class="time-inputs" role="cell">
+                    <label [for]="'startTime-' + i" class="sr-only">
+                      Horário de abertura de {{ getDayLabel(dayForm.get('dayOfWeek')?.value) }}
+                    </label>
+                    <input 
+                      type="text" 
+                      [id]="'startTime-' + i"
+                      formControlName="startTime" 
+                      placeholder="09:00" 
+                      maxlength="5"
+                      (input)="formatTime($event)" 
+                      class="time-input"
+                      [attr.aria-label]="'Horário de abertura de ' + getDayLabel(dayForm.get('dayOfWeek')?.value)"
+                      [attr.disabled]="dayForm.get('isClosed')?.value ? true : null">
 
-                  <span class="time-separator">até</span>
+                    <span class="time-separator" aria-hidden="true">até</span>
 
-                  <input type="text" formControlName="endTime" placeholder="18:00" maxlength="5"
-                    (input)="formatTime($event)" class="time-input">
-                </div>
+                    <label [for]="'endTime-' + i" class="sr-only">
+                      Horário de fechamento de {{ getDayLabel(dayForm.get('dayOfWeek')?.value) }}
+                    </label>
+                    <input 
+                      type="text" 
+                      [id]="'endTime-' + i"
+                      formControlName="endTime" 
+                      placeholder="18:00" 
+                      maxlength="5"
+                      (input)="formatTime($event)" 
+                      class="time-input"
+                      [attr.aria-label]="'Horário de fechamento de ' + getDayLabel(dayForm.get('dayOfWeek')?.value)"
+                      [attr.disabled]="dayForm.get('isClosed')?.value ? true : null">
+                  </div>
 
-                <div class="closed-checkbox">
-                  <label class="checkbox-label">
-                    <input type="checkbox" [checked]="dayForm.get('isClosed')?.value"
-                      (change)="onDayClosedChange(i, $event.target.checked)">
-                    <span class="checkbox-text">Fechado</span>
-                  </label>
+                  <div class="closed-checkbox" role="cell">
+                    <label class="checkbox-label">
+                      <input 
+                        type="checkbox" 
+                        [id]="'isClosed-' + i"
+                        [checked]="dayForm.get('isClosed')?.value"
+                        (change)="onDayClosedChange(i, $any($event.target).checked)"
+                        [attr.aria-label]="'Marcar ' + getDayLabel(dayForm.get('dayOfWeek')?.value) + ' como fechado'">
+                      <span class="checkbox-text">Fechado</span>
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </fieldset>
         </div>
       </div>
 
       <!-- Etapa 5: Regras e Informações -->
-      <div *ngIf="isStep5" class="form-step" [formGroupName]="'additionalInfo'">
+      <div *ngIf="isStep5" class="form-step" [formGroupName]="'additionalInfo'" role="group" aria-labelledby="step-title">
         <div class="form-group">
-          <label class="section-title">Regras do estabelecimento</label>
+          <fieldset>
+            <legend class="section-title" id="rules-label">Regras do estabelecimento</legend>
 
-          <div formArrayName="rulesItems">
-            <div *ngFor="let item of rulesItems.controls; let i = index" [formGroupName]="i" class="checkbox-group">
-              <input type="checkbox" formControlName="checked" />
+            <div formArrayName="rulesItems" role="list" aria-labelledby="rules-label">
+              <div *ngFor="let item of rulesItems.controls; let i = index" [formGroupName]="i" class="checkbox-group" role="listitem">
+                <label [for]="'rule-check-' + i" class="sr-only">
+                  {{ item.get('checked')?.value ? 'Regra selecionada' : 'Selecionar regra' }}
+                </label>
+                <input 
+                  type="checkbox" 
+                  [id]="'rule-check-' + i"
+                  formControlName="checked"
+                  [attr.aria-describedby]="'rule-name-' + i"
+                  [attr.aria-label]="'Selecionar regra: ' + (item.get('name')?.value || 'nova regra')" />
 
-              <input type="text" formControlName="name" placeholder="Digite a regra..."
-                [disabled]="item.get('checked')?.value" [class.input-active]="item.get('checked')?.value" />
+                <label [for]="'rule-name-' + i" class="sr-only">Texto da regra {{ i + 1 }}</label>
+                <input 
+                  type="text" 
+                  [id]="'rule-name-' + i"
+                  formControlName="name" 
+                  placeholder="Digite a regra..."
+                  [disabled]="item.get('checked')?.value" 
+                  [class.input-active]="item.get('checked')?.value"
+                  [attr.aria-label]="'Texto da regra ' + (i + 1)" />
 
-              <button type="button" (click)="removeRuleItem(i)" class="btn-trash">
-                🗑
+                <button 
+                  type="button" 
+                  (click)="removeRuleItem(i)" 
+                  class="btn-trash"
+                  [attr.aria-label]="'Remover regra ' + (i + 1)">
+                  <span aria-hidden="true">🗑</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- container centralizado -->
+            <div class="add-btn-container">
+              <button 
+                type="button" 
+                (click)="addRuleItem()" 
+                class="btn-add"
+                aria-label="Adicionar nova regra do estabelecimento">
+                + Adicionar regra
               </button>
             </div>
-          </div>
-
-          <!-- container centralizado -->
-          <div class="add-btn-container">
-            <button type="button" (click)="addRuleItem()" class="btn-add">
-              + Adicionar regra
-            </button>
-          </div>
+          </fieldset>
         </div>
 
         <div *ngIf="canShowDeliveryItemsRules()" class="form-group">
-          <label class="section-title">Regras de entrega</label>
+          <fieldset>
+            <legend class="section-title" id="delivery-rules-label">Regras de entrega</legend>
 
-          <div formArrayName="deliveryRulesItems">
-            <div *ngFor="let item of deliveryRulesItems.controls; let i = index" [formGroupName]="i"
-              class="checkbox-group">
-              <input type="checkbox" formControlName="checked" />
+            <div formArrayName="deliveryRulesItems" role="list" aria-labelledby="delivery-rules-label">
+              <div *ngFor="let item of deliveryRulesItems.controls; let i = index" [formGroupName]="i"
+                class="checkbox-group" role="listitem">
+                <label [for]="'delivery-rule-check-' + i" class="sr-only">
+                  {{ item.get('checked')?.value ? 'Regra de entrega selecionada' : 'Selecionar regra de entrega' }}
+                </label>
+                <input 
+                  type="checkbox" 
+                  [id]="'delivery-rule-check-' + i"
+                  formControlName="checked"
+                  [attr.aria-describedby]="'delivery-rule-name-' + i"
+                  [attr.aria-label]="'Selecionar regra de entrega: ' + (item.get('name')?.value || 'nova regra')" />
 
-              <input type="text" formControlName="name" placeholder="Digite a regra de entrega..."
-                [disabled]="item.get('checked')?.value" [class.input-active]="item.get('checked')?.value" />
+                <label [for]="'delivery-rule-name-' + i" class="sr-only">Texto da regra de entrega {{ i + 1 }}</label>
+                <input 
+                  type="text" 
+                  [id]="'delivery-rule-name-' + i"
+                  formControlName="name" 
+                  placeholder="Digite a regra de entrega..."
+                  [disabled]="item.get('checked')?.value" 
+                  [class.input-active]="item.get('checked')?.value"
+                  [attr.aria-label]="'Texto da regra de entrega ' + (i + 1)" />
 
-              <button type="button" (click)="removeDeliveryRuleItem(i)" class="btn-trash">
-                🗑
+                <button 
+                  type="button" 
+                  (click)="removeDeliveryRuleItem(i)" 
+                  class="btn-trash"
+                  [attr.aria-label]="'Remover regra de entrega ' + (i + 1)">
+                  <span aria-hidden="true">🗑</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="add-btn-container">
+              <button 
+                type="button" 
+                (click)="addDeliveryRuleItem()" 
+                class="btn-add"
+                aria-label="Adicionar nova regra de entrega">
+                + Adicionar regra de entrega
               </button>
             </div>
-          </div>
-
-          <div class="add-btn-container">
-            <button type="button" (click)="addDeliveryRuleItem()" class="btn-add">
-              + Adicionar regra de entrega
-            </button>
-          </div>
+          </fieldset>
         </div>
 
 
         <div class="form-group">
-          <label class="section-title">Informações do estabelecimento</label>
+          <fieldset>
+            <legend class="section-title" id="informational-label">Informações do estabelecimento</legend>
 
-          <div formArrayName="informationalItems" class="cards-grid">
-            <div *ngFor="let item of informationalItems.controls; let i = index" [formGroupName]="i" class="card-item"
-              [class.active]="item.get('checked')?.value"
-              (click)="item.get('checked')?.setValue(!item.get('checked')?.value)">
-              <!-- Checkbox oculto -->
-              <input type="checkbox" formControlName="checked" hidden />
+            <div formArrayName="informationalItems" class="cards-grid" role="group" aria-labelledby="informational-label">
+              <div *ngFor="let item of informationalItems.controls; let i = index" [formGroupName]="i" class="card-item"
+                [class.active]="item.get('checked')?.value"
+                (click)="item.get('checked')?.setValue(!item.get('checked')?.value)"
+                (keydown.enter)="item.get('checked')?.setValue(!item.get('checked')?.value); $event.preventDefault()"
+                (keydown.space)="item.get('checked')?.setValue(!item.get('checked')?.value); $event.preventDefault()"
+                tabindex="0"
+                role="checkbox"
+                [attr.aria-checked]="item.get('checked')?.value"
+                [attr.aria-label]="item.get('name')?.value">
+                <!-- Checkbox oculto -->
+                <input type="checkbox" formControlName="checked" hidden tabindex="-1" />
 
-              <!-- Ícone -->
-              <div class="card-icon">
-                <mat-icon class="text-4xl">{{ item.get('icon')?.value }}</mat-icon>
-              </div>
+                <!-- Ícone -->
+                <div class="card-icon" aria-hidden="true">
+                  <mat-icon class="text-4xl">{{ item.get('icon')?.value }}</mat-icon>
+                </div>
 
-              <!-- Texto -->
-              <div class="card-text">
-                {{ item.get('name')?.value }}
+                <!-- Texto -->
+                <div class="card-text" aria-hidden="true">
+                  {{ item.get('name')?.value }}
+                </div>
               </div>
             </div>
-          </div>
+          </fieldset>
         </div>
       </div>
 
 
       <!-- Botões de Navegação -->
-      <div class="form-actions">
-        <a href="#" (click)="previousStep(); $event.preventDefault()" class="btn-back">
+      <div class="form-actions" role="navigation" aria-label="Navegação do formulário">
+        <a 
+          href="#" 
+          (click)="goToPreviousStep(); $event.preventDefault()" 
+          (keydown.enter)="goToPreviousStep(); $event.preventDefault()"
+          class="btn-back"
+          [attr.aria-label]="currentStep === 1 ? 'Voltar para página de login' : 'Voltar para etapa anterior'">
           Voltar
         </a>
-        <button type="submit" class="btn-continue" [disabled]="isLoading">
+        <button 
+          type="submit" 
+          class="btn-continue" 
+          [disabled]="isLoading"
+          [attr.aria-label]="isLoading ? 'Carregando...' : (currentStep === 5 ? 'Finalizar cadastro' : 'Continuar para próxima etapa')">
           <span *ngIf="!isLoading">{{ buttonText }}</span>
-          <span *ngIf="isLoading">Carregando...</span>
+          <span *ngIf="isLoading" role="status" aria-live="polite">Carregando...</span>
         </button>
       </div>
     </form>

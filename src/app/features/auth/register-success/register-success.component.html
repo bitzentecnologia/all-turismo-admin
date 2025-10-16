@@ -1,21 +1,21 @@
-<div class="success-container">
+<div class="success-container" role="main">
   <div class="success-card">
     <header class="success-header">
       <div class="logo">
-        <img src="assets/images/logo/logo5.png" alt="ALLTURISMO" class="logo-image">
-        <span class="logo-text">ALLTURISMO</span>
+        <img src="assets/images/logo/logo5.png" alt="Logo ALLTURISMO" class="logo-image">
+        <span class="logo-text" aria-hidden="true">ALLTURISMO</span>
       </div>
     </header>
 
     <main class="success-content">
-      <section class="success-hero">
+      <section class="success-hero" role="status" aria-live="polite">
         <div class="success-icon" aria-hidden="true">
           <span class="checkmark">✓</span>
         </div>
 
         <div class="success-text">
           <p class="success-tagline">Cadastro concluído</p>
-          <h1 class="success-title">Parabéns!</h1>
+          <h1 class="success-title" tabindex="-1" id="success-title">Parabéns!</h1>
           <h2 class="success-subtitle">Seu cadastro foi realizado com sucesso</h2>
         </div>
 
@@ -25,41 +25,41 @@
         </div>
       </section>
 
-      <section class="next-steps">
-        <h3 class="section-title">Próximos passos</h3>
-        <ul class="steps-list">
-          <li class="step-item">
-            <span class="step-icon">1</span>
+      <section class="next-steps" aria-labelledby="next-steps-title">
+        <h3 class="section-title" id="next-steps-title">Próximos passos</h3>
+        <ol class="steps-list" role="list">
+          <li class="step-item" role="listitem">
+            <span class="step-icon" aria-hidden="true">1</span>
             <span class="step-text">Análise dos dados fornecidos</span>
           </li>
-          <li class="step-item">
-            <span class="step-icon">2</span>
+          <li class="step-item" role="listitem">
+            <span class="step-icon" aria-hidden="true">2</span>
             <span class="step-text">Validação do estabelecimento</span>
           </li>
-          <li class="step-item">
-            <span class="step-icon">3</span>
+          <li class="step-item" role="listitem">
+            <span class="step-icon" aria-hidden="true">3</span>
             <span class="step-text">Configuração da sua conta</span>
           </li>
-          <li class="step-item">
-            <span class="step-icon">4</span>
+          <li class="step-item" role="listitem">
+            <span class="step-icon" aria-hidden="true">4</span>
             <span class="step-text">Ativação do perfil no app</span>
           </li>
-        </ul>
+        </ol>
       </section>
 
-      <section class="contact-info">
-        <h3 class="section-title">Dúvidas? Fale com a gente</h3>
+      <section class="contact-info" aria-labelledby="contact-title">
+        <h3 class="section-title" id="contact-title">Dúvidas? Fale com a gente</h3>
         <p>Estamos prontos para ajudar nos próximos passos da parceria.</p>
-        <div class="contact-list">
-          <a class="contact-link" href="mailto:contato@allturismo.com.br">
+        <nav class="contact-list" aria-label="Informações de contato">
+          <a class="contact-link" href="mailto:contato@allturismo.com.br" aria-label="Enviar e-mail para contato@allturismo.com.br">
             <span class="contact-icon" aria-hidden="true">📧</span>
             <span class="contact-label">contato@allturismo.com.br</span>
           </a>
-          <a class="contact-link" href="tel:+5548988356484">
+          <a class="contact-link" href="tel:+5548988356484" aria-label="Ligar para (48) 98835-6484">
             <span class="contact-icon" aria-hidden="true">📱</span>
             <span class="contact-label">(48) 98835-6484</span>
           </a>
-        </div>
+        </nav>
       </section>
     </main>
   </div>

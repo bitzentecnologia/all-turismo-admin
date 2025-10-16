@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -29,7 +29,7 @@ import { passwordMatchValidator } from './password-match.validator';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, AfterViewChecked {
   currentStep: number = 1;
   private loadingState: LoadingState = {
     isLoading: false,
@@ -40,6 +40,10 @@ export class RegisterComponent implements OnInit {
   errorMessage: string = '';
   errorMessages: string[] = [];
   environment = environment;
+  
+  @ViewChild('errorAlert') errorAlert?: ElementRef;
+  private shouldFocusError = false;
+  private lastStep: number = 1;
 
   categories: DropDownItem[] = [];
   subcategories: DropDownItem[] = [];
@@ -95,6 +99,13 @@ export class RegisterComponent implements OnInit {
       next: res => (this.categories = res),
       error: err => console.error('Erro ao carregar categorias:', err),
     });
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.shouldFocusError && this.errorAlert) {
+      this.errorAlert.nativeElement.focus();
+      this.shouldFocusError = false;
+    }
   }
 
   // Finalizar registro - NOVO PROCESSO EM 3 ETAPAS
@@ -485,9 +496,11 @@ export class RegisterComponent implements OnInit {
 
       setTimeout(() => {
         this.stopLoading('step-navigation');
+        this.lastStep = this.currentStep;
         if (this.currentStep < 5) {
           this.currentStep++;
           console.log('Moving to step:', this.currentStep);
+          this.focusFirstFormElement();
         } else {
           this.finishRegistration();
         }
@@ -497,13 +510,24 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  previousStep(): void {
+  goToPreviousStep(): void {
     if (this.currentStep > 1) {
+      this.lastStep = this.currentStep;
       this.currentStep--;
       this.scrollToTop();
+      setTimeout(() => this.focusFirstFormElement(), 100);
     } else {
       this.router.navigate(['/login']);
     }
+  }
+
+  private focusFirstFormElement(): void {
+    setTimeout(() => {
+      const firstInput = document.querySelector('.form-step input:not([type="hidden"]), .form-step select, .form-step textarea') as HTMLElement;
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }, 100);
   }
 
   // Validação por etapa
@@ -823,6 +847,7 @@ export class RegisterComponent implements OnInit {
     this.showError = true;
     this.errorMessage = message;
     this.errorMessages = messagesList;
+    this.shouldFocusError = true;
     this.scrollToTop();
   }
 
