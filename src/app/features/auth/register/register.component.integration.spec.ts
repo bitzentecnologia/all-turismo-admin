@@ -19,6 +19,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
   const mockLogoFile = new File(['logo content'], 'logo.png', { type: 'image/png' });
   const mockPromoPhoto1 = new File(['photo1 content'], 'photo1.jpg', { type: 'image/jpeg' });
   const mockPromoPhoto2 = new File(['photo2 content'], 'photo2.jpg', { type: 'image/jpeg' });
+  const VALID_CNPJ = '32.554.300/7315-88';
 
   const validResponsibleData = {
     name: 'João Silva',
@@ -134,7 +135,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       // Step 3: Fill establishment data with logo file
       component.establishmentForm.patchValue({
         name: 'Restaurante Exemplo',
-        cnpj: '12.345.678/0001-90',
+        cnpj: VALID_CNPJ,
         categoryId: 'cat1',
         phone: '(11) 98888-7777',
         instagram: '@restaurante',
@@ -223,7 +224,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       expect(component.isLoading).toBeTrue();
 
       // Wait for uploads to complete
-      tick(100);
+      tick(1000);
 
       // Verify upload service was called for logo and photos
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockLogoFile);
@@ -246,7 +247,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
           }),
           establishment: jasmine.objectContaining({
             name: 'Restaurante Exemplo',
-            cnpj: '12.345.678/0001-90',
+            cnpj: VALID_CNPJ,
             file_upload_id: 'uploaded-file-id',
             photo_company_1_id: 'uploaded-file-id',
             photo_company_2_id: 'uploaded-file-id',
@@ -263,7 +264,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       );
 
       // Wait for navigation
-      tick(100);
+      tick(1000);
 
       // Verify navigation to success page
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/registro-sucesso']);
@@ -282,7 +283,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
 
       component.establishmentForm.patchValue({
         name: 'Teste Hotel',
-        cnpj: '12.345.678/0001-90',
+        cnpj: VALID_CNPJ,
         categoryId: 'cat2',
         phone: '(11) 98888-7777',
         description: 'Hotel com excelente infraestrutura e localização privilegiada',
@@ -307,7 +308,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       tick(1000);
 
       component.nextStep();
-      tick(100);
+      tick(1000);
 
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/registro-sucesso']);
     }));
@@ -327,7 +328,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       // Fill establishment form with logo
       component.establishmentForm.patchValue({
         name: 'Restaurante Teste',
-        cnpj: '12.345.678/0001-90',
+        cnpj: VALID_CNPJ,
         categoryId: 'cat1',
         phone: '(11) 98888-7777',
         description: 'Descrição do restaurante para teste de upload',
@@ -362,7 +363,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       };
       uploadServiceSpy.uploadFile.and.returnValue(throwError(() => sizeError));
 
-      tick(100);
+      tick(1000);
 
       expect(component.showError).toBeTrue();
       expect(component.errorMessage).toContain('Erro ao enviar');
@@ -380,7 +381,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
 
       component.establishmentForm.patchValue({
         name: 'Estabelecimento Teste',
-        cnpj: '12.345.678/0001-90',
+        cnpj: VALID_CNPJ,
         categoryId: 'cat1',
         phone: '(11) 98888-7777',
         description: 'Descrição completa do estabelecimento com detalhes',
@@ -420,7 +421,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
         return throwError(() => formatError);
       });
 
-      tick(100);
+      tick(1000);
 
       expect(component.showError).toBeTrue();
       expect(component.errorMessage).toContain('Erro ao enviar');
@@ -437,7 +438,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
 
       component.establishmentForm.patchValue({
         name: 'Nome do Local',
-        cnpj: '12.345.678/0001-90',
+        cnpj: VALID_CNPJ,
         categoryId: 'cat1',
         phone: '(11) 98888-7777',
         description: 'Uma descrição válida com pelo menos alguns caracteres',
@@ -469,7 +470,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       };
       uploadServiceSpy.uploadFile.and.returnValue(throwError(() => networkError));
 
-      tick(100);
+      tick(1000);
 
       expect(component.showError).toBeTrue();
       expect(component.errorMessage).toContain('Erro ao enviar');
@@ -502,7 +503,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
 
       component.establishmentForm.patchValue({
         name: 'Estabelecimento Final',
-        cnpj: '12.345.678/0001-90',
+        cnpj: VALID_CNPJ,
         categoryId: 'cat1',
         phone: '(11) 98888-7777',
         description: 'Descrição final do estabelecimento para submissão',
@@ -531,7 +532,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       component.nextStep();
       expect(component.isLoading).toBeTrue();
 
-      tick(100);
+      tick(1000);
 
       expect(component.isLoading).toBeFalse();
     }));
@@ -548,7 +549,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
 
       component.establishmentForm.patchValue({
         name: 'Parceiro Teste',
-        cnpj: '12.345.678/0001-90',
+        cnpj: VALID_CNPJ,
         categoryId: 'cat1',
         phone: '(11) 98888-7777',
         description: 'Parceiro de teste para validação de loading state',
@@ -583,15 +584,12 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       // Verify loading starts immediately
       expect(component.isLoading).toBeTrue();
 
-      tick(50);
-      // Loading should persist during uploads
-      expect(uploadServiceSpy.uploadFile).toHaveBeenCalled();
-
-      tick(50);
-      // Loading should persist until navigation completes
+      tick(1000);
+      // After delay, uploads and registration should execute
+      expect(uploadServiceSpy.uploadFile).toHaveBeenCalledTimes(3);
       expect(registerServiceSpy.register).toHaveBeenCalled();
 
-      tick(100);
+      tick(0);
       expect(component.isLoading).toBeFalse();
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/registro-sucesso']);
     }));
@@ -625,7 +623,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
 
       component.establishmentForm.patchValue({
         name: 'Restaurante Fechado Domingos',
-        cnpj: '12.345.678/0001-90',
+        cnpj: VALID_CNPJ,
         categoryId: 'cat1',
         phone: '(11) 98888-7777',
         description: 'Restaurante que fecha aos domingos e funciona outros dias',
@@ -659,7 +657,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
 
       component.establishmentForm.patchValue({
         name: 'Estabelecimento Horários',
-        cnpj: '12.345.678/0001-90',
+        cnpj: VALID_CNPJ,
         categoryId: 'cat1',
         phone: '(11) 98888-7777',
         description: 'Estabelecimento para testar horários de funcionamento',
@@ -692,7 +690,7 @@ describe('RegisterComponent - End-to-End Integration Tests', () => {
       tick(1000);
 
       component.nextStep();
-      tick(100);
+      tick(1000);
 
       expect(registerServiceSpy.register).toHaveBeenCalledWith(
         jasmine.objectContaining({
