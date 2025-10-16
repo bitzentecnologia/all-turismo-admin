@@ -742,6 +742,10 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
     return this.registerForm.get('operatingHours') as FormArray;
   }
 
+  get operatingHours(): FormArray {
+    return this.registerForm.get('operatingHours') as FormArray;
+  }
+
   onDayClosedChange(index: number, isClosed: boolean): void {
     const dayFormGroup = this.operatingHoursArray.at(index) as FormGroup;
     dayFormGroup.patchValue({ isClosed });
