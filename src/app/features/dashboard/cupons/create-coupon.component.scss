@@ -328,45 +328,48 @@
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  align-items: center;
+  gap: 1.25rem;
   margin-top: 2.5rem;
   padding-top: 0;
 }
 
 .cancel-button {
-  padding: 0.625rem 1.5rem;
+  padding: 0;
   background: transparent;
   border: none;
-  border-radius: 8px;
-  color: #3b82f6;
-  font-size: 0.9375rem;
+  border-radius: 0;
+  color: #4285f4;
+  font-size: 1rem;
   font-weight: 400;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: opacity 0.2s;
 
   &:hover {
-    color: #2563eb;
+    opacity: 0.8;
   }
 }
 
 .submit-button {
-  padding: 0.625rem 1.5rem;
-  background: #3b82f6;
+  padding: 0.875rem 2.5rem;
+  background: #4285f4;
   border: none;
-  border-radius: 8px;
+  border-radius: 50px;
   color: white;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s;
+  min-width: 160px;
 
   &:hover:not(:disabled) {
-    background: #2563eb;
+    background: #3367d6;
   }
 
   &:disabled {
     background: #d1d5db;
     cursor: not-allowed;
+    opacity: 0.6;
   }
 }
 
