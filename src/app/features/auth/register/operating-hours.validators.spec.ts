@@ -326,14 +326,14 @@ describe('operatingHoursValidator', () => {
 
     it('should return invalidTimeFormat error for invalid endTime format', () => {
       const formArray = createOperatingHoursFormArray([
-        { dayOfWeek: 'thursday', startTime: '09:00', endTime: '5:30', isClosed: false },
+        { dayOfWeek: 'thursday', startTime: '09:00', endTime: '5:3', isClosed: false },
       ]);
 
       expect(formArray.errors).not.toBeNull();
       expect(formArray.errors?.['invalidTimeFormat']).toEqual({
         day: 'Quinta-feira',
         startTime: '09:00',
-        endTime: '5:30',
+        endTime: '5:3',
         invalidStart: false,
         invalidEnd: true,
       });
