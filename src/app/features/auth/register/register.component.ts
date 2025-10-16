@@ -939,6 +939,16 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
         if (control instanceof FormGroup) {
           this.markFormGroupTouched(control);
         }
+        
+        // Se for um FormArray, marcar todos os controles como touched
+        if (control instanceof FormArray) {
+          control.controls.forEach((arrayControl) => {
+            arrayControl.markAsTouched();
+            if (arrayControl instanceof FormGroup) {
+              this.markFormGroupTouched(arrayControl);
+            }
+          });
+        }
       }
     });
   }
