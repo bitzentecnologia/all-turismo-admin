@@ -11,7 +11,7 @@ import {
   validateNumbersOnly as validateNumbers,
 } from '../../../shared/utils/masks';
 import { DropDownItem } from '../../../shared/models/dropdown.model';
-import { RegisterFormData } from './register.model';
+import { RegisterFormData, LoadingState, LoadingOperation } from './register.model';
 import { CepService } from '../../../shared/services/cep.service';
 import { RegisterService } from './register.service';
 import { UploadService, UploadError } from '../../../core/services/upload.service';
@@ -31,8 +31,10 @@ import { passwordMatchValidator } from './password-match.validator';
 })
 export class RegisterComponent implements OnInit {
   currentStep: number = 1;
-  isLoading: boolean = false;
-  isConsultingCep: boolean = false;
+  private loadingState: LoadingState = {
+    isLoading: false,
+    activeOperations: new Set<LoadingOperation>()
+  };
   registerForm!: FormGroup;
   showError: boolean = false;
   errorMessage: string = '';
@@ -65,6 +67,24 @@ export class RegisterComponent implements OnInit {
     private registerService: RegisterService,
     private uploadService: UploadService
   ) { }
+
+  private startLoading(operation: LoadingOperation): void {
+    this.loadingState.activeOperations.add(operation);
+    this.loadingState.isLoading = this.loadingState.activeOperations.size > 0;
+  }
+
+  private stopLoading(operation: LoadingOperation): void {
+    this.loadingState.activeOperations.delete(operation);
+    this.loadingState.isLoading = this.loadingState.activeOperations.size > 0;
+  }
+
+  get isLoading(): boolean {
+    return this.loadingState.isLoading;
+  }
+
+  get isConsultingCep(): boolean {
+    return this.loadingState.activeOperations.has('cep-lookup');
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle(`Registrar | ${environment.appName}`);
@@ -122,7 +142,7 @@ export class RegisterComponent implements OnInit {
     }
 
     // Iniciar processo de upload
-    this.isLoading = true;
+    this.startLoading('form-submission');
 
     try {
       // ETAPA 1: Upload da Logo (obrigatória)
@@ -135,7 +155,7 @@ export class RegisterComponent implements OnInit {
       this.saveRegistrationData(logoId, photoIds);
 
     } catch (error: any) {
-      this.isLoading = false;
+      this.stopLoading('form-submission');
       this.showErrorMessage('Erro ao enviar os arquivos. Tente novamente.');
     }
   }
@@ -254,11 +274,11 @@ export class RegisterComponent implements OnInit {
         try {
           await this.router.navigate(['/registro-sucesso']);
         } finally {
-          this.isLoading = false;
+          this.stopLoading('form-submission');
         }
       },
       error: (error) => {
-        this.isLoading = false;
+        this.stopLoading('form-submission');
 
         // Tratamento de erro com lista de mensagens
         let errorMsg = '';
@@ -461,10 +481,10 @@ export class RegisterComponent implements OnInit {
     console.log('Validate Current Step Result:', isValid);
 
     if (isValid) {
-      this.isLoading = true;
+      this.startLoading('step-navigation');
 
       setTimeout(() => {
-        this.isLoading = false;
+        this.stopLoading('step-navigation');
         if (this.currentStep < 5) {
           this.currentStep++;
           console.log('Moving to step:', this.currentStep);
@@ -913,7 +933,7 @@ export class RegisterComponent implements OnInit {
 
   // Consultar CEP automaticamente
   private consultCep(cep: string): void {
-    this.isConsultingCep = true;
+    this.startLoading('cep-lookup');
 
     this.cepService.consultarCep(cep).subscribe({
       next: response => {
@@ -927,7 +947,7 @@ export class RegisterComponent implements OnInit {
             street: response.logradouro,
           },
         });
-        this.isConsultingCep = false;
+        this.stopLoading('cep-lookup');
       },
       error: error => {
         // Limpa os campos de endereço em caso de erro
@@ -939,7 +959,7 @@ export class RegisterComponent implements OnInit {
             street: '',
           },
         });
-        this.isConsultingCep = false;
+        this.stopLoading('cep-lookup');
       },
     });
   }

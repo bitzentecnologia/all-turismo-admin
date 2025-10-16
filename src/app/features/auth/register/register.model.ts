@@ -65,3 +65,15 @@ export interface RegisterFormData {
     deliveryRulesItems: InformationalItem[];
   };
 }
+
+export type LoadingOperation = 
+  | 'cep-lookup'
+  | 'step-navigation'
+  | 'logo-upload'
+  | 'promotion-photo-upload'
+  | 'form-submission';
+
+export interface LoadingState {
+  isLoading: boolean;
+  activeOperations: Set<LoadingOperation>;
+}

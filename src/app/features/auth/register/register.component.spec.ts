@@ -106,11 +106,11 @@ describe('RegisterComponent - Steps 1 and 2', () => {
     component.responsibleForm.setValue(validResponsibleForm);
 
     component.nextStep();
-    expect(component.isLoading).toBeTrue();
+    expect(component.isLoading).toBe(true);
 
     tick(1000);
     expect(component.currentStep).toBe(2);
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading).toBe(false);
   }));
 
   it('should block progression when passwords do not match', () => {
@@ -154,11 +154,11 @@ describe('RegisterComponent - Steps 1 and 2', () => {
 
     component.addressForm.setValue(validAddressForm);
     component.nextStep();
-    expect(component.isLoading).toBeTrue();
+    expect(component.isLoading).toBe(true);
 
     tick(1000);
     expect(component.currentStep).toBe(3);
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading).toBe(false);
   }));
 
   it('should format cep input and auto fill address when consultCep succeeds', () => {
@@ -181,6 +181,6 @@ describe('RegisterComponent - Steps 1 and 2', () => {
     expect(component.addressForm.get('city')?.value).toBe('Cidade');
     expect(component.addressForm.get('neighborhood')?.value).toBe('Centro');
     expect(component.addressForm.get('street')?.value).toBe('Rua');
-    expect(component.isConsultingCep).toBeFalse();
+    expect(component.isConsultingCep).toBe(false);
   });
 });
