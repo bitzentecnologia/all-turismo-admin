@@ -128,7 +128,7 @@ export class MainLayoutComponent {
       },
       {
         title: 'Meus cupons',
-        icon: 'diamond',
+        icon: 'coupon',
         active: false,
         route: '/cupons',
       },

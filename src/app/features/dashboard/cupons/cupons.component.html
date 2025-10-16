@@ -1,54 +1,41 @@
-<div class="cupons-page">
-  <!-- Page Header -->
-  <div class="page-header">
+<div class="coupons-page">
+  <app-status-alert></app-status-alert>
+
+  <!-- Header -->
+  <header class="page-header">
     <h1>Meus cupons</h1>
     <p>Defina os cupons que você irá ofertar no app.</p>
-  </div>
+  </header>
 
-  <!-- Information Box -->
-  <div class="info-box">
-    <div class="info-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="16" x2="12" y2="12"></line>
-        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-      </svg>
-    </div>
-    <div class="info-content">
-      <p><strong>Cupom obrigatório</strong> Para ficar visível no aplicativo Allturismo, é necessário que você ofereça ao menos um cupom de desconto no app. Você poderá solicitar alteração posteriormente.</p>
-    </div>
-  </div>
+  <app-status-alert
+    class="requirement-alert"
+    icon="info"
+    title="Cupom obrigatório"
+    message="Para ficar visível no aplicativo Allturismo, é necessário que você ofereça ao menos um cupom de desconto no app. Você poderá solicitar alteração posteriormente."
+  ></app-status-alert>
 
-  <!-- Empty State -->
-  <div class="empty-state">
+  <!-- Empty state -->
+  <section class="card empty-card">
     <div class="empty-illustration">
-      <div class="coupon-icon">
-        <div class="coupon-percentage">%</div>
-        <div class="coupon-tear"></div>
+      <div class="coupon-shape">
+        <div class="coupon-icon">%</div>
+        <div class="bubble bubble-pink"></div>
+        <div class="bubble bubble-orange"></div>
+        <div class="bubble bubble-blue"></div>
       </div>
-      <div class="decoration-dots">
-        <div class="dot dot-pink"></div>
-        <div class="dot dot-orange"></div>
-        <div class="dot dot-light-blue"></div>
-      </div>
-      <div class="info-badge">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="16" x2="12" y2="12"></line>
-          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      <div class="badge">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z" />
+          <path d="M12 16v-4" />
+          <path d="M12 8h.01" />
         </svg>
       </div>
     </div>
-    
-    <div class="empty-content">
-      <h2>Crie seu primeiro cupom para ficar visível no aplicativo.</h2>
-      <button class="btn-primary">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        Novo cupom
-      </button>
-    </div>
-  </div>
+
+    <p class="empty-text">Crie seu primeiro cupom para ficar visível no aplicativo.</p>
+    <button class="primary-button">
+      <span class="icon">+</span>
+      Novo cupom
+    </button>
+  </section>
 </div>

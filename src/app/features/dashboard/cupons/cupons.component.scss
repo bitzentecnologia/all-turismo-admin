@@ -1,311 +1,221 @@
-// Variables
-$primary-blue: #3B82F6;
-$light-blue: #EFF6FF;
-$gray-50: #F9FAFB;
-$gray-100: #F3F4F6;
-$gray-200: #E5E7EB;
-$gray-300: #D1D5DB;
-$gray-400: #9CA3AF;
-$gray-500: #6B7280;
-$gray-600: #4B5563;
-$gray-700: #374151;
-$gray-800: #1F2937;
-$gray-900: #111827;
-$white: #FFFFFF;
-
-// Font family
 $font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$primary-blue: #3b82f6;
+$primary-blue-dark: #2563eb;
+$status-bg: #eff4ff;
+$card-border: #e4e9f4;
+$text-900: #0f172a;
+$text-700: #334155;
+$text-500: #64748b;
+$badge-blue: rgba(59, 130, 246, 0.15);
 
-// Page container
-.cupons-page {
-  max-width: 800px;
-  margin: 0 auto;
-  font-family: $font-family;
-}
-
-// Alert Banner
-.alert-banner {
+.coupons-page {
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  background-color: $light-blue;
-  border-radius: 0.5rem;
-  margin-bottom: 2rem;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-
-  .alert-icon {
-    color: $primary-blue;
-    flex-shrink: 0;
-    margin-top: 0.125rem;
-  }
-
-  .alert-content {
-    p {
-      margin: 0;
-      color: $gray-700;
-      font-size: 0.875rem;
-      line-height: 1.5;
-      font-family: $font-family;
-    }
-  }
+  flex-direction: column;
+  gap: 1.75rem;
+  padding: 0 1.5rem 3rem;
+  font-family: $font-family;
+  color: $text-700;
 }
 
-// Page Header
+.coupons-page app-status-alert {
+  margin-bottom: 1.75rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid $card-border;
+  border-radius: 16px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
 .page-header {
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 
   h1 {
-    font-size: 1.875rem;
+    margin: 0;
+    font-size: clamp(1.75rem, 2vw, 2rem);
     font-weight: 700;
-    color: $gray-900;
-    margin: 0 0 0.5rem 0;
-    line-height: 1.2;
-    font-family: $font-family;
+    color: $text-900;
   }
 
   p {
-    font-size: 1rem;
-    color: $gray-600;
     margin: 0;
-    line-height: 1.5;
-    font-family: $font-family;
+    color: $text-500;
+    font-size: 1rem;
   }
 }
 
-// Information Box
-.info-box {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  background-color: $light-blue;
-  border-radius: 0.5rem;
-  margin-bottom: 3rem;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-
-  .info-icon {
-    color: $primary-blue;
-    flex-shrink: 0;
-    margin-top: 0.125rem;
-  }
-
-  .info-content {
-    p {
-      margin: 0;
-      color: $gray-700;
-      font-size: 0.875rem;
-      line-height: 1.5;
-      font-family: $font-family;
-
-      strong {
-        color: $gray-900;
-        font-weight: 600;
-        font-family: $font-family;
-      }
-    }
-  }
+.requirement-alert {
+  margin-top: -0.25rem;
 }
 
-// Empty State
-.empty-state {
+.empty-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 3rem 1rem;
-  max-width: 400px;
-  margin: 0 auto;
+  padding: 3rem 2rem;
+  gap: 1.5rem;
 
   .empty-illustration {
     position: relative;
-    margin-bottom: 2rem;
+    width: 132px;
+    height: 132px;
+    display: grid;
+    place-items: center;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
 
-    .coupon-icon {
+    .coupon-shape {
       position: relative;
-      width: 120px;
-      height: 80px;
-      background: linear-gradient(135deg, $primary-blue, #2563EB);
-      border-radius: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      width: 98px;
+      height: 74px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #5591ff, #2563eb);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 600;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      box-shadow: 0 14px 32px rgba(37, 99, 235, 0.25);
 
-      .coupon-percentage {
-        color: $white;
-        font-size: 2rem;
-        font-weight: 700;
-        font-family: $font-family;
+      .coupon-icon {
+        position: relative;
+        z-index: 2;
       }
 
-      .coupon-tear {
+      .bubble {
         position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        height: 20px;
-        background: $white;
-        border-radius: 0 0 0.5rem 0.5rem;
-        
-        &::before {
-          content: '';
-          position: absolute;
-          top: -10px;
-          left: 0;
-          right: 0;
-          height: 20px;
-          background: linear-gradient(135deg, $primary-blue, #2563EB);
-          border-radius: 0.5rem;
-          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-        }
-      }
-    }
-
-    .decoration-dots {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      display: flex;
-      gap: 0.5rem;
-
-      .dot {
-        width: 8px;
-        height: 8px;
         border-radius: 50%;
+        opacity: 0.8;
 
-        &.dot-pink {
-          background-color: #EC4899;
+        &.bubble-pink {
+          width: 18px;
+          height: 18px;
+          top: -14px;
+          right: 12px;
+          background: #f472b6;
         }
 
-        &.dot-orange {
-          background-color: #F97316;
+        &.bubble-orange {
+          width: 14px;
+          height: 14px;
+          bottom: 10px;
+          right: -6px;
+          background: #fb923c;
         }
 
-        &.dot-light-blue {
-          background-color: #06B6D4;
+        &.bubble-blue {
+          width: 20px;
+          height: 20px;
+          bottom: -10px;
+          left: 14px;
+          background: #38bdf8;
         }
       }
     }
 
-    .info-badge {
+    .badge {
       position: absolute;
-      bottom: -5px;
-      right: -5px;
-      width: 24px;
-      height: 24px;
-      background-color: $primary-blue;
+      bottom: 18px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: $white;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-  }
-
-  .empty-content {
-    h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: $gray-700;
-      margin: 0 0 1.5rem 0;
-      line-height: 1.4;
-      font-family: $font-family;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      background-color: $primary-blue;
-      color: $white;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-      font-family: $font-family;
-
-      &:hover {
-        background-color: #2563EB;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      }
-
-      &:active {
-        transform: translateY(0);
-      }
+      background: #fff;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
 
       svg {
         width: 20px;
         height: 20px;
+        fill: none;
+        stroke: $primary-blue;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
       }
+    }
+  }
+
+  .empty-text {
+    margin: 0;
+    font-size: 1.05rem;
+    color: $text-700;
+    line-height: 1.6;
+    max-width: 360px;
+  }
+
+  .primary-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.75rem;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, $primary-blue, $primary-blue-dark);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.25);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(59, 130, 246, 0.28);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    .icon {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 1.25rem;
+      line-height: 1;
     }
   }
 }
 
-// Mobile responsive styles
-@media (max-width: 768px) {
-  .cupons-page {
-    padding: 0 1rem;
+@media (max-width: 992px) {
+  .coupons-page {
+    padding-inline: 1rem;
   }
 
-  .alert-banner,
-  .info-box {
-    padding: 0.875rem 1rem;
-  }
-
-  .page-header {
-    h1 {
-      font-size: 1.5rem;
-    }
-  }
-
-  .empty-state {
-    padding: 2rem 1rem;
-
-    .empty-illustration {
-      .coupon-icon {
-        width: 100px;
-        height: 70px;
-
-        .coupon-percentage {
-          font-size: 1.75rem;
-        }
-      }
-    }
-
-    .empty-content {
-      h2 {
-        font-size: 1.125rem;
-      }
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .alert-banner,
-  .info-box {
-    flex-direction: column;
+  .status-card,
+  .requirement-card {
     align-items: flex-start;
-    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 1.25rem 1.5rem;
   }
 
-  .empty-state {
-    .empty-illustration {
-      .coupon-icon {
-        width: 80px;
-        height: 60px;
+  .requirement-card {
+    flex-direction: column;
+    text-align: center;
 
-        .coupon-percentage {
-          font-size: 1.5rem;
-        }
+    .requirement-content {
+      p {
+        margin-top: 0.75rem;
       }
     }
+  }
+
+  .empty-card {
+    padding: 2.5rem 1.5rem;
   }
 }

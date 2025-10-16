@@ -25,31 +25,8 @@ $font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
 }
 
 // Alert Banner
-.alert-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  background-color: $light-blue;
-  border-radius: 0.5rem;
+.home-status {
   margin-bottom: 2rem;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-
-  .alert-icon {
-    color: $primary-blue;
-    flex-shrink: 0;
-    margin-top: 0.125rem;
-  }
-
-  .alert-content {
-    p {
-      margin: 0;
-      color: $gray-700;
-      font-size: 0.875rem;
-      line-height: 1.5;
-      font-family: $font-family;
-    }
-  }
 }
 
 // Welcome section
@@ -134,10 +111,6 @@ $font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
     padding: 1rem;
   }
 
-  .alert-banner {
-    padding: 0.875rem 1rem;
-  }
-
   .welcome-section {
     margin-bottom: 2rem;
 
@@ -172,12 +145,6 @@ $font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
 }
 
 @media (max-width: 480px) {
-  .alert-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
   .welcome-section {
     h1 {
       font-size: 1.75rem;

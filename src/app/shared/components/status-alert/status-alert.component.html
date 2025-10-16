@@ -1,0 +1,19 @@
+<div class="alert-banner">
+  <div class="alert-icon">
+    <ng-container [ngSwitch]="icon">
+      <svg *ngSwitchCase="'info'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <circle cx="12" cy="8" r="1"></circle>
+      </svg>
+      <svg *ngSwitchDefault width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12,6 12,12 16,14"></polyline>
+      </svg>
+    </ng-container>
+  </div>
+  <div class="alert-content">
+    <h4 *ngIf="title">{{ title }}</h4>
+    <p>{{ message }}</p>
+  </div>
+</div>
