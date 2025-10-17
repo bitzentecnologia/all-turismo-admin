@@ -666,6 +666,12 @@
     background: #f0f7ff;
   }
 
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   .upload-icon {
     font-size: 2rem;
     margin-bottom: 0.5rem;

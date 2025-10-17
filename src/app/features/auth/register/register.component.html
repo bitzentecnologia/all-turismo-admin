@@ -607,7 +607,10 @@
                 aria-label="Selecionar arquivo de logo do estabelecimento"
                 aria-required="true"
                 #fileInput>
-              <div class="upload-icon" aria-hidden="true">↑</div>
+              <div *ngIf="isUploadingLogo" class="logo-loading" role="status" aria-live="polite">
+                <span>Enviando logo...</span>
+              </div>
+              <div *ngIf="!isUploadingLogo" class="upload-icon" aria-hidden="true">↑</div>
               <button 
                 type="button" 
                 class="upload-btn" 
@@ -615,7 +618,8 @@
                 (keydown.enter)="fileInput.click(); $event.preventDefault()"
                 (keydown.space)="fileInput.click(); $event.preventDefault()"
                 aria-label="Selecionar imagem da logo"
-                [attr.aria-describedby]="'logo-hint'">
+                [attr.aria-describedby]="'logo-hint'"
+                [disabled]="isUploadingLogo">
                 Selecionar imagem
               </button>
             </div>
@@ -741,7 +745,9 @@
                     (keydown.space)="photoInput.click(); $event.preventDefault()"
                     tabindex="0"
                     role="button"
-                    [attr.aria-label]="'Adicionar fotos da promoção. ' + promotionPhotos.length + ' de 3 fotos adicionadas'">
+                    [attr.aria-label]="'Adicionar fotos da promoção. ' + promotionPhotos.length + ' de 3 fotos adicionadas'"
+                    [attr.aria-disabled]="isUploadingPromotionPhotos"
+                    [class.disabled]="isUploadingPromotionPhotos">
                     <div class="upload-icon" aria-hidden="true">📷</div>
                     <span class="upload-text">Adicionar fotos</span>
                     <span class="upload-hint" aria-hidden="true">{{ promotionPhotos.length }}/3 fotos</span>
