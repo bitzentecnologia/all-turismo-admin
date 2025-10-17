@@ -7,49 +7,143 @@
     <p>Defina os cupons que você irá ofertar no app.</p>
   </header>
 
-  <app-status-alert
-    class="requirement-alert"
-    icon="info"
-    title="Cupom obrigatório"
-    message="Para ficar visível no aplicativo Allturismo, é necessário que você ofereça ao menos um cupom de desconto no app. Você poderá solicitar alteração posteriormente."
-  ></app-status-alert>
-
-  <!-- Empty state -->
-  <section class="card empty-card">
-    <div class="empty-illustration">
-      <span class="bubble bubble-pink"></span>
-      <span class="bubble bubble-orange"></span>
-      <span class="bubble bubble-lilac"></span>
-
-      <div class="icon-circle">
-        <div class="icon-wrapper">
-          <svg viewBox="0 0 48 48">
-            <path
-              d="M12 18a2 2 0 0 1 2-2h24l-4 16H16a2 2 0 0 1-2-2v-2a3 3 0 1 0 0-6v-4Z"
-              fill="none"
-              stroke-width="2.5"
-              stroke-linejoin="round"
-            />
-            <path d="M22 20v8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M30 20v8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M26 24h.1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+  <!-- Fixed Coupon Section -->
+  <section class="fixed-coupon-section">
+    <div class="fixed-coupon-card">
+      <img [src]="fixedCoupon.image" [alt]="fixedCoupon.title" class="coupon-image" />
+      <div class="coupon-content">
+        <div class="coupon-header">
+          <h3 class="coupon-title">{{ fixedCoupon.title }}</h3>
+          <button class="icon-button info-button" type="button">
+            <mat-icon>info</mat-icon>
+          </button>
         </div>
+        <p class="coupon-description">{{ fixedCoupon.description }}</p>
       </div>
+      <div class="coupon-actions">
+        <button class="icon-button" type="button" (click)="viewCoupon(fixedCoupon.id)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button class="icon-button" type="button" (click)="editCoupon(fixedCoupon.id)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </div>
+  </section>
 
-      <div class="info-badge">
-        <svg viewBox="0 0 16 16">
-          <circle cx="8" cy="8" r="6.5" stroke-width="1.4" fill="none" stroke="white" />
-          <line x1="8" y1="5" x2="8" y2="9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" />
-          <circle cx="8" cy="11.8" r="0.7" fill="white" />
-        </svg>
+  <!-- Other Offers Section -->
+  <section class="other-offers-section">
+    <h2 class="section-title">Outras ofertas</h2>
+    <p class="section-subtitle">
+      Caso deseje, você pode ofertar outros cupons para os clientes do app.
+    </p>
+
+    <!-- Search and Filters -->
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Pesquisar"
+          [(ngModel)]="searchQuery"
+        />
+      </div>
+      <button class="date-filter-button" type="button">
+        <mat-icon>calendar_today</mat-icon>
+        <span>Data</span>
+      </button>
+      <button class="new-coupon-button" type="button" routerLink="/cupons/criar">
+        <span class="button-icon">+</span>
+        Novo cupom
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-wrapper">
+      <button
+        class="tab"
+        [class.active]="activeTab === 'Ativas'"
+        (click)="setActiveTab('Ativas')"
+        type="button"
+      >
+        Ativas
+      </button>
+      <button
+        class="tab"
+        [class.active]="activeTab === 'Finalizadas'"
+        (click)="setActiveTab('Finalizadas')"
+        type="button"
+      >
+        Finalizadas
+      </button>
+      <button
+        class="tab"
+        [class.active]="activeTab === 'Reprovadas'"
+        (click)="setActiveTab('Reprovadas')"
+        type="button"
+      >
+        Reprovadas
+      </button>
+      <button
+        class="tab"
+        [class.active]="activeTab === 'Em análise'"
+        (click)="setActiveTab('Em análise')"
+        type="button"
+      >
+        Em análise
+      </button>
+    </div>
+
+    <!-- Coupon List -->
+    <div class="coupons-list">
+      <div *ngFor="let coupon of filteredCoupons" class="coupon-card">
+        <img [src]="coupon.image" [alt]="coupon.title" class="coupon-image" />
+        <div class="coupon-details">
+          <div class="status-badge">
+            <span class="status-dot"></span>
+            <span class="status-text">{{ coupon.status }}</span>
+          </div>
+          <h3 class="coupon-title-main">{{ coupon.title }}</h3>
+          <div class="coupon-date">
+            <mat-icon>calendar_today</mat-icon>
+            <span>{{ coupon.startDate }} - {{ coupon.endDate }}</span>
+          </div>
+        </div>
+        <div class="coupon-usage">
+          <div class="usage-bar">
+            <div class="usage-fill" [style.width.%]="getUsagePercentage(coupon)"></div>
+          </div>
+          <span class="usage-text">{{ coupon.usedToday }}/{{ coupon.totalDaily }} cupons utilizados hoje</span>
+        </div>
+        <div class="coupon-actions-list">
+          <button class="icon-button" type="button" (click)="viewCoupon(coupon.id)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button class="icon-button" type="button" (click)="editCoupon(coupon.id)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button class="icon-button delete-button" type="button" (click)="deleteCoupon(coupon.id)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
       </div>
     </div>
 
-    <p class="empty-text">Crie seu primeiro cupom para ficar visível no aplicativo.</p>
-    <button class="primary-button" routerLink="/cupons/criar">
-      <span class="button-icon">+</span>
-      Novo cupom
-    </button>
+    <!-- Pagination -->
+    <div class="pagination">
+      <span class="pagination-text">Página 1 de 10</span>
+      <div class="pagination-buttons">
+        <button class="pagination-button" type="button">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button class="pagination-button" type="button">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button class="pagination-button" type="button">
+          <mat-icon>last_page</mat-icon>
+        </button>
+      </div>
+    </div>
   </section>
 </div>
