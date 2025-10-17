@@ -5,63 +5,54 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { environment } from '../../../../environments/environment';
-import { StatusAlertComponent } from '@shared/components/status-alert/status-alert.component';
-
-interface CouponRule {
-  id: string;
-  text: string;
-  checked: boolean;
-}
-
-interface CustomRule {
-  id: string;
-  text: string;
-}
 
 @Component({
   selector: 'app-create-coupon',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, StatusAlertComponent],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './create-coupon.component.html',
   styleUrls: ['./create-coupon.component.scss'],
 })
 export class CreateCouponComponent implements OnInit {
-  discountPercentage = '';
   description = '';
+  dailyQuantity = '';
+  rules = '';
   selectedImages: File[] = [];
   imagePreviewUrls: string[] = [];
+  startDate = '';
+  endDate = '';
+  startTime = '';
+  endTime = '';
 
-  rules: CouponRule[] = [
-    {
-      id: '1',
-      text: 'Não é válido para feriados, vésperas de feriados e datas comemorativas.',
-      checked: false,
-    },
-    {
-      id: '2',
-      text: 'Não é acumulativo com outras promoções vigentes no estabelecimento.',
-      checked: false,
-    },
-    { id: '3', text: 'O consumo deve ser realizado no restaurante.', checked: false },
-    {
-      id: '4',
-      text: 'Não é válido para delivery, embalagem para viagem e festivais com cardápios pré-definidos.',
-      checked: false,
-    },
-    {
-      id: '5',
-      text: 'Outras bebidas, taxa de serviço, gorjeta e couvert artístico não estão inclusos no benefício.',
-      checked: false,
-    },
-    {
-      id: '6',
-      text: 'Bebidas, entradas, sobremesas e taxa de entrega não estão incluídas no benefício.',
-      checked: false,
-    },
-  ];
-
-  customRules: CustomRule[] = [];
   maxDescriptionLength = 100;
+  maxRulesLength = 200;
+
+  timeOptions: string[] = [
+    '00:00',
+    '01:00',
+    '02:00',
+    '03:00',
+    '04:00',
+    '05:00',
+    '06:00',
+    '07:00',
+    '08:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '13:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+    '19:00',
+    '20:00',
+    '21:00',
+    '22:00',
+    '23:00',
+  ];
 
   constructor(
     private router: Router,
@@ -76,18 +67,18 @@ export class CreateCouponComponent implements OnInit {
     return this.description.length;
   }
 
-  get couponPreview(): string {
-    if (!this.discountPercentage || !this.description) {
-      return 'Ex: 20% de desconto no rodízio de pizza';
-    }
-    return `${this.discountPercentage}% ${this.description}`;
+  get rulesCharCount(): number {
+    return this.rules.length;
   }
 
-  get minimumDiscountText(): string {
-    if (this.discountPercentage) {
-      return `Desconto mínimo de ${this.discountPercentage}%`;
-    }
-    return 'Desconto mínimo de 20%';
+  showExampleRules(): void {
+    alert(
+      'Exemplo de regras:\n\n' +
+        '- Válido apenas para consumo no local\n' +
+        '- Não acumulativo com outras promoções\n' +
+        '- Não válido para feriados\n' +
+        '- Sujeito à disponibilidade'
+    );
   }
 
   onImageSelect(event: Event): void {
@@ -116,31 +107,20 @@ export class CreateCouponComponent implements OnInit {
     this.imagePreviewUrls.splice(index, 1);
   }
 
-  addCustomRule(): void {
-    this.customRules.push({
-      id: Date.now().toString(),
-      text: '',
-    });
-  }
-
-  removeCustomRule(index: number): void {
-    this.customRules.splice(index, 1);
-  }
-
   onCancel(): void {
     this.router.navigate(['/cupons']);
   }
 
   onSubmit(): void {
-    const selectedRules = this.rules.filter(rule => rule.checked).map(rule => rule.text);
-
-    const allRules = [...selectedRules, ...this.customRules.map(r => r.text).filter(t => t.trim())];
-
     const _couponData = {
-      discountPercentage: parseInt(this.discountPercentage, 10),
       description: this.description,
-      rules: allRules,
+      dailyQuantity: parseInt(this.dailyQuantity, 10),
+      rules: this.rules,
       images: this.selectedImages,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      startTime: this.startTime,
+      endTime: this.endTime,
     };
 
     this.router.navigate(['/cupons']);
