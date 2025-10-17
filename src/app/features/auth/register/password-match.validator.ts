@@ -35,7 +35,7 @@ function removePasswordMismatchError(control: AbstractControl): void {
         return;
     }
 
-    const { passwordMismatch, ...otherErrors } = currentErrors;
+    const { passwordMismatch: _passwordMismatch, ...otherErrors } = currentErrors;
     const hasOtherErrors = Object.keys(otherErrors).length > 0;
 
     control.setErrors(hasOtherErrors ? otherErrors : null);

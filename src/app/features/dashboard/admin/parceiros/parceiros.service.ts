@@ -87,7 +87,6 @@ export class ParceirosService {
   }
 
   updatePartner(id: string, data: any): Observable<PartnerDetailsResponse> {
-    console.log('Updating partner with data:', data);
     return this.http.put<PartnerDetailsResponse>(`${this.apiUrl}/admin/companies/${id}`, data);
   }
 

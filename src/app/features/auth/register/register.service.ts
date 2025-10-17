@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { DropDownItem } from '@shared/models/dropdown.model';
-import { RegisterFormData } from './register.model';
 
 @Injectable({
   providedIn: 'root',

@@ -3,11 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ParceirosService, PartnerDetailsResponse, InformationalData } from '../parceiros.service';
 import { CommonModule } from '@angular/common';
 import { ImageService } from '@core/services/image.service';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { DropDownItem } from '@shared/models/dropdown.model';
 import { formatPhone, formatCnpj, formatCep } from '@shared/utils/masks';
-import { cnpjValidator } from '@shared/utils/cnpj-validator';
 
 export type Partner = PartnerDetailsResponse & {
   subcategory: { name: string };
@@ -291,15 +290,8 @@ export class PartnerDetailComponent implements OnInit {
   initializeSelectedInformationals() {
     if (!this.partner || !this.informationals.length) return;
 
-    console.log('iniciando método');
     const availableInformationals = this.filteredInformationals;
     const existingInformationals = this.partner.category_informationals || [];
-
-    console.log('Inicializando informações selecionadas:', {
-      availableInformationals,
-      existingInformationals,
-      partnerCategory: this.partner.category
-    });
 
     this.selectedInformationals = availableInformationals.map(info => {
       const existingInfo = existingInformationals.find((ei: any) => ei.id === info.id);

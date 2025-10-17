@@ -2,8 +2,6 @@
  * Interfaces para o formulário de registro
  */
 
-import { DropDownItem } from '../../../shared/models/dropdown.model';
-
 export interface ResponsibleData {
   name: string;
   email: string;

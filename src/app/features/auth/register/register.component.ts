@@ -11,13 +11,12 @@ import {
   validateNumbersOnly as validateNumbers,
 } from '../../../shared/utils/masks';
 import { DropDownItem } from '../../../shared/models/dropdown.model';
-import { RegisterFormData, LoadingState, LoadingOperation } from './register.model';
+import { LoadingState, LoadingOperation } from './register.model';
 import { CepService } from '../../../shared/services/cep.service';
 import { RegisterService } from './register.service';
 import { UploadService, UploadError } from '../../../core/services/upload.service';
 import { cnpjValidator } from '@shared/utils/cnpj-validator';
 import { MatIconModule } from '@angular/material/icon';
-import { OperatingHours } from './operating-hours.model';
 import { timeFormatValidator, operatingHoursValidator } from './operating-hours.validators';
 import { fillFormWithMockData, generateRandomMockData } from './register.mock';
 import { passwordMatchValidator } from './password-match.validator';
@@ -121,26 +120,6 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
     // Esconder mensagem de erro ao iniciar o processo
     this.hideErrorMessage();
 
-    console.log('=== FINISH REGISTRATION DEBUG ===');
-    console.log('registerForm.valid:', this.registerForm.valid);
-    console.log('registerForm.invalid:', this.registerForm.invalid);
-    console.log('registerForm.errors:', this.registerForm.errors);
-
-    // Log each form group's validity
-    const responsibleGroup = this.registerForm.get('responsible');
-    const addressGroup = this.registerForm.get('address');
-    const establishmentGroup = this.registerForm.get('establishment');
-    const promotionGroup = this.registerForm.get('promotion');
-    const additionalInfoGroup = this.registerForm.get('additionalInfo');
-    const operatingHoursControl = this.registerForm.get('operatingHours');
-
-    console.log('Step 1 (responsible) - valid:', responsibleGroup?.valid, 'errors:', responsibleGroup?.errors);
-    console.log('Step 2 (address) - valid:', addressGroup?.valid, 'errors:', addressGroup?.errors);
-    console.log('Step 3 (establishment) - valid:', establishmentGroup?.valid, 'errors:', establishmentGroup?.errors);
-    console.log('Step 4 (promotion) - valid:', promotionGroup?.valid, 'errors:', promotionGroup?.errors);
-    console.log('Step 4 (operatingHours) - valid:', operatingHoursControl?.valid, 'errors:', operatingHoursControl?.errors);
-    console.log('Step 5 (additionalInfo) - valid:', additionalInfoGroup?.valid, 'errors:', additionalInfoGroup?.errors);
-
     // Como já validamos cada etapa individualmente, não precisamos validar o formulário inteiro
     // O problema é que campos desabilitados podem deixar o FormArray inválido mesmo sem erros reais
 
@@ -173,7 +152,7 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
       // ETAPA 3: Salvar dados do registro
       this.saveRegistrationData(logoId, photoIds);
 
-    } catch (error: any) {
+    } catch {
       this.stopLoading('form-submission');
       this.showErrorMessage('Erro ao enviar os arquivos. Tente novamente.');
     }
@@ -296,26 +275,26 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
           this.stopLoading('form-submission');
         }
       },
-      error: (error) => {
+      error: (_error) => {
         this.stopLoading('form-submission');
 
         // Tratamento de erro com lista de mensagens
         let errorMsg = '';
         let errorList: string[] = [];
 
-        if (error?.error?.message) {
-          if (Array.isArray(error.error.message)) {
-            errorList = error.error.message;
+        if (_error?.error?.message) {
+          if (Array.isArray(_error.error.message)) {
+            errorList = _error.error.message;
             errorMsg = '';
           } else {
-            errorMsg = error.error.message;
+            errorMsg = _error.error.message;
           }
-        } else if (error?.message) {
-          if (Array.isArray(error.message)) {
-            errorList = error.message;
+        } else if (_error?.message) {
+          if (Array.isArray(_error.message)) {
+            errorList = _error.message;
             errorMsg = '';
           } else {
-            errorMsg = error.message;
+            errorMsg = _error.message;
           }
         } else {
           errorMsg = 'Erro inesperado ao salvar o registro. Tente novamente.';
@@ -483,21 +462,14 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
 
   // Navegação entre etapas
   nextStep(): void {
-    console.log('=== NEXT STEP DEBUG ===');
-    console.log('Current Step:', this.currentStep);
-
     // Forçar validação de todos os campos da etapa atual
     const formGroup = this.getCurrentStepFormGroup();
-    console.log('Form Group:', formGroup);
 
     if (formGroup) {
       this.markFormGroupTouched(formGroup);
-      console.log('Form Group Invalid:', formGroup.invalid);
-      console.log('Form Group Errors:', formGroup.errors);
     }
 
     const isValid = this.validateCurrentStep();
-    console.log('Validate Current Step Result:', isValid);
 
     if (isValid) {
       this.startLoading('step-navigation');
@@ -507,14 +479,11 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
         this.lastStep = this.currentStep;
         if (this.currentStep < 5) {
           this.currentStep++;
-          console.log('Moving to step:', this.currentStep);
           this.focusFirstFormElement();
         } else {
           this.finishRegistration();
         }
       }, 1000);
-    } else {
-      console.log('Validation failed - staying on step', this.currentStep);
     }
   }
 
@@ -615,10 +584,6 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
       // Validar horários de funcionamento
       const operatingHoursControl = this.registerForm.get('operatingHours');
 
-      console.log('=== OPERATING HOURS VALIDATION DEBUG ===');
-      console.log('operatingHoursControl.invalid:', operatingHoursControl?.invalid);
-      console.log('operatingHoursControl.errors:', operatingHoursControl?.errors);
-
       // Verificar se há erros reais ou se é apenas por causa de campos desabilitados
       const hasRealErrors = operatingHoursControl?.errors !== null;
 
@@ -641,14 +606,9 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
             const dayName = this.getDayLabel(dayKey);
             const isClosed = control.get('isClosed')?.value;
 
-            console.log(`Day: ${dayName}, isClosed: ${isClosed}`);
-
             if (!isClosed) {
               const startTimeControl = control.get('startTime');
               const endTimeControl = control.get('endTime');
-
-              console.log(`  startTime - value: "${startTimeControl?.value}", enabled: ${startTimeControl?.enabled}, invalid: ${startTimeControl?.invalid}, errors:`, startTimeControl?.errors);
-              console.log(`  endTime - value: "${endTimeControl?.value}", enabled: ${endTimeControl?.enabled}, invalid: ${endTimeControl?.invalid}, errors:`, endTimeControl?.errors);
 
               // Apenas validar campos que estão habilitados
               if (startTimeControl?.invalid && startTimeControl?.errors && startTimeControl.enabled) {
@@ -1021,7 +981,7 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
         });
         this.stopLoading('cep-lookup');
       },
-      error: error => {
+      error: () => {
         // Limpa os campos de endereço em caso de erro
         this.registerForm.patchValue({
           address: {
@@ -1075,8 +1035,8 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
           };
           reader.readAsDataURL(file);
         },
-        error: (error: UploadError) => {
-          this.logoUploadError = this.getUploadErrorMessage(error, 'Logo');
+        error: (_error: UploadError) => {
+          this.logoUploadError = this.getUploadErrorMessage(_error, 'Logo');
           this.registerForm.get('establishment.logoPreview')?.setValue('');
           this.registerForm.get('establishment.logoFile')?.setValue(null);
           

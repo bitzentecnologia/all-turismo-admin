@@ -5,7 +5,6 @@ import {
   TableColumn,
 } from '@shared/components/generic-table/generic-table.component';
 import { ParceirosService } from './parceiros.service';
-import { PaginationMeta } from '@shared/models/pagination.model';
 import { Router } from '@angular/router';
 import { translateStatus } from '@shared/utils/status-translator';
 
@@ -87,8 +86,8 @@ export class ParceirosComponent implements OnInit {
           limit: res.meta.itemsPerPage,
         };
       },
-      error: err => {
-        console.error('Erro ao carregar parceiros', err);
+      error: _err => {
+        console.error('Erro ao carregar parceiros', _err);
       },
       complete: () => {
         this.loading = false;
@@ -104,11 +103,11 @@ export class ParceirosComponent implements OnInit {
     this.router.navigate(['/parceiros', partner.id]);
   }
 
-  onEdit(partner: Partner) {
-    console.log('Editar:', partner);
+  onEdit(_partner: Partner) {
+    // Edit functionality not yet implemented
   }
 
-  onDelete(partner: Partner) {
-    console.log('Excluir:', partner);
+  onDelete(_partner: Partner) {
+    // Delete functionality not yet implemented
   }
 }
