@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
 import { StatusAlertComponent } from '@shared/components/status-alert/status-alert.component';
+import { DeactivateCouponModalComponent } from '@shared/components/deactivate-coupon-modal/deactivate-coupon-modal.component';
 
 interface Coupon {
   id: string;
@@ -22,7 +23,14 @@ interface Coupon {
 @Component({
   selector: 'app-cupons',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusAlertComponent, MatIconModule, FormsModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    StatusAlertComponent,
+    MatIconModule,
+    FormsModule,
+    DeactivateCouponModalComponent
+  ],
   templateUrl: './cupons.component.html',
   styleUrls: ['./cupons.component.scss']
 })
@@ -30,6 +38,8 @@ export class CuponsComponent implements OnInit {
   searchQuery = '';
   selectedDate = '';
   activeTab: 'Ativas' | 'Finalizadas' | 'Reprovadas' | 'Em análise' = 'Ativas';
+  showDeactivateModal = false;
+  couponToDeactivate: string | null = null;
   
   fixedCoupon: Coupon = {
     id: 'fixed-1',
@@ -134,8 +144,24 @@ export class CuponsComponent implements OnInit {
     // Edit coupon implementation
   }
 
-  deleteCoupon(_couponId: string): void {
-    // Delete coupon implementation
+  deleteCoupon(couponId: string): void {
+    this.couponToDeactivate = couponId;
+    this.showDeactivateModal = true;
+  }
+
+  closeDeactivateModal(): void {
+    this.showDeactivateModal = false;
+    this.couponToDeactivate = null;
+  }
+
+  confirmDeactivation(): void {
+    if (this.couponToDeactivate) {
+      const couponIndex = this.coupons.findIndex(c => c.id === this.couponToDeactivate);
+      if (couponIndex !== -1) {
+        this.coupons[couponIndex].status = 'Em análise';
+      }
+    }
+    this.closeDeactivateModal();
   }
 
   getUsagePercentage(coupon: Coupon): number {

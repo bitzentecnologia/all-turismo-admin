@@ -1,5 +1,11 @@
 <div class="coupons-page">
   <app-status-alert></app-status-alert>
+  
+  <app-deactivate-coupon-modal
+    [isOpen]="showDeactivateModal"
+    (closeModal)="closeDeactivateModal()"
+    (confirmDeactivation)="confirmDeactivation()"
+  ></app-deactivate-coupon-modal>
 
   <!-- Header -->
   <header class="page-header">
