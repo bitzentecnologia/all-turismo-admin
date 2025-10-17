@@ -22,38 +22,11 @@ export class CreateCouponComponent implements OnInit {
   imagePreviewUrls: string[] = [];
   startDate: Date | null = null;
   endDate: Date | null = null;
-  startTime = '';
-  endTime = '';
+  startTime: Date | null = null;
+  endTime: Date | null = null;
 
   maxDescriptionLength = 100;
   maxRulesLength = 200;
-
-  timeOptions: string[] = [
-    '00:00',
-    '01:00',
-    '02:00',
-    '03:00',
-    '04:00',
-    '05:00',
-    '06:00',
-    '07:00',
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-    '19:00',
-    '20:00',
-    '21:00',
-    '22:00',
-    '23:00',
-  ];
 
   constructor(
     private router: Router,
@@ -120,8 +93,8 @@ export class CreateCouponComponent implements OnInit {
       images: this.selectedImages,
       startDate: this.startDate ? this.startDate.toISOString() : null,
       endDate: this.endDate ? this.endDate.toISOString() : null,
-      startTime: this.startTime,
-      endTime: this.endTime,
+      startTime: this.startTime ? this.startTime.toLocaleTimeString() : null,
+      endTime: this.endTime ? this.endTime.toLocaleTimeString() : null,
     };
 
     this.router.navigate(['/cupons']);

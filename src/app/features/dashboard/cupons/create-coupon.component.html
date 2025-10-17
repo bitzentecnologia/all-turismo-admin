@@ -147,24 +147,32 @@
       <div class="time-range-wrapper">
         <div class="time-input-group">
           <label for="startTime" class="form-label">De</label>
-          <select
-            id="startTime"
+          <p-datepicker
+            inputId="startTime"
             name="startTime"
-            class="form-select"
             [(ngModel)]="startTime"
-            required
-          >
-            <option value="" disabled selected>Selecione uma hora</option>
-            <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
-          </select>
+            [timeOnly]="true"
+            [showIcon]="true"
+            [iconDisplay]="'input'"
+            placeholder="Selecione uma hora"
+            [required]="true"
+            styleClass="custom-calendar"
+          />
         </div>
 
         <div class="time-input-group">
           <label for="endTime" class="form-label">Até</label>
-          <select id="endTime" name="endTime" class="form-select" [(ngModel)]="endTime" required>
-            <option value="" disabled selected>Selecione uma hora</option>
-            <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
-          </select>
+          <p-datepicker
+            inputId="calendar-timeonly"
+            name="endTime"
+            [(ngModel)]="endTime"
+            [timeOnly]="true"
+            [showIcon]="true"
+            [iconDisplay]="'input'"
+            placeholder="Selecione uma hora"
+            [required]="true"
+            styleClass="custom-calendar"
+          />
         </div>
       </div>
     </section>
