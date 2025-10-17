@@ -23,8 +23,8 @@
     "watch": "ng build --watch --configuration=development",
     "test": "ng test",
     "test:coverage": "ng test --code-coverage",
-    "lint": "ng lint",
-    "lint:fix": "ng lint --fix",
+    "lint": "node --max-old-space-size=8192 ./node_modules/@angular/cli/bin/ng lint",
+    "lint:fix": "node --max-old-space-size=8192 ./node_modules/@angular/cli/bin/ng lint --fix",
     "format": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\""
   },
