@@ -47,21 +47,56 @@ export class CuponsComponent implements OnInit {
     {
       id: '1',
       title: 'Refrigerante 2L grátis na compra de uma pizza média',
+      description: 'Válido apenas para consumo no local. Não acumulativo.',
       image: 'assets/images/pizza-coupon.jpg',
       status: 'Ativo',
-      startDate: '2025-07-07',
-      endDate: '2025-07-08',
-      usedToday: 2,
-      totalDaily: 10
+      startDate: '10/01/2025',
+      endDate: '15/01/2025',
+      usedToday: 7,
+      totalDaily: 15
     },
     {
       id: '2',
-      title: 'Refrigerante 2L grátis na compra de uma pizza média',
+      title: '30% de desconto em pizzas grandes',
+      description: 'Promoção especial de fim de semana. Todas as pizzas grandes.',
       image: 'assets/images/pizza-coupon.jpg',
       status: 'Ativo',
-      startDate: '2025-07-07',
-      endDate: '2025-07-08',
-      usedToday: 2,
+      startDate: '10/01/2025',
+      endDate: '12/01/2025',
+      usedToday: 12,
+      totalDaily: 20
+    },
+    {
+      id: '3',
+      title: 'Sobremesa grátis no pedido acima de R$ 50',
+      description: 'Escolha entre petit gateau ou brownie com sorvete.',
+      image: 'assets/images/pizza-coupon.jpg',
+      status: 'Em análise',
+      startDate: '15/01/2025',
+      endDate: '20/01/2025',
+      usedToday: 0,
+      totalDaily: 25
+    },
+    {
+      id: '4',
+      title: 'Combo família: 2 pizzas + 2 refrigerantes por R$ 79,90',
+      description: 'Economize 25% no combo especial para família.',
+      image: 'assets/images/pizza-coupon.jpg',
+      status: 'Finalizado',
+      startDate: '01/01/2025',
+      endDate: '08/01/2025',
+      usedToday: 30,
+      totalDaily: 30
+    },
+    {
+      id: '5',
+      title: '50% na segunda pizza de calabresa',
+      description: 'Compre uma pizza de calabresa e ganhe 50% na segunda.',
+      image: 'assets/images/pizza-coupon.jpg',
+      status: 'Reprovado',
+      startDate: '05/01/2025',
+      endDate: '10/01/2025',
+      usedToday: 0,
       totalDaily: 10
     }
   ];
