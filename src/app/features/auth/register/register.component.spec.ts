@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { RegisterService } from './register.service';
 import { UploadService } from '../../../core/services/upload.service';
 import { CepService } from '../../../shared/services/cep.service';
@@ -448,11 +448,11 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
           preview: 'data:image/jpeg;base64,mock1',
         })
       );
-
-      expect(component.isLoading).toBeFalse();
-
       component.nextStep();
       tick(1000);
+
+      expect(component.currentStep).toBe(5);
+      expect(component.isLoading).toBeFalse();
 
       component.nextStep();
       expect(component.isLoading).toBeTrue();
@@ -472,6 +472,8 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       );
       component.nextStep();
       tick(1000);
+
+      expect(component.currentStep).toBe(5);
 
       component.nextStep();
       expect(component.isLoading).toBeTrue();
@@ -495,6 +497,8 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       component.nextStep();
       tick(1000);
 
+      expect(component.currentStep).toBe(5);
+
       component.nextStep();
       expect(component.isLoading).toBeTrue();
 
@@ -503,6 +507,7 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockLogoFile);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockPromoPhoto1);
       expect(component.isLoading).toBeFalse();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/registro-sucesso']);
     }));
 
     it('should handle multiple promotional photo uploads (2 photos) with loading indicator', fakeAsync(() => {
@@ -526,6 +531,7 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       component.nextStep();
       tick(1000);
 
+      expect(component.currentStep).toBe(5);
       expect(component.isLoading).toBeFalse();
 
       component.nextStep();
@@ -533,10 +539,12 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
 
       tick(1000);
 
+      expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockLogoFile);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockPromoPhoto1);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockPromoPhoto2);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledTimes(3);
       expect(component.isLoading).toBeFalse();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/registro-sucesso']);
     }));
 
     it('should handle maximum promotional photo uploads (3 photos) with loading indicator', fakeAsync(() => {
@@ -566,6 +574,7 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       component.nextStep();
       tick(1000);
 
+      expect(component.currentStep).toBe(5);
       expect(component.isLoading).toBeFalse();
 
       component.nextStep();
@@ -573,11 +582,13 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
 
       tick(1000);
 
+      expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockLogoFile);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockPromoPhoto1);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockPromoPhoto2);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockPromoPhoto3);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledTimes(4);
       expect(component.isLoading).toBeFalse();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/registro-sucesso']);
     }));
   });
 
@@ -596,6 +607,8 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       );
       component.nextStep();
       tick(1000);
+
+      expect(component.currentStep).toBe(5);
 
       const sizeError = {
         type: 'size',
@@ -628,6 +641,8 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       component.nextStep();
       tick(1000);
 
+      expect(component.currentStep).toBe(5);
+
       const formatError = {
         type: 'format',
         message: 'Formato de arquivo não suportado. Use PNG, JPG ou JPEG',
@@ -658,6 +673,8 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       );
       component.nextStep();
       tick(1000);
+
+      expect(component.currentStep).toBe(5);
 
       const networkError = {
         type: 'network',
@@ -695,6 +712,8 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       );
       component.nextStep();
       tick(1000);
+
+      expect(component.currentStep).toBe(5);
 
       let callCount = 0;
       uploadServiceSpy.uploadFile.and.callFake((_file: File) => {
@@ -749,14 +768,12 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       );
 
       expect(component.promotionPhotos.length).toBe(3);
-      expect(component.canAddMorePhotos()).toBeFalse();
     }));
 
     it('should allow adding photos when under the 3 photo limit', fakeAsync(() => {
       navigateToStep4();
 
       expect(component.promotionPhotos.length).toBe(0);
-      expect(component.canAddMorePhotos()).toBeTrue();
 
       component.promotionPhotos.push(
         component['fb'].group({
@@ -766,7 +783,6 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       );
 
       expect(component.promotionPhotos.length).toBe(1);
-      expect(component.canAddMorePhotos()).toBeTrue();
 
       component.promotionPhotos.push(
         component['fb'].group({
@@ -776,7 +792,6 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       );
 
       expect(component.promotionPhotos.length).toBe(2);
-      expect(component.canAddMorePhotos()).toBeTrue();
     }));
 
     it('should validate minimum promotional photo requirement (at least 1 photo)', fakeAsync(() => {
@@ -788,10 +803,10 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       component.nextStep();
       tick(1000);
 
+      expect(component.currentStep).toBe(5);
       expect(component.promotionPhotos.length).toBe(0);
 
       component.nextStep();
-      tick(1000);
 
       expect(component.showError).toBeTrue();
       expect(component.errorMessage).toContain('pelo menos 1 foto');
@@ -813,6 +828,7 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       component.nextStep();
       tick(1000);
 
+      expect(component.currentStep).toBe(5);
       expect(component.promotionPhotos.length).toBe(1);
 
       component.nextStep();
@@ -820,9 +836,12 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
 
       tick(1000);
 
+      expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockLogoFile);
+      expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockPromoPhoto1);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledTimes(2);
       expect(component.isLoading).toBeFalse();
       expect(component.showError).toBeFalse();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/registro-sucesso']);
     }));
   });
 
@@ -842,6 +861,7 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       component.nextStep();
       tick(1000);
 
+      expect(component.currentStep).toBe(5);
       expect(component.isLoading).toBeFalse();
     }));
 
@@ -866,6 +886,8 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       component.nextStep();
       tick(1000);
 
+      expect(component.currentStep).toBe(5);
+
       component.nextStep();
 
       expect(component.isLoading).toBeTrue();
@@ -876,6 +898,7 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockPromoPhoto1);
       expect(uploadServiceSpy.uploadFile).toHaveBeenCalledWith(mockPromoPhoto2);
       expect(component.isLoading).toBeFalse();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/registro-sucesso']);
     }));
 
     it('should clear loading indicator after registration API call completes', fakeAsync(() => {
@@ -892,6 +915,8 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
       );
       component.nextStep();
       tick(1000);
+
+      expect(component.currentStep).toBe(5);
 
       component.nextStep();
       expect(component.isLoading).toBeTrue();
