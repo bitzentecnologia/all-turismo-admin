@@ -90,6 +90,14 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
     return this.loadingState.activeOperations.has('cep-lookup');
   }
 
+  get isUploadingLogo(): boolean {
+    return this.loadingState.activeOperations.has('logo-upload');
+  }
+
+  get isUploadingPromotionPhotos(): boolean {
+    return this.loadingState.activeOperations.has('promotion-photo-upload');
+  }
+
   ngOnInit(): void {
     this.titleService.setTitle(`Registrar | ${environment.appName}`);
     this.initForm();
@@ -541,6 +549,12 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
 
     // Validação adicional para etapa 3 (estabelecimento)
     if (this.currentStep === 3) {
+      // Check if logo upload is in progress
+      if (this.isUploadingLogo) {
+        this.showErrorMessage('Por favor, aguarde o upload da logo ser concluído.');
+        return false;
+      }
+
       const establishmentForm = this.registerForm.get('establishment') as FormGroup;
 
       // Use getRawValue() to get values including disabled controls
@@ -567,6 +581,12 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
 
     // Validação adicional para etapa 4 (promoção)
     if (this.currentStep === 4) {
+      // Check if promotion photos upload is in progress
+      if (this.isUploadingPromotionPhotos) {
+        this.showErrorMessage('Por favor, aguarde o upload das fotos ser concluído.');
+        return false;
+      }
+
       // Validar promoção
       const promotionForm = this.registerForm.get('promotion') as FormGroup;
       if (promotionForm && promotionForm.invalid) {
@@ -802,6 +822,11 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
     }
 
     const filesToAdd = Array.from(files).slice(0, remainingSlots);
+    let uploadCount = 0;
+
+    if (filesToAdd.length > 0) {
+      this.startLoading('promotion-photo-upload');
+    }
 
     filesToAdd.forEach((file: any, index: number) => {
       if (file.type.startsWith('image/')) {
@@ -815,6 +840,10 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
                   preview: [e.target.result]
                 })
               );
+              uploadCount++;
+              if (uploadCount === filesToAdd.length) {
+                this.stopLoading('promotion-photo-upload');
+              }
               this.cdr.detectChanges();
             };
             reader.readAsDataURL(file);
@@ -822,6 +851,10 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
           error: (error: UploadError) => {
             const errorMsg = this.getUploadErrorMessage(error, `Foto ${currentPhotos + index + 1}`);
             this.promotionPhotosUploadErrors.push(errorMsg);
+            uploadCount++;
+            if (uploadCount === filesToAdd.length) {
+              this.stopLoading('promotion-photo-upload');
+            }
             this.cdr.detectChanges();
           }
         });
@@ -1024,6 +1057,7 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
     
     const file = event.target.files[0];
     if (file) {
+      this.startLoading('logo-upload');
       this.uploadService.uploadFile(file).subscribe({
         next: () => {
           const reader = new FileReader();
@@ -1036,6 +1070,7 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
             logoFileControl?.markAsTouched();
             logoFileControl?.updateValueAndValidity();
 
+            this.stopLoading('logo-upload');
             this.cdr.detectChanges();
           };
           reader.readAsDataURL(file);
@@ -1049,6 +1084,7 @@ export class RegisterComponent implements OnInit, AfterViewChecked {
           logoFileControl?.markAsTouched();
           logoFileControl?.updateValueAndValidity();
           
+          this.stopLoading('logo-upload');
           event.target.value = '';
           this.cdr.detectChanges();
         }

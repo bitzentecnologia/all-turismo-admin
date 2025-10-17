@@ -587,10 +587,17 @@
 
           <div class="logo-upload-area"
             [class.error]="(establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched) || logoUploadError"
+            [class.uploading]="isUploadingLogo"
             role="group"
             aria-labelledby="logo-label"
             [attr.aria-describedby]="logoUploadError ? 'logo-upload-error' : (establishmentForm.get('logoFile')?.invalid && establishmentForm.get('logoFile')?.touched ? 'logo-error' : 'logo-hint')">
-            <div class="upload-placeholder">
+            
+            <div *ngIf="isUploadingLogo" class="upload-loading" role="status" aria-live="polite">
+              <span class="loading-spinner"></span>
+              <span>Enviando logo...</span>
+            </div>
+
+            <div class="upload-placeholder" *ngIf="!isUploadingLogo">
               <input 
                 type="file" 
                 id="logoFile" 
@@ -613,7 +620,7 @@
               </button>
             </div>
 
-            <div *ngIf="establishmentForm.get('logoPreview')?.value" class="logo-preview" role="img" aria-label="Preview da logo selecionada">
+            <div *ngIf="establishmentForm.get('logoPreview')?.value && !isUploadingLogo" class="logo-preview" role="img" aria-label="Preview da logo selecionada">
               <img [src]="establishmentForm.get('logoPreview')?.value" alt="Preview da logo do estabelecimento" class="preview-image">
               <button 
                 type="button" 
@@ -709,8 +716,15 @@
               <p class="section-subtitle" id="promotion-photos-hint">Adicione pelo menos 1 foto para ilustrar sua promoção.</p>
 
               <div class="photos-upload-container" role="group" aria-labelledby="promotion-photos-label" aria-describedby="promotion-photos-hint">
+                
+                <!-- Loading indicator for promotion photos -->
+                <div *ngIf="isUploadingPromotionPhotos" class="photos-upload-loading" role="status" aria-live="polite">
+                  <span class="loading-spinner"></span>
+                  <span>Enviando fotos...</span>
+                </div>
+
                 <!-- Área de upload -->
-                <div class="photos-upload-area" *ngIf="promotionPhotos.length < 3">
+                <div class="photos-upload-area" *ngIf="promotionPhotos.length < 3 && !isUploadingPromotionPhotos">
                   <input 
                     type="file" 
                     id="promotionPhotos" 
