@@ -836,11 +836,21 @@
     line-height: 1.5;
   }
 
+  fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-inline-size: 0;
+  }
+
   .category-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     margin-top: 1rem;
+    border: 0;
+    padding: 0;
+    min-inline-size: 0;
   }
 
   .category-option {
