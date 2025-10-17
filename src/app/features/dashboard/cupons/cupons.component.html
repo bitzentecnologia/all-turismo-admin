@@ -155,6 +155,7 @@
 </div>
 
 <app-deactivate-coupon-modal
-  [(visible)]="showDeactivateModal"
-  (modalClose)="onModalClose()"
+  [isOpen]="showDeactivateModal"
+  (closeModal)="closeDeactivateModal()"
+  (confirmDeactivation)="confirmDeactivation()"
 ></app-deactivate-coupon-modal>
