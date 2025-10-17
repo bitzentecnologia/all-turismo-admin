@@ -6,11 +6,12 @@ import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { DatePicker } from 'primeng/datepicker';
 import { environment } from '../../../../environments/environment';
+import { CouponSuccessModalComponent } from '@shared/components/coupon-success-modal/coupon-success-modal.component';
 
 @Component({
   selector: 'app-create-coupon',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, DatePicker],
+  imports: [CommonModule, FormsModule, MatIconModule, DatePicker, CouponSuccessModalComponent],
   templateUrl: './create-coupon.component.html',
   styleUrls: ['./create-coupon.component.scss'],
 })
@@ -24,6 +25,7 @@ export class CreateCouponComponent implements OnInit {
   endDate: Date | null = null;
   startTime: Date | null = null;
   endTime: Date | null = null;
+  showSuccessModal = false;
 
   maxDescriptionLength = 100;
   maxRulesLength = 200;
@@ -97,6 +99,14 @@ export class CreateCouponComponent implements OnInit {
       endTime: this.endTime ? this.endTime.toLocaleTimeString() : null,
     };
 
+    this.showSuccessModal = true;
+  }
+
+  onModalClosed(): void {
+    this.router.navigate(['/cupons']);
+  }
+
+  onViewRequests(): void {
     this.router.navigate(['/cupons']);
   }
 }

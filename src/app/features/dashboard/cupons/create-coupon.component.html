@@ -185,4 +185,10 @@
       </button>
     </div>
   </form>
+
+  <app-coupon-success-modal
+    [(visible)]="showSuccessModal"
+    (closed)="onModalClosed()"
+    (viewRequests)="onViewRequests()"
+  />
 </div>
