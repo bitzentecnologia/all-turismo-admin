@@ -107,27 +107,31 @@
       <div class="date-range-wrapper">
         <div class="date-input-group">
           <label for="startDate" class="form-label">Início</label>
-          <input
-            type="date"
-            id="startDate"
+          <p-datepicker
+            inputId="startDate"
             name="startDate"
-            class="form-input date-input"
             [(ngModel)]="startDate"
+            dateFormat="dd/mm/yy"
             placeholder="Selecione uma data"
-            required
+            [showIcon]="true"
+            [iconDisplay]="'input'"
+            [required]="true"
+            styleClass="custom-calendar"
           />
         </div>
 
         <div class="date-input-group">
           <label for="endDate" class="form-label">Final</label>
-          <input
-            type="date"
-            id="endDate"
+          <p-datepicker
+            inputId="endDate"
             name="endDate"
-            class="form-input date-input"
             [(ngModel)]="endDate"
+            dateFormat="dd/mm/yy"
             placeholder="Selecione uma data"
-            required
+            [showIcon]="true"
+            [iconDisplay]="'input'"
+            [required]="true"
+            styleClass="custom-calendar"
           />
         </div>
       </div>

@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
+import { DatePicker } from 'primeng/datepicker';
 import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-create-coupon',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule, DatePicker],
   templateUrl: './create-coupon.component.html',
   styleUrls: ['./create-coupon.component.scss'],
 })
@@ -19,8 +20,8 @@ export class CreateCouponComponent implements OnInit {
   rules = '';
   selectedImages: File[] = [];
   imagePreviewUrls: string[] = [];
-  startDate = '';
-  endDate = '';
+  startDate: Date | null = null;
+  endDate: Date | null = null;
   startTime = '';
   endTime = '';
 
@@ -117,8 +118,8 @@ export class CreateCouponComponent implements OnInit {
       dailyQuantity: parseInt(this.dailyQuantity, 10),
       rules: this.rules,
       images: this.selectedImages,
-      startDate: this.startDate,
-      endDate: this.endDate,
+      startDate: this.startDate ? this.startDate.toISOString() : null,
+      endDate: this.endDate ? this.endDate.toISOString() : null,
       startTime: this.startTime,
       endTime: this.endTime,
     };
