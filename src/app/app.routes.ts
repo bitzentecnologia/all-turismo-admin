@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { HomeComponent } from './features/dashboard/home/home.component';
 import { CuponsComponent } from './features/dashboard/cupons/cupons.component';
+import { CreateCouponComponent } from './features/dashboard/cupons/create-coupon.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
@@ -40,6 +41,11 @@ export const routes: Routes = [
       {
         path: 'cupons',
         component: CuponsComponent,
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'cupons/criar',
+        component: CreateCouponComponent,
         canActivate: [AuthGuard],
       },
       {

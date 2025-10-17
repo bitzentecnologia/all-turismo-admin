@@ -45,16 +45,18 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     singleRun: false,
     restartOnFileChange: true,
     customLaunchers: {
       ChromeHeadless: {
         base: 'Chrome',
         flags: [
-          '--headless',
+          '--headless=new',
           '--disable-gpu',
           '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
           '--remote-debugging-port=9222'
         ]
       }

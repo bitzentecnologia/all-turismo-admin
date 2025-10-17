@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,10 +11,10 @@ import {
   validateNumbersOnly as validateNumbers,
 } from '../../../shared/utils/masks';
 import { DropDownItem } from '../../../shared/models/dropdown.model';
-import { RegisterFormData } from './register.model';
+import { RegisterFormData, LoadingState, LoadingOperation } from './register.model';
 import { CepService } from '../../../shared/services/cep.service';
 import { RegisterService } from './register.service';
-import { UploadService } from '../../../core/services/upload.service';
+import { UploadService, UploadError } from '../../../core/services/upload.service';
 import { cnpjValidator } from '@shared/utils/cnpj-validator';
 import { MatIconModule } from '@angular/material/icon';
 import { OperatingHours } from './operating-hours.model';
@@ -29,18 +29,27 @@ import { passwordMatchValidator } from './password-match.validator';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, AfterViewChecked {
   currentStep: number = 1;
-  isLoading: boolean = false;
-  isConsultingCep: boolean = false;
+  private loadingState: LoadingState = {
+    isLoading: false,
+    activeOperations: new Set<LoadingOperation>()
+  };
   registerForm!: FormGroup;
   showError: boolean = false;
   errorMessage: string = '';
   errorMessages: string[] = [];
   environment = environment;
+  
+  @ViewChild('errorAlert') errorAlert?: ElementRef;
+  private shouldFocusError = false;
+  private lastStep: number = 1;
 
   categories: DropDownItem[] = [];
   subcategories: DropDownItem[] = [];
+
+  logoUploadError: string = '';
+  promotionPhotosUploadErrors: string[] = [];
 
   // Dias da semana para os horários (iniciando no domingo)
   daysOfWeek = [
@@ -63,6 +72,24 @@ export class RegisterComponent implements OnInit {
     private uploadService: UploadService
   ) { }
 
+  private startLoading(operation: LoadingOperation): void {
+    this.loadingState.activeOperations.add(operation);
+    this.loadingState.isLoading = this.loadingState.activeOperations.size > 0;
+  }
+
+  private stopLoading(operation: LoadingOperation): void {
+    this.loadingState.activeOperations.delete(operation);
+    this.loadingState.isLoading = this.loadingState.activeOperations.size > 0;
+  }
+
+  get isLoading(): boolean {
+    return this.loadingState.isLoading;
+  }
+
+  get isConsultingCep(): boolean {
+    return this.loadingState.activeOperations.has('cep-lookup');
+  }
+
   ngOnInit(): void {
     this.titleService.setTitle(`Registrar | ${environment.appName}`);
     this.initForm();
@@ -72,6 +99,13 @@ export class RegisterComponent implements OnInit {
       next: res => (this.categories = res),
       error: err => console.error('Erro ao carregar categorias:', err),
     });
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.shouldFocusError && this.errorAlert) {
+      this.errorAlert.nativeElement.focus();
+      this.shouldFocusError = false;
+    }
   }
 
   // Finalizar registro - NOVO PROCESSO EM 3 ETAPAS
@@ -119,7 +153,7 @@ export class RegisterComponent implements OnInit {
     }
 
     // Iniciar processo de upload
-    this.isLoading = true;
+    this.startLoading('form-submission');
 
     try {
       // ETAPA 1: Upload da Logo (obrigatória)
@@ -132,7 +166,7 @@ export class RegisterComponent implements OnInit {
       this.saveRegistrationData(logoId, photoIds);
 
     } catch (error: any) {
-      this.isLoading = false;
+      this.stopLoading('form-submission');
       this.showErrorMessage('Erro ao enviar os arquivos. Tente novamente.');
     }
   }
@@ -149,8 +183,9 @@ export class RegisterComponent implements OnInit {
         next: (response: { id: string }) => {
           resolve(response.id);
         },
-        error: (error: any) => {
-          reject(error);
+        error: (error: UploadError) => {
+          const errorMsg = this.getUploadErrorMessage(error, fileType);
+          reject({ uploadError: error, displayMessage: errorMsg });
         }
       });
     });
@@ -159,20 +194,38 @@ export class RegisterComponent implements OnInit {
   // Método para fazer upload das fotos da promoção
   private async uploadPromotionPhotos(photos: any[]): Promise<string[]> {
     try {
-      // Criar array de Promises para upload paralelo
       const uploadPromises = photos.map((photo, index) => {
         const photoNumber = index + 1;
         return this.uploadFileAndGetId(photo.file, `Foto ${photoNumber}`);
       });
 
-      // Aguardar todos os uploads terminarem
       const photoIds = await Promise.all(uploadPromises);
 
       return photoIds;
 
     } catch (error: any) {
-      this.showErrorMessage('Erro ao enviar as fotos. Tente novamente.');
+      const errorMsg = error?.displayMessage || 'Erro ao enviar as fotos. Tente novamente.';
+      this.showErrorMessage(errorMsg);
       throw error;
+    }
+  }
+
+  private getUploadErrorMessage(error: UploadError, fileType: string): string {
+    const prefix = `Erro ao enviar ${fileType}: `;
+    
+    switch (error.type) {
+      case 'size':
+        return prefix + error.message;
+      case 'format':
+        return prefix + error.message;
+      case 'timeout':
+        return prefix + error.message;
+      case 'network':
+        return prefix + error.message;
+      case 'server':
+        return prefix + error.message;
+      default:
+        return prefix + 'Erro desconhecido. Tente novamente.';
     }
   }
 
@@ -232,11 +285,11 @@ export class RegisterComponent implements OnInit {
         try {
           await this.router.navigate(['/registro-sucesso']);
         } finally {
-          this.isLoading = false;
+          this.stopLoading('form-submission');
         }
       },
       error: (error) => {
-        this.isLoading = false;
+        this.stopLoading('form-submission');
 
         // Tratamento de erro com lista de mensagens
         let errorMsg = '';
@@ -439,13 +492,15 @@ export class RegisterComponent implements OnInit {
     console.log('Validate Current Step Result:', isValid);
 
     if (isValid) {
-      this.isLoading = true;
+      this.startLoading('step-navigation');
 
       setTimeout(() => {
-        this.isLoading = false;
+        this.stopLoading('step-navigation');
+        this.lastStep = this.currentStep;
         if (this.currentStep < 5) {
           this.currentStep++;
           console.log('Moving to step:', this.currentStep);
+          this.focusFirstFormElement();
         } else {
           this.finishRegistration();
         }
@@ -455,13 +510,24 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  previousStep(): void {
+  goToPreviousStep(): void {
     if (this.currentStep > 1) {
+      this.lastStep = this.currentStep;
       this.currentStep--;
       this.scrollToTop();
+      setTimeout(() => this.focusFirstFormElement(), 100);
     } else {
       this.router.navigate(['/login']);
     }
+  }
+
+  private focusFirstFormElement(): void {
+    setTimeout(() => {
+      const firstInput = document.querySelector('.form-step input:not([type="hidden"]), .form-step select, .form-step textarea') as HTMLElement;
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }, 100);
   }
 
   // Validação por etapa
@@ -676,6 +742,10 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.get('operatingHours') as FormArray;
   }
 
+  get operatingHours(): FormArray {
+    return this.registerForm.get('operatingHours') as FormArray;
+  }
+
   onDayClosedChange(index: number, isClosed: boolean): void {
     const dayFormGroup = this.operatingHoursArray.at(index) as FormGroup;
     dayFormGroup.patchValue({ isClosed });
@@ -720,6 +790,8 @@ export class RegisterComponent implements OnInit {
   }
 
   onPromotionPhotoSelected(event: any): void {
+    this.promotionPhotosUploadErrors = [];
+    
     const files = event.target.files;
     const currentPhotos = this.promotionPhotos.length;
     const remainingSlots = 3 - currentPhotos;
@@ -731,24 +803,37 @@ export class RegisterComponent implements OnInit {
 
     const filesToAdd = Array.from(files).slice(0, remainingSlots);
 
-    filesToAdd.forEach((file: any) => {
+    filesToAdd.forEach((file: any, index: number) => {
       if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.promotionPhotos.push(
-            this.fb.group({
-              file: [file],
-              preview: [e.target.result]
-            })
-          );
-        };
-        reader.readAsDataURL(file);
+        this.uploadService.uploadFile(file).subscribe({
+          next: () => {
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+              this.promotionPhotos.push(
+                this.fb.group({
+                  file: [file],
+                  preview: [e.target.result]
+                })
+              );
+              this.cdr.detectChanges();
+            };
+            reader.readAsDataURL(file);
+          },
+          error: (error: UploadError) => {
+            const errorMsg = this.getUploadErrorMessage(error, `Foto ${currentPhotos + index + 1}`);
+            this.promotionPhotosUploadErrors.push(errorMsg);
+            this.cdr.detectChanges();
+          }
+        });
       }
     });
+
+    event.target.value = '';
   }
 
   removePromotionPhoto(index: number): void {
     this.promotionPhotos.removeAt(index);
+    this.promotionPhotosUploadErrors = [];
   }
 
   // Scroll para o topo da página
@@ -766,6 +851,7 @@ export class RegisterComponent implements OnInit {
     this.showError = true;
     this.errorMessage = message;
     this.errorMessages = messagesList;
+    this.shouldFocusError = true;
     this.scrollToTop();
   }
 
@@ -853,6 +939,16 @@ export class RegisterComponent implements OnInit {
         if (control instanceof FormGroup) {
           this.markFormGroupTouched(control);
         }
+        
+        // Se for um FormArray, marcar todos os controles como touched
+        if (control instanceof FormArray) {
+          control.controls.forEach((arrayControl) => {
+            arrayControl.markAsTouched();
+            if (arrayControl instanceof FormGroup) {
+              this.markFormGroupTouched(arrayControl);
+            }
+          });
+        }
       }
     });
   }
@@ -876,7 +972,7 @@ export class RegisterComponent implements OnInit {
 
   // Consultar CEP automaticamente
   private consultCep(cep: string): void {
-    this.isConsultingCep = true;
+    this.startLoading('cep-lookup');
 
     this.cepService.consultarCep(cep).subscribe({
       next: response => {
@@ -890,7 +986,7 @@ export class RegisterComponent implements OnInit {
             street: response.logradouro,
           },
         });
-        this.isConsultingCep = false;
+        this.stopLoading('cep-lookup');
       },
       error: error => {
         // Limpa os campos de endereço em caso de erro
@@ -902,7 +998,7 @@ export class RegisterComponent implements OnInit {
             street: '',
           },
         });
-        this.isConsultingCep = false;
+        this.stopLoading('cep-lookup');
       },
     });
   }
@@ -924,27 +1020,43 @@ export class RegisterComponent implements OnInit {
 
   // Upload de logo
   onLogoSelected(event: any): void {
+    this.logoUploadError = '';
+    
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.registerForm.get('establishment.logoPreview')?.setValue(e.target.result);
-        this.registerForm.get('establishment.logoFile')?.setValue(file);
+      this.uploadService.uploadFile(file).subscribe({
+        next: () => {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            this.registerForm.get('establishment.logoPreview')?.setValue(e.target.result);
+            this.registerForm.get('establishment.logoFile')?.setValue(file);
 
-        const logoFileControl = this.registerForm.get('establishment.logoFile');
+            const logoFileControl = this.registerForm.get('establishment.logoFile');
 
-        logoFileControl?.markAsTouched();
-        logoFileControl?.updateValueAndValidity();
+            logoFileControl?.markAsTouched();
+            logoFileControl?.updateValueAndValidity();
 
-        this.cdr.detectChanges();
-      };
-      reader.readAsDataURL(file);
+            this.cdr.detectChanges();
+          };
+          reader.readAsDataURL(file);
+        },
+        error: (error: UploadError) => {
+          this.logoUploadError = this.getUploadErrorMessage(error, 'Logo');
+          this.registerForm.get('establishment.logoPreview')?.setValue('');
+          this.registerForm.get('establishment.logoFile')?.setValue(null);
+          
+          const logoFileControl = this.registerForm.get('establishment.logoFile');
+          logoFileControl?.markAsTouched();
+          logoFileControl?.updateValueAndValidity();
+          
+          event.target.value = '';
+          this.cdr.detectChanges();
+        }
+      });
     } else {
-      // Limpar o campo se nenhum arquivo foi selecionado
       this.registerForm.get('establishment.logoPreview')?.setValue('');
       this.registerForm.get('establishment.logoFile')?.setValue(null);
 
-      // Forçar validação e marcação como touched
       const logoFileControl = this.registerForm.get('establishment.logoFile');
       logoFileControl?.markAsTouched();
       logoFileControl?.updateValueAndValidity();
@@ -953,10 +1065,10 @@ export class RegisterComponent implements OnInit {
 
   // Remover logo
   removeLogo(): void {
+    this.logoUploadError = '';
     this.registerForm.get('establishment.logoPreview')?.setValue('');
     this.registerForm.get('establishment.logoFile')?.setValue(null);
 
-    // Forçar validação e marcação como touched
     const logoFileControl = this.registerForm.get('establishment.logoFile');
     logoFileControl?.markAsTouched();
     logoFileControl?.updateValueAndValidity();

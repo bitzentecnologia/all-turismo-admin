@@ -1,0 +1,398 @@
+.create-coupon-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+  }
+}
+
+.requirement-alert {
+  margin-bottom: 2rem;
+}
+
+.coupon-form {
+  background: transparent;
+  padding: 0;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}
+
+.form-label {
+  display: block;
+  font-weight: 400;
+  color: #000000;
+  margin-bottom: 0.625rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+  background: #ffffff;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  resize: none;
+  transition: border-color 0.2s;
+  background: #ffffff;
+  min-height: 80px;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+}
+
+.help-text {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.char-counter {
+  text-align: right;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.coupon-preview {
+  background: #f3f4f6;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+
+  .preview-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #000000;
+    margin: 0 0 0.375rem 0;
+  }
+
+  .preview-text {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0 0 0.5rem 0;
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.5;
+
+  &:hover {
+    .checkbox-input {
+      border-color: #3b82f6;
+    }
+  }
+}
+
+.checkbox-input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 3px;
+  accent-color: #3b82f6;
+}
+
+.checkbox-text {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.custom-rule-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  align-items: flex-start;
+
+  .form-input {
+    flex: 1;
+  }
+}
+
+.remove-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #6b7280;
+  }
+
+  &:hover {
+    background: #fee;
+    border-color: #ef4444;
+
+    mat-icon {
+      color: #ef4444;
+    }
+  }
+}
+
+.add-rule-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #3b82f6;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+  font-weight: 400;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: #2563eb;
+  }
+}
+
+.image-upload-container {
+  margin-bottom: 0.75rem;
+}
+
+.upload-box {
+  margin-bottom: 1rem;
+
+  .file-input {
+    display: none;
+  }
+
+  .upload-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 3rem 2rem;
+    background: transparent;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    color: #3b82f6;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background: #f9fafb;
+      border-color: #3b82f6;
+    }
+  }
+}
+
+.image-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.image-preview-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  border: 1px solid #e5e7eb;
+
+  .preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .remove-image-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #6b7280;
+    }
+
+    &:hover {
+      background: #ef4444;
+
+      mat-icon {
+        color: white;
+      }
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  padding-top: 0;
+}
+
+.cancel-button {
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: #4285f4;
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.submit-button {
+  padding: 0.875rem 2.5rem;
+  background: #4285f4;
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 160px;
+
+  &:hover:not(:disabled) {
+    background: #3367d6;
+  }
+
+  &:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 768px) {
+  .create-coupon-page {
+    padding: 1rem;
+  }
+
+  .page-header {
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .image-preview-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
