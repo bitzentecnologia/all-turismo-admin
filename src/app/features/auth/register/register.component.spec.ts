@@ -801,13 +801,9 @@ describe('RegisterComponent - Step 4 Photo Upload Loading Indicator', () => {
         text: 'Promoção válida de teste',
       });
       component.nextStep();
-      tick(1000);
 
-      expect(component.currentStep).toBe(5);
+      expect(component.currentStep).toBe(4);
       expect(component.promotionPhotos.length).toBe(0);
-
-      component.nextStep();
-
       expect(component.showError).toBeTrue();
       expect(component.errorMessage).toContain('pelo menos 1 foto');
       expect(component.isLoading).toBeFalse();
